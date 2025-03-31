@@ -1,8 +1,8 @@
-# FurnitureCore
+# LunaDeerMC
 
-FurnitureCore is a project aims to adding custom furniture models to your Minecraft Paper server.
+To the Moon! To the Dream! To the Future!
 
-**Components:**
-- [FurnitureCore](https://github.com/FurnitureCore/FurnitureCore): Srever plugin to load, manage and interactive with furniture.
-- [FurnitureMarket](https://github.com/FurnitureCore/FurnitureMarket): Website host models can be used by FurnitureCore plugin.
-- [FurnitureBench](https://github.com/FurnitureCore/FurnitureBench): Blockbench plugin to build & export FurnitureCore compatible models.
+**AWESOME:**
+
+- [Dominion](https://github.com/LunaDeerMC/Dominion): New generation territory anti-grief plugin developed specifically for high-versions minecraft server.
+- [FurnitureCore](https://github.com/LunaDeerMC/FurnitureCore): Adding custom furniture models to your Minecraft Paper server.
