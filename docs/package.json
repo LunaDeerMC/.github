@@ -1,0 +1,37 @@
+{
+  "name": "luna-deer-mc",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "To the Moon! To the Dream! To the Future!",
+  "packageManager": "pnpm@9.15.1",
+  "author": "zhangyuheng <zhangyuheng@lunadeer.cn>",
+  "license": "MIT",
+  "engines": {
+    "node": "^20.6.0 || >=22.0.0"
+  },
+  "scripts": {
+    "docs:dev": "vuepress dev src",
+    "docs:dev-clean": "vuepress dev src --clean-cache --clean-temp",
+    "docs:build": "vuepress build src --clean-cache --clean-temp",
+    "docs:preview": "http-server src/.vuepress/dist",
+    "vp-update": "pnpm dlx vp-update"
+  },
+  "devDependencies": {
+    "@vuepress/bundler-vite": "2.0.0-rc.23",
+    "http-server": "^14.1.1",
+    "sass-embedded": "^1.89.1",
+    "typescript": "^5.8.3",
+    "vue": "^3.5.16",
+    "vuepress": "2.0.0-rc.23",
+    "vuepress-theme-plume": "1.0.0-rc.153"
+  },
+  "dependencies": {
+    "@vuepress/shiki-twoslash": "^2.0.0-rc.108",
+    "artplayer": "^5.2.3",
+    "chart.js": "^4.5.0",
+    "echarts": "^5.6.0",
+    "flowchart.ts": "^3.0.1",
+    "mermaid": "^11.6.0",
+    "pyodide": "^0.27.7"
+  }
+}
