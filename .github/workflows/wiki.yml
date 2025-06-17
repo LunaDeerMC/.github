@@ -3,7 +3,7 @@ name: Deploy VuePress with GitHub Pages dependencies preinstalled
 on:
   push:
     branches:
-      - master
+      - main
 
   workflow_dispatch:
 
