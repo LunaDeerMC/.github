@@ -3,6 +3,10 @@ title: ReColorfulMap
 createTime: 2025/06/17 17:58:20
 permalink: /amusing/ReColorfulMap/
 ---
+<CardGrid>
+    <LinkCard title="💾 下载地址" href="https://github.com/LunaDeerMC/ReColorfulMap/releases/latest"></LinkCard>
+    <LinkCard title="📁 源码地址" href="https://github.com/LunaDeerMC/ReColorfulMap"></LinkCard>
+</CardGrid>
 
 ReColorfulMap 可以将图片自动转换为地图画阵列，用以方便地悬挂公告、装饰画、地图等。
 

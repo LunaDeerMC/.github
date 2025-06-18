@@ -4,6 +4,11 @@ createTime: 2025/06/17 18:59:49
 permalink: /amusing/LiteWorldEdit/
 ---
 
+<CardGrid>
+    <LinkCard title="💾 下载地址" href="https://github.com/LunaDeerMC/LiteWorldEdit/releases/latest"></LinkCard>
+    <LinkCard title="📁 源码地址" href="https://github.com/LunaDeerMC/LiteWorldEdit"></LinkCard>
+</CardGrid>
+
 适用于生存服务器的轻量级创世神插件。
 
 ## 说明

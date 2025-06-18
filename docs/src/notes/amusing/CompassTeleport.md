@@ -3,6 +3,10 @@ title: CompassTeleport
 createTime: 2025/06/17 17:59:42
 permalink: /amusing/CompassTeleport/
 ---
+<CardGrid>
+    <LinkCard title="💾 下载地址" href="https://github.com/LunaDeerMC/CompassTeleport/releases/latest"></LinkCard>
+    <LinkCard title="📁 源码地址" href="https://github.com/LunaDeerMC/CompassTeleport"></LinkCard>
+</CardGrid>
 
 使用指南针进行传送，增强原版指南针功能，更适合长途探险！
 
