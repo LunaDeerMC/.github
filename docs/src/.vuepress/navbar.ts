@@ -12,17 +12,17 @@ export default defineNavbarConfig([
   {
     text: '🎉趣味插件',
     items: [
-      { text: 'ReColorfulMap', link: '/notes/amusing/ReColorfulMap.md' },
-      { text: 'CompassTeleport', link: '/notes/amusing/CompassTeleport.md' },
-      { text: 'ExpExtraction', link: '/notes/amusing/ExpExtraction.md' },
-      { text: 'LiteWorldEdit', link: '/notes/amusing/LiteWorldEdit/' },
+      { text: 'ReColorfulMap', link: '/amusing/ReColorfulMap/' },
+      { text: 'CompassTeleport', link: '/amusing/CompassTeleport/' },
+      { text: 'ExpExtraction', link: '/amusing/ExpExtraction/' },
+      { text: 'LiteWorldEdit', link: '/amusing/LiteWorldEdit/' },
     ]
   },
   {
     text: '🍃服务端核心',
     items: [
-      { text: '【原版优化】DeerFolia', link: '/notes/core/DeerFolia/' },
-      { text: '【更多功能】DeerFoliaPlus', link: '/notes/core/DeerFoliaPlus/' },
+      { text: '【原版优化】DeerFolia', link: '/core/DeerFolia/' },
+      { text: '【更多功能】DeerFoliaPlus', link: '/core/DeerFoliaPlus/' },
     ]
   },
   {

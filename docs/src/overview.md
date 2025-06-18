@@ -20,10 +20,10 @@ permalink: /overview/
 ## 🎉趣味插件
 
 <CardGrid cols=3>
-    <LinkCard title="ReColorfulMap" href="/notes/amusing/ReColorfulMap.md">地图画</LinkCard>
-    <LinkCard title="CompassTeleport" href="/notes/amusing/CompassTeleport.md">指南针传送</LinkCard>
-    <LinkCard title="ExpExtraction" href="/notes/amusing/ExpExtraction.md">经验提取</LinkCard>
-    <LinkCard title="LiteWorldEdit" href="/notes/amusing/LiteWorldEdit/">小创世神</LinkCard>
+    <LinkCard title="ReColorfulMap" href="/amusing/ReColorfulMap/">地图画</LinkCard>
+    <LinkCard title="CompassTeleport" href="/amusing/CompassTeleport/">指南针传送</LinkCard>
+    <LinkCard title="ExpExtraction" href="/amusing/ExpExtraction/">经验提取</LinkCard>
+    <LinkCard title="LiteWorldEdit" href="/amusing/LiteWorldEdit/">小创世神</LinkCard>
 </CardGrid>
 
 ## 🍃服务端核心
