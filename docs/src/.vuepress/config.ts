@@ -9,7 +9,7 @@ export default defineUserConfig({
   description: 'To the Moon! To the Dream! To the Future!',
 
   head: [
-    ['link', { rel: 'icon', type: 'image/png', href: 'https://theme-plume.vuejs.press/favicon-32x32.png' }],
+    ['link', { rel: 'icon', type: 'image/png', href: 'https://mc.lunadeer.cn/logo.png' }],
   ],
 
   bundler: viteBundler(),
