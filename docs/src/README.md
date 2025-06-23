@@ -12,7 +12,7 @@ config:
       actions:
         -
           theme: brand
-          text: 开始阅读 →
+          text: 来看看都有什么好东西 →
           link: /overview/
         -
           theme: alt
