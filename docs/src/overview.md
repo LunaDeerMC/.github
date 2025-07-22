@@ -24,6 +24,7 @@ permalink: /overview/
     <LinkCard title="CompassTeleport" href="/amusing/CompassTeleport/">指南针传送</LinkCard>
     <LinkCard title="ExpExtraction" href="/amusing/ExpExtraction/">经验提取</LinkCard>
     <LinkCard title="LiteWorldEdit" href="/amusing/LiteWorldEdit/">小创世神</LinkCard>
+    <LinkCard title="TimeManager" href="/amusing/TimeManager/">自定义时间</LinkCard>
 </CardGrid>
 
 ## 🍃服务端核心
