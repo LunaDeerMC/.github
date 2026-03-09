@@ -11,7 +11,7 @@ const amusing = defineNoteConfig(
 const coreDeerFolia = defineNoteConfig(
   {
     dir: 'core/DeerFolia',
-    link: '/core/DeerFolia',
+    link: '/core/DeerFolia/',
     sidebar: 'auto',
   }
 )
@@ -19,7 +19,7 @@ const coreDeerFolia = defineNoteConfig(
 const coreDeerFoliaPlus = defineNoteConfig(
   {
     dir: 'core/DeerFoliaPlus',
-    link: '/core/DeerFoliaPlus',
+    link: '/core/DeerFoliaPlus/',
     sidebar: 'auto',
   }
 )
