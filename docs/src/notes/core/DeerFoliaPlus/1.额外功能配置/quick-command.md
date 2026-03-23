@@ -4,9 +4,9 @@ createTime: 2025/06/23 13:35:52
 permalink: /core/DeerFoliaPlus/features/quick-command/
 ---
 
-## 实用快捷命令
-
 以下命令无需额外配置，安装即可使用。带 `*` 标记的命令默认所有玩家可用，其余默认仅 OP 可用。
+
+## 实用快捷命令
 
 | 命令 | 权限节点 | 说明 |
 |---|---|---|
