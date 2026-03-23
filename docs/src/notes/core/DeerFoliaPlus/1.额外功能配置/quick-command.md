@@ -25,6 +25,8 @@ permalink: /core/DeerFoliaPlus/features/quick-command/
 
 ## 快捷工作方块命令
 
+| 命令 | 权限节点 | 说明 |
+|---|---|---|
 | `/enderchest` | `deerfoliaplus.command.enderchest` | 直接打开自己的末影箱 |
 | `/workbench` | `deerfoliaplus.command.workbench` | 直接打开 3x3 合成台界面 |
 | `/craftingtable` | `deerfoliaplus.command.craftingtable` | 直接打开 3x3 合成台界面 |
