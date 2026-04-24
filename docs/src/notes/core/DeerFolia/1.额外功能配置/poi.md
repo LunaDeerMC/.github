@@ -6,6 +6,15 @@ permalink: /core/DeerFolia/features/poi/
 
 通过降低 POI（兴趣点）相关操作的频率，减少了村民等实体的 CPU 占用，尤其在村民较多的场景下效果显著。
 
+## 优化的组件
+
+- **Villager.java** — 为铁傀儡生成检查添加了速率限制，引入玩家距离检查以避免不必要的计算
+- **SecondaryPoiSensor.java** — 降低 POI 扫描频率，跳过不需要次要 POI 的职业扫描
+- **ValidateNearbyPoi.java** — 为 POI 验证检查添加速率限制，防止冗余操作
+- **GolemSensor.java** — 如果附近没有玩家则跳过铁傀儡检测检查，减少不必要的计算
+
+## 配置项
+
 ```yaml
 # config/deer-folia.yml
 poi-optimizations:

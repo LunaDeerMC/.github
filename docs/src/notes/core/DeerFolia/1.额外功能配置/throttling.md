@@ -4,7 +4,13 @@ createTime: 2025/06/23 13:39:09
 permalink: /core/DeerFolia/features/throttling/
 ---
 
-引入了 Kaiiju 的实体节流机制，提升了服务器的性能。
+引入了 Kaiiju 的实体节流机制，按区域对实体进行数量限制和更新频率控制。
+
+## 工作原理
+
+当某个区域（region）内特定类型实体的数量超过 `limit` 时，超出的实体将被限速，每隔一定 tick 数才会被更新一次。当数量超过 `removal` 时，最先生成的实体会被逐步移除。
+
+## 配置项
 
 ```yaml
 # config/deer-folia.yml
