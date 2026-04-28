@@ -48,3 +48,23 @@
   --vp-c-text-3: rgba(235, 235, 245, 0.38);
   */
 }
+
+/* Sidebar price badge styling */
+.vp-sidebar-item .text :deep(.vp-menu-badge) {
+  padding: 2px 6px !important;
+  margin-top: 0;
+  margin-left: 4px;
+  font-size: 10px !important;
+  font-weight: 700 !important;
+  line-height: 1;
+  letter-spacing: 0.2px;
+  border-radius: 4px !important;
+  background: linear-gradient(135deg, #f093fb, #f5576c) !important;
+  color: #fff !important;
+  border: none !important;
+}
+
+[data-theme="dark"] .vp-sidebar-item .text :deep(.vp-menu-badge) {
+  background: linear-gradient(135deg, #f093fb, #f5576c) !important;
+  color: #fff !important;
+}

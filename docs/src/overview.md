@@ -33,3 +33,11 @@ permalink: /overview/
   <LinkCard title="DeerFolia" href="/core/DeerFolia/">比 Folia 具备更多优化。</LinkCard>
   <LinkCard title="DeerFoliaPlus" href="/core/DeerFoliaPlus/">比 DeerFolia 具备更多功能。</LinkCard>
 </CardGrid>
+
+## 💎付费插件
+
+<CardGrid>
+  <LinkCard title="DominionProtect" href="/paid/DominionProtect/">
+    专为 Dominion 领地系统打造的保护记录插件，支持回溯、恢复与订阅经济系统。
+  </LinkCard>
+</CardGrid>

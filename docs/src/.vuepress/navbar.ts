@@ -26,6 +26,13 @@ export default defineNavbarConfig([
     ]
   },
   {
+    text: '💎付费插件',
+    items: [
+      { text: '【保护记录】DominionProtect', link: '/paid/DominionProtect/' },
+      { text: '购买说明', link: '/paid/buy/' },
+    ]
+  },
+  {
     text: '💬交流',
     items: [
       { text: 'QQ 群', link: 'https://qm.qq.com/q/J8FeUtpEIM' },

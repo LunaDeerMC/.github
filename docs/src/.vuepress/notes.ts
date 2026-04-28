@@ -24,8 +24,16 @@ const coreDeerFoliaPlus = defineNoteConfig(
   }
 )
 
+const paid = defineNoteConfig(
+  {
+    dir: 'paid',
+    link: '/paid',
+    sidebar: 'auto',
+  }
+)
+
 export default defineNotesConfig({
   dir: 'notes',
   link: '/',
-  notes: [amusing, coreDeerFolia, coreDeerFoliaPlus],
+  notes: [amusing, coreDeerFolia, coreDeerFoliaPlus, paid],
 })
