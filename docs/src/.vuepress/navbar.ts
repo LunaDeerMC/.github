@@ -16,6 +16,7 @@ export default defineNavbarConfig([
       { text: 'CompassTeleport', link: '/amusing/CompassTeleport/' },
       { text: 'ExpExtraction', link: '/amusing/ExpExtraction/' },
       { text: 'LiteWorldEdit', link: '/amusing/LiteWorldEdit/' },
+      { text: 'DeerTitle', link: '/amusing/DeerTitle/' },
     ]
   },
   {
