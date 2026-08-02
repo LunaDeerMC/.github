@@ -1,0 +1,29 @@
+:root {
+  color-scheme: dark;
+
+  /* Duskmoon brand colors */
+  --color-dusk: #6677c8;
+  --color-dusk-deep: #43559f;
+  --color-ink: #17182e;
+  --color-ink-raised: #202442;
+  --color-ink-soft: #2a3157;
+  --color-mineral: #a8b8de;
+  --color-cherry: #d36b7d;
+  --color-redstone: #e1475f;
+  --color-redstone-hover: #ee5b70;
+  --color-moon: #f7f7fb;
+  --color-moon-muted: #c7cbe0;
+  --color-line: rgba(247, 247, 251, 0.18);
+  --color-line-strong: rgba(247, 247, 251, 0.34);
+
+  --font-sans: "Mona Sans", "PingFang SC", "Microsoft YaHei UI", "Noto Sans CJK SC", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+
+  --content-max: 80rem;
+  --page-gutter: clamp(1.25rem, 4vw, 4.5rem);
+  --nav-height: 4.75rem;
+  --radius-sm: 0.25rem;
+  --radius-md: 0.6rem;
+  --ease-out: cubic-bezier(0.075, 0.85, 0.175, 1);
+  --parallax-perspective: 2.5rem;
+}

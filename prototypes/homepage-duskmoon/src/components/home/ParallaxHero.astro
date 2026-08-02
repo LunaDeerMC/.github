@@ -1,0 +1,236 @@
+---
+const layers = [
+  { name: "暮光天空", src: "/assets/home/parallax/sky.png", depth: 8, position: "50%" },
+  { name: "方块远山", src: "/assets/home/parallax/mountains.png", depth: 5, position: "50%" },
+  { name: "开发者聚落", src: "/assets/home/parallax/settlement.png", depth: 2, position: "50%" },
+  { name: "近景植被", src: "/assets/home/parallax/foreground.png", depth: 1, position: "50%", shift: "-13vh" },
+];
+---
+
+<section class="scene" aria-label="LunaDeerMC 方块世界">
+  {layers.map((layer) => (
+    <div
+      class="scene__layer"
+      style={`--depth:${layer.depth}; --image-position:${layer.position}; --image-shift:${layer.shift ?? "0px"};`}
+      aria-hidden="true"
+    >
+      <img
+        class="scene__image"
+        src={layer.src}
+        alt=""
+        loading="eager"
+        decoding="async"
+        style={layer.shift ? `transform:translateY(${layer.shift})` : undefined}
+      />
+    </div>
+  ))}
+
+  <div class="scene__blend" aria-hidden="true"></div>
+
+  <div class="hero-wrap">
+    <div class="hero" data-hero-copy>
+      <h1>LunaDeerMC</h1>
+      <p class="hero__line">To the moon, to the dream, to the future!</p>
+      <p class="hero__body">为 Minecraft 社区构建可靠易用的插件、<br class="hero__desktop-break" />服务端核心与开发工具。</p>
+      <div class="hero__actions">
+        <a class="button button--primary" href="/works">浏览作品 <span aria-hidden="true">→</span></a>
+        <a class="button button--secondary" href="/docs">查看文档 <span aria-hidden="true">→</span></a>
+      </div>
+    </div>
+
+    <div class="hero__more" aria-hidden="true">
+      <svg viewBox="0 0 24 24" role="img">
+        <path d="m5 9 7 7 7-7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+    </div>
+  </div>
+</section>
+
+<style>
+  .scene {
+    position: relative;
+    display: block;
+    height: 140vh;
+    contain: strict;
+    transform-style: preserve-3d;
+  }
+
+  .scene__layer {
+    position: absolute;
+    inset: 0 auto auto 0;
+    z-index: calc(10 - var(--depth));
+    width: 100vw;
+    height: max(120vh, 62vw);
+    pointer-events: none;
+    transform: translateZ(calc(var(--parallax-perspective) * var(--depth) * -1)) scale(calc(var(--depth) + 1));
+    transform-origin: 50vw 50vh;
+  }
+
+  .scene__image {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: var(--image-position, 50%);
+    user-select: none;
+  }
+
+  .scene__blend {
+    position: absolute;
+    inset: auto 0 0;
+    z-index: 12;
+    height: min(100vh, 100vw);
+    pointer-events: none;
+    background: linear-gradient(to bottom, transparent, var(--color-ink) 82%);
+  }
+
+  .hero-wrap {
+    position: sticky;
+    top: 0;
+    z-index: 11;
+    height: 100vh;
+    margin-bottom: -100vh;
+    pointer-events: none;
+  }
+
+  .hero {
+    position: absolute;
+    left: max(var(--page-gutter), calc((100vw - var(--content-max)) / 2));
+    bottom: clamp(5.8rem, 10vh, 8.5rem);
+    width: min(39rem, calc(100vw - var(--page-gutter) * 2));
+    color: var(--color-moon);
+    text-shadow: 0 2px 12px rgba(10, 12, 27, 0.5);
+    pointer-events: auto;
+    opacity: calc(1 - var(--hero-exit, 0));
+    transform: translateY(calc(var(--hero-exit, 0) * -2.25rem));
+    transition: opacity 80ms linear;
+  }
+
+  .hero h1 {
+    margin: 0 0 0.55rem;
+    font-size: clamp(3.3rem, 6vw, 5.5rem);
+    line-height: 0.98;
+    letter-spacing: -0.062em;
+    font-weight: 650;
+  }
+
+  .hero__line {
+    margin: 0 0 0.55rem;
+    font-size: clamp(1.12rem, 1.9vw, 1.52rem);
+    line-height: 1.3;
+    letter-spacing: -0.025em;
+    font-weight: 520;
+  }
+
+  .hero__body {
+    margin: 0;
+    color: rgba(247, 247, 251, 0.9);
+    font-size: clamp(0.98rem, 1.25vw, 1.12rem);
+    line-height: 1.75;
+  }
+
+  .hero__actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 1.65rem;
+  }
+
+  .button {
+    min-height: 3.15rem;
+    padding: 0.2rem 1.35rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.9rem;
+    border: 1px solid transparent;
+    border-radius: var(--radius-sm);
+    font-size: 0.98rem;
+    font-weight: 600;
+    text-shadow: none;
+    transition: color 160ms ease, background-color 160ms ease, border-color 160ms ease;
+  }
+
+  .button span {
+    font-size: 1.25em;
+    transition: transform 220ms var(--ease-out);
+  }
+
+  .button:hover span {
+    transform: translateX(0.22rem);
+  }
+
+  .button--primary {
+    background: var(--color-redstone);
+    color: var(--color-moon);
+  }
+
+  .button--primary:hover {
+    background: var(--color-redstone-hover);
+  }
+
+  .button--secondary {
+    border-color: rgba(247, 247, 251, 0.68);
+    color: var(--color-moon);
+    background: rgba(23, 24, 46, 0.34);
+  }
+
+  .button--secondary:hover {
+    background: var(--color-moon);
+    color: var(--color-ink);
+    border-color: var(--color-moon);
+  }
+
+  .hero__more {
+    position: absolute;
+    left: 50%;
+    bottom: 1.5rem;
+    width: 2rem;
+    height: 2rem;
+    color: var(--color-moon);
+    transform: translateX(-50%);
+    animation: nudge 2s ease-in-out infinite;
+  }
+
+  .hero__more svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  @keyframes nudge {
+    0%, 100% { transform: translate(-50%, 0); }
+    50% { transform: translate(-50%, -0.7rem); }
+  }
+
+  @media (min-aspect-ratio: 5 / 4) {
+    .scene { height: 120vw; }
+  }
+
+  @media (min-aspect-ratio: 3 / 2) {
+    .scene { height: 130vw; }
+  }
+
+  @media (min-aspect-ratio: 7 / 4) {
+    .scene { height: 140vw; }
+  }
+
+  @media (max-width: 44rem) {
+    .scene { height: 150svh; }
+    .scene__layer { height: 125svh; }
+    .scene__image { object-position: 58% 50%; }
+    .hero { bottom: 5.4rem; }
+    .hero__desktop-break { display: none; }
+    .hero__actions { align-items: stretch; flex-direction: column; width: min(18rem, 100%); gap: 0.7rem; }
+    .button { justify-content: space-between; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .scene { height: 100svh; contain: paint; }
+    .scene__layer { height: 100svh; transform: none; }
+    .hero { opacity: 1; transform: none; }
+    .hero__more { display: none; }
+    .button span { transition: none; }
+  }
+</style>

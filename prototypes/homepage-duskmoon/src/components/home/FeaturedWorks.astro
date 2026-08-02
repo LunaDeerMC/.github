@@ -1,0 +1,402 @@
+---
+const secondaryWorks = [
+  {
+    index: "02",
+    name: "LunarGuard",
+    description: "智能防护与反作弊，守护公平的游戏环境。",
+  },
+  {
+    index: "03",
+    name: "LunarToolkit",
+    description: "实用工具集合，改善管理员与玩家的日常体验。",
+  },
+];
+---
+
+<section class="works" id="featured-works">
+  <div class="works__inner">
+    <header class="works__header">
+      <div>
+        <h2>精选作品</h2>
+        <p>为服务器与创作者打造，可靠地运行，也愉快地使用。</p>
+      </div>
+      <a class="works__all" href="/works">浏览全部作品 <span aria-hidden="true">→</span></a>
+    </header>
+
+    <article class="feature">
+      <div class="feature__media" aria-label="LunarCore 区域管理界面预览">
+        <img src="/assets/home/parallax/sky.png" alt="" loading="lazy" decoding="async" />
+        <div class="feature__world" aria-hidden="true">
+          <span class="feature__region feature__region--main"></span>
+          <span class="feature__region feature__region--side"></span>
+          <span class="feature__beacon"></span>
+        </div>
+        <div class="feature__panel">
+          <div class="feature__panel-head">
+            <strong>LunarCore</strong>
+            <span>区域可视化</span>
+            <i></i><i></i><i></i>
+          </div>
+          <div class="feature__panel-body">
+            <div class="feature__rail">
+              <span class="is-active">区域管理</span>
+              <span>权限组</span>
+              <span>日志审计</span>
+              <span>配置中心</span>
+            </div>
+            <div class="feature__canvas">
+              <span class="feature__canvas-label">领地边界 · 实时预览</span>
+              <span class="feature__canvas-axis"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="feature__copy">
+        <span class="feature__index">01 / 03</span>
+        <h3>LunarCore</h3>
+        <p>简洁而强大的服务端核心，专注稳定、性能与扩展性。</p>
+        <span class="feature__meta">服务端核心 · 开源</span>
+        <a href="/works/lunar-core">查看作品 <span aria-hidden="true">→</span></a>
+      </div>
+    </article>
+
+    <div class="work-list">
+      {secondaryWorks.map((work) => (
+        <a class="work-row" href={`/works/${work.name.toLowerCase()}`}>
+          <span class="work-row__index">{work.index}</span>
+          <strong>{work.name}</strong>
+          <span>{work.description}</span>
+          <span class="work-row__arrow" aria-hidden="true">→</span>
+        </a>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .works {
+    position: relative;
+    z-index: 15;
+    min-height: 100vh;
+    margin-top: -2px;
+    background: var(--color-ink);
+    color: var(--color-moon);
+  }
+
+  .works__inner {
+    width: min(100%, calc(var(--content-max) + var(--page-gutter) * 2));
+    margin: 0 auto;
+    padding: clamp(6rem, 10vw, 9rem) var(--page-gutter) clamp(5rem, 9vw, 8rem);
+  }
+
+  .works__header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 2rem;
+    margin-bottom: clamp(3rem, 6vw, 5rem);
+  }
+
+  .works__header h2 {
+    margin: 0 0 0.5rem;
+    font-size: clamp(2.5rem, 5vw, 4.6rem);
+    line-height: 1;
+    letter-spacing: -0.055em;
+    font-weight: 620;
+  }
+
+  .works__header p {
+    margin: 0;
+    color: var(--color-moon-muted);
+    font-size: clamp(1rem, 1.35vw, 1.16rem);
+  }
+
+  .works__all,
+  .feature__copy a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.8rem;
+    font-weight: 580;
+    transition: color 160ms ease;
+  }
+
+  .works__all:hover,
+  .feature__copy a:hover {
+    color: var(--color-redstone-hover);
+  }
+
+  .works__all span,
+  .feature__copy a span,
+  .work-row__arrow {
+    transition: transform 220ms var(--ease-out);
+  }
+
+  .works__all:hover span,
+  .feature__copy a:hover span,
+  .work-row:hover .work-row__arrow {
+    transform: translateX(0.28rem);
+  }
+
+  .feature {
+    display: grid;
+    grid-template-columns: minmax(0, 1.7fr) minmax(18rem, 0.85fr);
+    gap: clamp(2rem, 5vw, 5rem);
+    align-items: center;
+  }
+
+  .feature__media {
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: 16 / 9;
+    border-radius: var(--radius-md);
+    background: var(--color-dusk);
+    border: 1px solid rgba(247, 247, 251, 0.14);
+  }
+
+  .feature__media > img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.52;
+    filter: saturate(0.8) brightness(0.66);
+  }
+
+  .feature__world {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(10, 12, 29, 0.92), rgba(10, 12, 29, 0.05) 70%);
+  }
+
+  .feature__region {
+    position: absolute;
+    border: 2px solid #7185ff;
+    background: rgba(82, 105, 238, 0.1);
+    transform: rotateX(58deg) rotateZ(44deg);
+    box-shadow: inset 0 0 0 1px rgba(247, 247, 251, 0.14);
+  }
+
+  .feature__region::before,
+  .feature__region::after {
+    content: "";
+    position: absolute;
+    inset: 25%;
+    border: 1px solid rgba(168, 184, 222, 0.55);
+  }
+
+  .feature__region--main {
+    width: 37%;
+    aspect-ratio: 1;
+    left: 44%;
+    top: 24%;
+  }
+
+  .feature__region--side {
+    width: 18%;
+    aspect-ratio: 1;
+    left: 69%;
+    top: 47%;
+    border-color: var(--color-redstone);
+    background: rgba(225, 71, 95, 0.1);
+  }
+
+  .feature__beacon {
+    position: absolute;
+    left: 61.5%;
+    bottom: 32%;
+    width: 2px;
+    height: 43%;
+    background: var(--color-moon);
+    box-shadow: 0 0 18px rgba(247, 247, 251, 0.7);
+  }
+
+  .feature__panel {
+    position: absolute;
+    inset: 8% auto auto 8%;
+    width: min(58%, 31rem);
+    height: 78%;
+    overflow: hidden;
+    border: 1px solid rgba(168, 184, 222, 0.25);
+    border-radius: 0.5rem;
+    background: rgba(14, 16, 34, 0.94);
+    box-shadow: 0 1.2rem 3rem rgba(4, 5, 14, 0.34);
+  }
+
+  .feature__panel-head {
+    height: 15%;
+    padding: 0 4%;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    border-bottom: 1px solid rgba(168, 184, 222, 0.14);
+    font-size: clamp(0.5rem, 0.9vw, 0.8rem);
+  }
+
+  .feature__panel-head strong { margin-right: 0.25rem; }
+  .feature__panel-head span { color: var(--color-moon-muted); }
+  .feature__panel-head i { width: 0.36rem; height: 0.36rem; border-radius: 50%; background: var(--color-moon-muted); opacity: 0.35; }
+  .feature__panel-head i:first-of-type { margin-left: auto; background: var(--color-redstone); opacity: 1; }
+
+  .feature__panel-body {
+    display: grid;
+    grid-template-columns: 29% 1fr;
+    height: 85%;
+  }
+
+  .feature__rail {
+    padding: 10% 7%;
+    display: flex;
+    flex-direction: column;
+    gap: 5%;
+    border-right: 1px solid rgba(168, 184, 222, 0.12);
+  }
+
+  .feature__rail span {
+    padding: 5% 8%;
+    color: var(--color-moon-muted);
+    font-size: clamp(0.38rem, 0.62vw, 0.64rem);
+  }
+
+  .feature__rail .is-active {
+    color: var(--color-moon);
+    background: rgba(102, 119, 200, 0.25);
+    border-radius: 0.25rem;
+  }
+
+  .feature__canvas {
+    position: relative;
+    overflow: hidden;
+    background-image:
+      linear-gradient(rgba(168, 184, 222, 0.09) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(168, 184, 222, 0.09) 1px, transparent 1px);
+    background-size: 12% 12%;
+  }
+
+  .feature__canvas::after {
+    content: "";
+    position: absolute;
+    left: 28%;
+    top: 27%;
+    width: 45%;
+    aspect-ratio: 1;
+    border: 2px solid #7185ff;
+    transform: rotateX(58deg) rotateZ(44deg);
+    background: rgba(102, 119, 200, 0.11);
+    box-shadow: 0 0 1.5rem rgba(102, 119, 200, 0.25);
+  }
+
+  .feature__canvas-label {
+    position: absolute;
+    z-index: 2;
+    left: 7%;
+    top: 8%;
+    color: var(--color-moon-muted);
+    font-size: clamp(0.35rem, 0.58vw, 0.58rem);
+  }
+
+  .feature__canvas-axis {
+    position: absolute;
+    z-index: 3;
+    left: 51%;
+    bottom: 22%;
+    width: 2px;
+    height: 48%;
+    background: var(--color-moon);
+    box-shadow: 0 0 12px rgba(247, 247, 251, 0.6);
+  }
+
+  .feature__index {
+    display: block;
+    margin-bottom: 1.4rem;
+    color: var(--color-redstone-hover);
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    letter-spacing: 0.08em;
+  }
+
+  .feature__copy h3 {
+    margin: 0 0 1.1rem;
+    font-size: clamp(2.6rem, 4.8vw, 5rem);
+    line-height: 0.96;
+    letter-spacing: -0.06em;
+    font-weight: 620;
+  }
+
+  .feature__copy p {
+    margin: 0;
+    max-width: 28rem;
+    color: var(--color-moon-muted);
+    font-size: clamp(1rem, 1.4vw, 1.18rem);
+    line-height: 1.7;
+  }
+
+  .feature__meta {
+    display: block;
+    margin: 1.4rem 0 3rem;
+    color: rgba(168, 184, 222, 0.72);
+    font-size: 0.9rem;
+  }
+
+  .work-list {
+    margin-top: clamp(3rem, 6vw, 5rem);
+    border-top: 1px solid var(--color-line);
+  }
+
+  .work-row {
+    min-height: 5.4rem;
+    display: grid;
+    grid-template-columns: 3rem minmax(9rem, 1fr) minmax(15rem, 2fr) 2rem;
+    align-items: center;
+    gap: 1.2rem;
+    border-bottom: 1px solid var(--color-line);
+    transition: color 160ms ease, border-color 160ms ease;
+  }
+
+  .work-row:hover {
+    color: var(--color-redstone-hover);
+    border-color: rgba(225, 71, 95, 0.56);
+  }
+
+  .work-row__index {
+    color: rgba(168, 184, 222, 0.62);
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+  }
+
+  .work-row strong {
+    font-size: clamp(1.25rem, 2.2vw, 1.8rem);
+    letter-spacing: -0.035em;
+  }
+
+  .work-row > span:nth-child(3) {
+    color: var(--color-moon-muted);
+    font-size: 0.95rem;
+  }
+
+  @media (max-width: 52rem) {
+    .works__header { align-items: flex-start; flex-direction: column; }
+    .feature { grid-template-columns: 1fr; }
+    .feature__copy { display: grid; grid-template-columns: 1fr auto; column-gap: 1rem; }
+    .feature__index, .feature__copy p, .feature__meta { grid-column: 1 / -1; }
+    .feature__copy h3 { margin-bottom: 1.2rem; }
+    .feature__copy a { align-self: end; }
+  }
+
+  @media (max-width: 38rem) {
+    .works__inner { padding-top: 5rem; }
+    .feature__panel { width: 72%; }
+    .feature__copy { display: block; }
+    .feature__meta { margin-bottom: 2rem; }
+    .work-row { grid-template-columns: 2rem 1fr 2rem; padding: 1rem 0; }
+    .work-row > span:nth-child(3) { grid-column: 2 / 4; }
+    .work-row__arrow { grid-column: 3; grid-row: 1; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .works__all span,
+    .feature__copy a span,
+    .work-row__arrow { transition: none; }
+  }
+</style>

@@ -1,0 +1,58 @@
+---
+import SiteLayout from "@/layouts/SiteLayout.astro";
+import BrandNav from "@/components/site/BrandNav.astro";
+import ParallaxHero from "@/components/home/ParallaxHero.astro";
+import FeaturedWorks from "@/components/home/FeaturedWorks.astro";
+---
+
+<SiteLayout
+  title="LunaDeerMC — To the moon, to the dream, to the future!"
+  description="为 Minecraft 社区构建可靠易用的插件、服务端核心与开发工具。"
+>
+  <BrandNav />
+  <main class="site-scroll" data-site-scroll>
+    <ParallaxHero />
+    <FeaturedWorks />
+  </main>
+</SiteLayout>
+
+<script>
+  const scroller = document.querySelector<HTMLElement>("[data-site-scroll]");
+  const hero = document.querySelector<HTMLElement>("[data-hero-copy]");
+  const nav = document.querySelector<HTMLElement>("[data-nav]");
+
+  if (scroller && hero && nav) {
+    let ticking = false;
+
+    const update = () => {
+      const viewport = Math.max(scroller.clientHeight, 1);
+      const heroExit = Math.min(1, Math.max(0, (scroller.scrollTop - viewport * 0.12) / (viewport * 0.52)));
+      const navSurface = Math.min(0.94, scroller.scrollTop / (viewport * 0.3));
+
+      hero.style.setProperty("--hero-exit", heroExit.toFixed(3));
+      nav.style.setProperty("--nav-surface", navSurface.toFixed(3));
+      ticking = false;
+    };
+
+    scroller.addEventListener("scroll", () => {
+      if (!ticking) {
+        requestAnimationFrame(update);
+        ticking = true;
+      }
+    }, { passive: true });
+
+    update();
+  }
+</script>
+
+<style>
+  .site-scroll {
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden auto;
+    overscroll-behavior-y: none;
+    perspective: var(--parallax-perspective);
+    scroll-behavior: smooth;
+    background: var(--color-ink);
+  }
+</style>

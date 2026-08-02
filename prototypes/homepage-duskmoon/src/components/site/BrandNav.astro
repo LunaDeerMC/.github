@@ -1,0 +1,230 @@
+<header class="nav" data-nav>
+  <nav class="nav__inner" aria-label="全站导航">
+    <div class="nav__brand-group">
+      <a class="nav__brand" href="/" aria-label="LunaDeerMC 首页">LunaDeerMC</a>
+      <a class="nav__link nav__link--organization" href="/support">支持</a>
+      <a class="nav__link nav__link--organization" href="/about">关于</a>
+    </div>
+
+    <div class="nav__content-group">
+      <a class="nav__link nav__link--content" href="/works">作品</a>
+      <a class="nav__link nav__link--content" href="/docs">文档</a>
+      <button class="nav__menu" type="button" aria-label="打开功能菜单" aria-expanded="false" aria-controls="site-tools">
+        <span></span><span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <div class="nav-panel" id="site-tools" hidden>
+    <div class="nav-panel__group nav-panel__group--organization">
+      <span>组织</span>
+      <a href="/support">支持</a>
+      <a href="/about">关于</a>
+    </div>
+    <div class="nav-panel__group nav-panel__group--content">
+      <span>内容</span>
+      <a href="/works">作品</a>
+      <a href="/docs">文档</a>
+    </div>
+    <div class="nav-panel__group">
+      <span>工具</span>
+      <button type="button" disabled>搜索站内内容</button>
+      <div class="nav-panel__language" aria-label="语言">
+        <strong>中文</strong>
+        <a href="/en">English</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<script>
+  const trigger = document.querySelector<HTMLButtonElement>(".nav__menu");
+  const panel = document.querySelector<HTMLElement>("#site-tools");
+
+  if (trigger && panel) {
+    const close = () => {
+      panel.hidden = true;
+      trigger.setAttribute("aria-expanded", "false");
+    };
+
+    trigger.addEventListener("click", () => {
+      const willOpen = panel.hidden;
+      panel.hidden = !willOpen;
+      trigger.setAttribute("aria-expanded", String(willOpen));
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && !panel.hidden) {
+        close();
+        trigger.focus();
+      }
+    });
+
+    document.addEventListener("pointerdown", (event) => {
+      if (!panel.hidden && event.target instanceof Node && !panel.contains(event.target) && !trigger.contains(event.target)) {
+        close();
+      }
+    });
+  }
+</script>
+
+<style>
+  .nav {
+    position: fixed;
+    inset: 0 0 auto;
+    z-index: 40;
+    height: var(--nav-height);
+    color: var(--color-moon);
+    background: rgba(23, 24, 46, var(--nav-surface, 0));
+    border-bottom: 1px solid rgba(247, 247, 251, calc(var(--nav-surface, 0) * 0.16));
+    backdrop-filter: blur(calc(var(--nav-surface, 0) * 14px));
+    transition: background-color 180ms ease, border-color 180ms ease;
+  }
+
+  .nav__inner {
+    width: min(100%, calc(var(--content-max) + var(--page-gutter) * 2));
+    height: 100%;
+    margin: 0 auto;
+    padding: 0 var(--page-gutter);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+  }
+
+  .nav__brand-group,
+  .nav__content-group {
+    display: flex;
+    align-items: center;
+    gap: clamp(1.25rem, 2.5vw, 2.6rem);
+  }
+
+  .nav__brand {
+    font-size: 1.18rem;
+    font-weight: 650;
+    letter-spacing: -0.035em;
+    text-shadow: 0 1px 8px rgba(10, 12, 27, 0.4);
+  }
+
+  .nav__link {
+    position: relative;
+    padding: 0.7rem 0;
+    color: rgba(247, 247, 251, 0.82);
+    font-size: 0.95rem;
+    font-weight: 480;
+    transition: color 160ms ease;
+  }
+
+  .nav__link::after {
+    content: "";
+    position: absolute;
+    left: 38%;
+    right: 38%;
+    bottom: 0.35rem;
+    height: 1px;
+    background: currentColor;
+    opacity: 0;
+    transform: scaleX(0.5);
+    transition: opacity 160ms ease, transform 160ms ease;
+  }
+
+  .nav__link:hover {
+    color: var(--color-moon);
+  }
+
+  .nav__link:hover::after {
+    opacity: 0.65;
+    transform: scaleX(1);
+  }
+
+  .nav__menu {
+    width: 2.5rem;
+    height: 2.5rem;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    display: grid;
+    grid-template: repeat(2, 0.28rem) / repeat(2, 0.28rem);
+    place-content: center;
+    gap: 0.24rem;
+    cursor: pointer;
+    opacity: 0.72;
+    transition: opacity 160ms ease;
+  }
+
+  .nav__menu:hover,
+  .nav__menu[aria-expanded="true"] { opacity: 1; }
+
+  .nav__menu span {
+    border-radius: 50%;
+    background: currentColor;
+  }
+
+  .nav-panel {
+    position: absolute;
+    top: calc(var(--nav-height) - 0.3rem);
+    right: max(var(--page-gutter), calc((100vw - var(--content-max)) / 2));
+    width: min(19rem, calc(100vw - var(--page-gutter) * 2));
+    padding: 1.2rem;
+    border: 1px solid rgba(247, 247, 251, 0.16);
+    border-radius: 0.45rem;
+    background: rgba(23, 24, 46, 0.97);
+    box-shadow: 0 1.4rem 3rem rgba(6, 7, 18, 0.28);
+    backdrop-filter: blur(16px);
+  }
+
+  .nav-panel[hidden] { display: none; }
+
+  .nav-panel__group {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.55rem 0.75rem;
+    padding: 0.8rem 0;
+    border-top: 1px solid rgba(247, 247, 251, 0.12);
+  }
+
+  .nav-panel__group:first-child { padding-top: 0; border-top: 0; }
+  .nav-panel__group:last-child { padding-bottom: 0; }
+  .nav-panel__group > span { grid-column: 1 / -1; color: rgba(168, 184, 222, 0.68); font-size: 0.72rem; }
+  .nav-panel__group a,
+  .nav-panel__group button {
+    padding: 0.45rem 0;
+    border: 0;
+    color: var(--color-moon);
+    background: transparent;
+    font: inherit;
+    font-size: 0.9rem;
+    text-align: left;
+  }
+
+  .nav-panel__group a:hover { color: var(--color-redstone-hover); }
+  .nav-panel__group button:disabled { color: rgba(247, 247, 251, 0.52); }
+  .nav-panel__language { grid-column: 1 / -1; display: flex; gap: 1.1rem; font-size: 0.9rem; }
+  .nav-panel__language strong { color: var(--color-redstone-hover); font-weight: 550; }
+
+  @media (max-width: 52rem) {
+    .nav__link--content {
+      display: none;
+    }
+
+    .nav-panel__group--content { display: grid; }
+  }
+
+  @media (max-width: 35rem) {
+    .nav__link--organization {
+      display: none;
+    }
+
+    .nav__brand-group,
+    .nav__content-group {
+      gap: 0.75rem;
+    }
+
+    .nav-panel {
+      left: var(--page-gutter);
+      right: var(--page-gutter);
+      width: auto;
+    }
+  }
+</style>

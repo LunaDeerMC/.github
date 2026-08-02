@@ -1,0 +1,22 @@
+# Dependencies
+**/node_modules/
+
+# Build output and framework caches
+**/dist/
+**/.astro/
+**/.cache/
+**/.vite/
+
+# Test output
+**/coverage/
+**/playwright-report/
+**/test-results/
+
+# Local environment and logs
+.env
+.env.*
+!.env.example
+*.log
+
+# Operating-system files
+.DS_Store

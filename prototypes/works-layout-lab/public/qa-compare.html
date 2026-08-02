@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Works layout QA comparison</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        padding: 24px;
+        color: #f7f4ef;
+        background: #171513;
+        font-family: system-ui, sans-serif;
+      }
+
+      main {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 20px;
+      }
+
+      figure {
+        margin: 0;
+      }
+
+      figcaption {
+        margin-bottom: 10px;
+        color: #bfb8ae;
+        font-size: 13px;
+      }
+
+      img {
+        width: 100%;
+        height: auto;
+        display: block;
+        background: #fff9ed;
+        border: 1px solid #4a4540;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <figure>
+        <figcaption>Source visual — selected direction 3</figcaption>
+        <img
+          src="/assets/reference/selected-works-layout.png"
+          alt="Selected works layout source visual"
+        />
+      </figure>
+      <figure>
+        <figcaption>Implementation — light theme, desktop</figcaption>
+        <img
+          src="/qa/implementation-light-v2.png"
+          alt="Browser-rendered works layout implementation"
+        />
+      </figure>
+    </main>
+  </body>
+</html>
