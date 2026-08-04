@@ -1,6 +1,6 @@
 ---
 title: CompassTeleport · 管理员配置
-description: 安装 CompassTeleport，确认 Folia 与 Paper 兼容性，调整配置并管理传送权限。
+description: 安装 CompassTeleport，调整配置并管理传送权限。
 icon: Settings
 sidebar:
   label: 管理员配置
@@ -10,17 +10,15 @@ sidebar:
 ## 安装与首次启动
 
 1. 停止服务器，并备份世界、`plugins/` 目录和服务端日志。
-2. 从 [CompassTeleport GitHub Releases](https://github.com/LunaDeerMC/CompassTeleport/releases) 下载适合当前 Minecraft 版本的 JAR。
-3. 将 JAR 放入服务端的 `plugins/` 目录；不要同时放入多个版本。
+2. 从 [CompassTeleport GitHub Releases](https://github.com/LunaDeerMC/CompassTeleport/releases) 下载 JAR。
+3. 将 JAR 放入服务端的 `plugins/` 目录。目录中只保留一个 CompassTeleport JAR。
 4. 启动服务器，确认控制台显示插件已成功启用。
-5. 首次启用后检查 `plugins/CompassTeleport/config.yml`。修改配置后重启服务器；当前项目没有提供配置重载命令。
+5. 首次启用后检查 `plugins/CompassTeleport/config.yml`。修改配置后重启服务器。插件没有配置重载命令。
 6. 用一个没有 OP 的测试账号完成绑定、重命名和传送，再向普通玩家开放。
-
-`plugin.yml` 声明的 API 版本为 `1.20`，并标记 `folia-supported: true`。仓库 Maven 配置使用 Java `21` 编译目标；如果自行构建，请使用 Java 21 工具链。正式服务器仍应以目标 Minecraft 版本的服务端运行时要求为准。
 
 ## 配置文件
 
-配置文件由源码中的配置类生成。当前 `v1.4.1` 源码默认值如下：
+默认配置如下：
 
 ~~~yaml
 cooldown-sec: 15
@@ -34,7 +32,7 @@ cost-level: 1
 | `delay-sec` | `5` | 从右键空气触发到执行传送前等待的秒数。设为 `0` 时仍会保留很短的内部调度等待。 |
 | `cost-level` | `1` | 在铁砧中重命名磁石指南针时设置的经验等级花费，不是每次传送消耗的经验。 |
 
-仓库 README 中曾列出 `cooldown-sec: 12` 和 `delay-sec: 3`，但当前 `v1.4.1` 源码配置类的默认值是 `15` 和 `5`。如果服务器已经存在旧的 `config.yml`，插件会继续使用文件中的现有值；请以服务器实际生成的配置文件为准。
+如果服务器已经存在 `config.yml`，插件会继续使用该文件中的值。请以该文件为准。
 
 ## 权限节点
 
@@ -46,8 +44,8 @@ cost-level: 1
 
 ## 管理与排查建议
 
-- 先用普通玩家账号验证，不要只用 OP 账号；OP 可能绕过权限插件的实际限制。
-- 如果没有传送提示，先确认物品是插件生成的铁砧结果，并检查玩家是否拥有 `compassteleport.use`。
-- 如果提示指南针已失效，检查磁石是否仍存在、指南针是否仍在追踪该磁石，以及目标世界是否正常加载。
-- 如果传送开始但没有按预期完成，记录服务端版本、插件版本、配置值和完整控制台日志，再在测试服务器中复现。
-- `cooldown-sec` 与未完成的传送任务保存在运行时内存中；重启插件或服务器后不会恢复之前的玩家冷却状态。
+- 先用普通玩家账号验证。OP 账号可能绕过权限插件的实际限制。
+- 如果没有传送提示，确认物品是插件生成的铁砧结果。然后确认玩家拥有 `compassteleport.use`。
+- 如果提示指南针已失效，确认磁石仍然存在，指南针仍然追踪磁石，目标世界已经加载。
+- 如果传送开始但没有完成，记录服务端核心、配置值和完整控制台日志，再在测试服务器中复现。
+- `cooldown-sec` 和未完成的传送任务保存在内存中。重启插件或服务器会清除之前的玩家冷却状态。

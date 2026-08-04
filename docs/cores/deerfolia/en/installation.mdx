@@ -1,6 +1,6 @@
 ---
 title: DeerFolia · Installation and first start
-description: Download DeerFolia, prepare Java 25, start the server, verify generated files, and upgrade safely.
+description: Download, start, migrate, upgrade, and build DeerFolia.
 icon: Download
 sidebar:
   label: Installation and first start
@@ -9,30 +9,30 @@ sidebar:
 
 ## Prepare the host
 
-The current DeerFolia build baseline uses Java 25. Check the Java major version on the same machine that will run the server:
+Check the Java runtime required by the selected release. Run this command on the machine that will run the server:
 
 ~~~sh
 java -version
 ~~~
 
-The reported major version should be 25. A panel, Docker container, or systemd service may use a different Java installation from your interactive shell. Print java -version from the actual startup script if you are unsure.
+Check the runtime in the actual launch environment. A panel, Docker container, or systemd service can use a different Java installation from your shell. Run `java -version` in the startup script if you are unsure.
 
 Also confirm that:
 
 - the disk can hold worlds, backups, and logs;
 - the server user can read and write the working directory;
 - firewall, port forwarding, and the panel command are ready;
-- the important plugins explicitly support Folia or DeerFolia.
+- important plugins explicitly support Folia or DeerFolia.
 
-## Download a release
+## Download the core
 
-Download a release matching your Minecraft version from [GitHub Releases](https://github.com/LunaDeerMC/DeerFolia/releases). The current documentation baseline is tag 26.2.0-bbeb1d1; for another release, follow its title and filename instead of renaming an older jar.
+Download a release that matches your server from [GitHub Releases](https://github.com/LunaDeerMC/DeerFolia/releases). Use the release title and file name. Do not rename an old jar to represent a different release.
 
 Put the jar in its own server directory, for example:
 
 ~~~text
 deerfolia-server/
-├── DeerFolia-26.2.0-bbeb1d1.jar
+├── DeerFolia-<release>.jar
 └── start.sh
 ~~~
 
@@ -40,13 +40,13 @@ DeerFolia is a complete server core. Do not put it in plugins/, and do not keep 
 
 ## First start
 
-Run the server from its directory. The memory values below are examples; size them for player count, view distance, world count, and host memory:
+Run the server from its directory. Replace `<release>` with the file name that you downloaded. The memory values below are examples. Set them for the player count, view distance, world count, and host memory:
 
 ~~~sh
-java -Xms4G -Xmx8G -jar DeerFolia-26.2.0-bbeb1d1.jar --nogui
+java -Xms4G -Xmx8G -jar DeerFolia-<release>.jar --nogui
 ~~~
 
-The first start normally creates eula.txt and stops. Read and accept the [Minecraft EULA](https://www.minecraft.net/eula), change eula=false to eula=true, and run the command again.
+The first start normally creates `eula.txt` and stops. Read and accept the [Minecraft EULA](https://www.minecraft.net/eula). Change `eula=false` to `eula=true`. Run the command again.
 
 Avoid copying an unexplained set of startup flags. Start with the smallest command, verify the core, and add GC, debug, or panel flags one at a time so failures remain diagnosable.
 
@@ -98,4 +98,4 @@ cd DeerFolia
 ./gradlew createPaperclipJar
 ~~~
 
-The core is written to DeerFolia-server/build/libs/. The build requires Java 25 and applies patches against the Folia upstream commit pinned by the repository. Regular server owners should prefer GitHub Releases; source builds are for operators who need to verify or develop the core.
+The core is written to `DeerFolia-server/build/libs/`. Use the Java runtime required by the project build. Use a release build unless you need to verify patches or contribute code.

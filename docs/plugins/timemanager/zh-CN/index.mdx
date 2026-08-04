@@ -8,35 +8,26 @@ documentSet:
   status: active
 ---
 
-## 这套文档服务谁
+## 从这里开始
 
-这套文档同时面向需要部署插件的服主和管理员，以及只想调整自己画面的普通玩家。TimeManager 功能很集中，因此不再拆分独立的玩家、管理员和配置目录：本页负责安装、首次启动与配置，下一页负责命令、时间格式和权限。
+先安装插件。首次启动后修改 `config.yml`。使用[命令、时间格式与权限](./commands)调整个人时间、冻结画面和权限。
 
-## TimeManager 改变什么
+## 插件行为
 
-TimeManager 只为当前玩家设置客户端时间，不改变服务器世界时间。其他玩家仍然按照服务器的昼夜循环看到世界；作物、生物、红石、天气和定时任务也不会因为某位玩家使用插件而改变。
+TimeManager 只为当前玩家设置客户端时间，不改变服务器世界时间。其他玩家仍然按照服务器的昼夜循环看到世界。作物、生物、红石、天气和定时任务也不会改变。
 
-这使它适合拍摄建筑、观察不同光照下的场景，或在不影响服务器的情况下冻结自己的画面。它不是全服时间控制器，也不会为世界设置永久的白天或夜晚。
-
-## 兼容性与前置条件
-
-- Minecraft API：`1.21`。
-- Java：`21`。
-- 服务端：Paper、Spigot、Folia。
-- 插件类型：Bukkit/Paper 插件，放入服务端的 `plugins/` 目录。
-
-如果你的服务端、Java 或插件版本与上述范围不同，请先在测试服务器验证。Folia 服务器还应同时检查其他插件是否支持 Folia；TimeManager 自身在 `plugin.yml` 中声明了 Folia 支持。
+TimeManager 适合拍摄建筑、观察不同光照下的场景，或在不影响服务器的情况下冻结自己的画面。它不控制全服时间，也不会为世界设置永久的白天或夜晚。
 
 ## 安装与首次启动
 
 1. 停止服务器，并备份世界、`plugins/` 目录和服务端日志。
-2. 从 [TimeManager GitHub 仓库](https://github.com/LunaDeerMC/TimeManager) 获取适合当前版本的 JAR。若仓库没有预构建文件，可在 Java 21 环境中按项目 Maven 配置执行 `mvn clean package`，再从 `target/` 中选择构建产物。
-3. 将 JAR 放入服务端的 `plugins/` 目录。不要同时放入多个 TimeManager 版本。
-4. 启动服务器，检查控制台是否出现插件启用成功的信息。
-5. 首次启用后，插件会生成 `plugins/TimeManager/config.yml`。修改配置后重启服务器；当前项目没有提供配置重载命令。
+2. 从 [TimeManager GitHub 仓库](https://github.com/LunaDeerMC/TimeManager) 获取 JAR。若仓库没有预构建文件，请按项目构建配置执行 `mvn clean package`，再从 `target/` 中选择构建产物。
+3. 将 JAR 放入服务端的 `plugins/` 目录。目录中只保留一个 TimeManager JAR。
+4. 启动服务器，检查控制台中的插件启用成功信息。
+5. 首次启用后，插件会生成 `plugins/TimeManager/config.yml`。修改配置后重启服务器。插件没有配置重载命令。
 6. 用普通玩家账号执行 `/ptime info` 和 `/ptime set day`，确认只改变该账号看到的时间，再用 `/ptime reset` 清理测试状态。
 
-如果插件没有加载，先检查服务端日志中的 Java、API 和插件依赖错误；不要只根据 JAR 文件名判断兼容性。
+如果插件没有加载，先检查服务端日志中的 Java、API 和插件依赖错误。不要根据 JAR 文件名判断加载结果。
 
 ## 配置文件
 
@@ -44,12 +35,12 @@ TimeManager 的配置文件由源码中的配置类首次启动时生成。默�
 
 | 配置键 | 默认值 | 作用 |
 | --- | --- | --- |
-| `debug` | `false` | 是否输出调试日志。 |
-| `enable-time-command` | `true` | 是否注册 `/ptime` 命令。关闭后，命令执行器不会被插件注册。 |
-| `show-welcome-message` | `true` | 是否尝试在玩家加入时显示欢迎消息。 |
+| `debug` | `false` | 输出调试日志。 |
+| `enable-time-command` | `true` | 注册 `/ptime` 命令。关闭后，插件不会注册命令执行器。 |
+| `show-welcome-message` | `true` | 玩家加入时显示欢迎消息。 |
 | `welcome-message` | `&aTimeManager is enabled! Use &e/ptime help &afor commands.` | 加入提示内容，支持 Bukkit `&` 颜色代码。 |
 
-当前仓库的加入事件代码检查的是 `timeessence.use` 权限，而 `plugin.yml` 只声明了 `ptime.set` 和 `ptime.freeze`。因此，即使 `show-welcome-message` 为 `true`，欢迎消息也可能不会显示；不要把这条消息当作插件是否正常工作的判断依据，优先查看日志并执行命令验证。
+加入事件检查 `timeessence.use` 权限。`plugin.yml` 只声明了 `ptime.set` 和 `ptime.freeze`。因此，即使 `show-welcome-message` 为 `true`，欢迎消息也可能不会显示。请查看日志并执行命令验证插件状态。
 
 ## 下一步
 

@@ -1,47 +1,47 @@
 ---
 title: DeerFoliaPlus · Installation and first start
-description: Prepare Java 25, download DeerFoliaPlus, complete a first start, migrate, upgrade, and build from source.
+description: Download, start, migrate, upgrade, and build DeerFoliaPlus.
 icon: Download
 sidebar:
   label: Installation and first start
   order: 10
 ---
 
-## Before installing
+## Prepare the host
 
-The current DeerFoliaPlus build uses Java 25. Verify the major version on the machine that actually runs the server:
+Check the Java runtime required by the selected release. Run this command on the machine that runs the server:
 
 ~~~sh
 java -version
 ~~~
 
-Panels, Docker containers, and systemd services may use a different Java installation, so check inside the actual launch environment. The server directory also needs write access, backup space, reachable ports, and a rollback copy of the old core.
+Check the runtime in the actual launch environment. A panel, Docker container, or systemd service can use a different Java installation from your shell. The server directory also needs write access, backup space, reachable ports, and a rollback copy of the old core.
 
 Also confirm that:
 
 - plugins, scripts, and management panels are explicitly compatible with Folia or DeerFolia;
-- players who need Syncmatica, Servux, or Recipe Sync know which matching client mods to install;
+- players who need Syncmatica, Servux, or Recipe Sync know which client components to install;
 - worlds, configuration, plugin data, and databases are backed up;
 - the first start will happen in an isolated copy of the production directory.
 
 ## Download the core
 
-Get a Minecraft-matched build from [DeerFoliaPlus GitHub Releases](https://github.com/LunaDeerMC/DeerFoliaPlus/releases). The reference build is 26.2.0-eb43c5e; for another build, follow its release title, Git tag, and filename.
+Download a release for your server from [DeerFoliaPlus GitHub Releases](https://github.com/LunaDeerMC/DeerFoliaPlus/releases). Use the release title and file name. Do not rename an old jar to represent a different release.
 
 DeerFoliaPlus is the launch core. Do not put its jar in plugins/, and do not load Folia, Paper, Purpur, or DeerFolia as a second core:
 
 ~~~text
 deerfoliaplus-test/
-├── DeerFoliaPlus-26.2.x.jar
+├── DeerFoliaPlus-<release>.jar
 └── start.sh
 ~~~
 
 ## First start
 
-Use minimal launch arguments in the test directory:
+Use minimal launch arguments in the test directory. Replace `<release>` with the file name that you downloaded:
 
 ~~~sh
-java -Xms4G -Xmx8G -jar DeerFoliaPlus-26.2.x.jar --nogui
+java -Xms4G -Xmx8G -jar DeerFoliaPlus-<release>.jar --nogui
 ~~~
 
 The first start normally creates eula.txt and stops. Read and accept the [Minecraft EULA](https://www.minecraft.net/eula), change eula=false to eula=true, and start again.
@@ -53,7 +53,7 @@ After a completed start, verify that:
 3. enabling custom recipes creates and reads config/custom-recipes.yml;
 4. a player can log in, move, load chunks, teleport, and disconnect;
 5. compatible plugins do not continuously report Folia thread-context errors;
-6. Syncmatica, Servux, and Recipe Sync are enabled only after client versions are confirmed;
+6. you enable Syncmatica, Servux, and Recipe Sync only after you confirm the client components;
 7. fake players, posture, and utility commands are tested before being exposed in production.
 
 ## Migrating from DeerFolia or another core
@@ -76,7 +76,7 @@ Back up worlds, config/deer-folia-plus.yml, config/custom-recipes.yml, plugin da
 
 ## Build from source
 
-The project README gives this build sequence:
+Run these commands to build from source:
 
 ~~~sh
 git clone https://github.com/LunaDeerMC/DeerFoliaPlus.git
@@ -85,4 +85,4 @@ cd DeerFoliaPlus
 ./gradlew createPaperclipJar
 ~~~
 
-The server core is written to DeerFoliaPlus-server/build/libs/. The build uses Java 25. Use a release build unless you need to verify patches or contribute code.
+The server core is written to `DeerFoliaPlus-server/build/libs/`. Use the Java runtime required by the project build. Use a release build unless you need to verify patches or contribute code.

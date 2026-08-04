@@ -8,22 +8,22 @@ sidebar:
   order: 20
 ---
 
-## 管理员负责哪些部分
+## 管理职责
 
 管理员不需要替玩家逐个管理领地，但需要保证插件有一个稳定、可解释的运行边界：
 
-- 选择兼容的 Minecraft 核心与 Java 运行时；
+- 选择服务器核心与 Java 运行环境；
 - 保管 `plugins/Dominion/` 下的数据库与配置；
 - 定义默认 flag、玩家限制和未认领区域规则；
-- 决定使用 SQLite 还是外部数据库，是否启用多服；
+- 决定使用 SQLite 还是外部数据库，设置多服开关；
 - 在升级、迁移和导入之前完成备份；
 - 用普通账号验证访客行为，而不是只用 OP 账号测试。
 
 ## 一次完整的部署顺序
 
-1. 使用 Paper 启动目标 Minecraft 版本，确认 Java 与服务端核心本身稳定；
+1. 启动服务端，确认 Java 运行环境与服务端核心本身稳定；
 2. 把 Dominion 发行版 JAR 放进 `plugins/`，启动一次让插件生成文件；
-3. 核对启动日志中的插件版本、NMS 版本、数据库连接和 `Plugin Enabled!`；
+3. 核对启动日志中的数据库连接和 `Plugin Enabled!`；
 4. 停服备份 `plugins/Dominion/`，再修改 `config.yml`、`flags.yml`、`limitations/` 和 `world-wide/`；
 5. 用 `/dominion reload config` 重载配置，或在维护窗口重启；
 6. 用普通玩家账号创建一个测试领地，依次验证访客、成员、权限组和环境 flag；
@@ -31,10 +31,10 @@ sidebar:
 
 ## 配置文件地图
 
-| 文件 | 管理内容 | 是否建议直接改动 |
+| 文件 | 管理内容 | 修改方式 |
 | --- | --- | --- |
 | `config.yml` | 数据库、语言、UI、自动创建、消息、边界显示、跨服和集成开关 | 可改；`version` 不要改 |
-| `flags.yml` | flag 是否启用、默认值、UI 图标物品 | 可改；改动会影响可选项与数据库字段 |
+| `flags.yml` | flag 的启用状态、默认值、UI 图标物品 | 可改；改动会影响可选项与数据库字段 |
 | `languages/*.yml` | 提示、菜单文本和 flag 名称描述 | 可改；也可用 `update_language` 重建 |
 | `limitations/*.yml` | 领地数量、尺寸、经济、传送和垂直范围 | 可按玩家组新增文件 |
 | `world-wide/*.yml` | 未认领区域的环境与访客规则 | 可按世界新增文件 |
@@ -53,12 +53,12 @@ admin-bypass: true
 check-update: true
 ```
 
-这只是当前版本生成配置的默认基线，不是适合所有服务器的最终策略。生产服最重要的是先把 `container`、`place`、`break`、爆炸和传送规则用普通账号验证，再考虑进一步开放。
+这是生成配置的默认基线，不是适合所有服务器的最终策略。生产服应先用普通账号验证 `container`、`place`、`break`、爆炸和传送规则，再开放更多权限。
 
 ## 管理员文档导航
 
 - [功能清单](./features)：按玩家、领地、权限、环境和运维归类当前能力。
-- [安装与升级](./installation)：版本、文件生成、日志确认、升级和备份顺序。
+- [安装与升级](./installation)：安装、文件生成、日志确认、升级和备份顺序。
 - [配置文件总览](./configuration)：修改顺序和四类配置的关系。
 - [config.yml 参考](./configuration/config-yml)：主配置所有当前键的解释。
 - [flags.yml 参考](./configuration/flags)：环境 flag、权限 flag 和配置格式。
@@ -70,5 +70,5 @@ check-update: true
 - [PlaceholderAPI](./placeholderapi)：完整占位符参考、显示示例和排错方法。
 - [跨服务器功能](./multi-server)：共享数据库、服务器 ID、缓存同步与跨服传送。
 - [扩展与 API](./addons)：API、事件和扩展开发注意事项。
-- [常见问题](./troubleshooting)：按现象定位配置或版本问题。
+- [常见问题](./troubleshooting)：按现象定位配置、启动或权限问题。
 - [赞助支持](./sponsorship)：赞助权益与实现边界。

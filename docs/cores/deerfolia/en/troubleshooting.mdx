@@ -1,31 +1,31 @@
 ---
 title: DeerFolia · Troubleshooting
-description: Diagnose DeerFolia startup, configuration, plugin compatibility, entity throttling, farms, and AFK resynchronization.
+description: Fix DeerFolia startup, configuration, plugin, farm, and AFK sync problems.
 icon: CircleHelp
 sidebar:
   label: Troubleshooting
   order: 40
 ---
 
-## Troubleshooting order
+## Check the problem layer
 
-First identify the layer:
+Check the problem in this order:
 
-1. Java or the startup command;
-2. core version and patch application;
+1. Java and the startup command;
+2. the core jar and patch loading;
 3. DeerFolia configuration;
 4. Folia plugin compatibility;
-5. one high-density region or one feature.
+5. one dense region or one feature.
 
-Change one variable at a time. A complete startup log, configuration backup, and reproduction sequence are more useful than one isolated error line.
+Change one variable at a time. Keep the complete startup log, a configuration backup, and the steps that reproduce the problem.
 
 ## The core does not start
 
-Check in this order:
+Check these items:
 
-- java -version reports Java 25;
+- `java -version` reports the runtime required by the selected release;
 - the command references the DeerFolia jar, not Paper, Purpur, or an older Folia jar;
-- the jar matches the Minecraft version;
+- the jar matches the server release;
 - eula.txt is accepted as required;
 - the server user can read and write the directory;
 - the log is not stopping on YAML, dependency, or patch errors before DeerFolia configuration is generated.
@@ -34,7 +34,7 @@ Do not put the core in plugins/, and do not pass two server-core jars in one com
 
 ## Configuration errors
 
-Stop the server, copy the current file, and restore the last known-good backup. Check:
+Stop the server. Copy the current file. Restore the last known-good backup. Check:
 
 - Tab indentation;
 - spaces after colons;
@@ -42,33 +42,33 @@ Stop the server, copy the current file, and restore the last known-good backup. 
 - list and empty-list syntax;
 - numbers accidentally written as quoted text.
 
-Reapply one change at a time. Both deer-folia.yml and kaiiju-entity-throttling.yml require a full restart before you can verify a fix.
+Add changes one at a time. Restart the server after you edit either `deer-folia.yml` or `kaiiju-entity-throttling.yml`.
 
 ## A plugin does not load
 
-Folia can reject plugins that are not explicitly marked as Folia-supported, and a plugin that loads can still fail if it accesses data outside its current region. Read the author's compatibility statement and the startup log; working on Paper is not proof that it is safe on DeerFolia.
+Folia can reject plugins without explicit Folia support. A plugin can also fail when it accesses data outside its current region. Read the plugin compatibility statement and the startup log. Paper support does not prove DeerFolia support.
 
-Reproduce with an empty plugin directory or only the core plugins. Add plugins one at a time after the problem disappears. Include plugin versions, the DeerFolia tag, Minecraft version, and the full stack trace in a report.
+Reproduce the problem with an empty plugin directory or only the core plugins. Add plugins one at a time after the problem disappears. Include the core build identifier, server release, Java runtime, affected plugin builds, and the full stack trace in a report.
 
 ## A farm or villager area is slower
 
-Do not change every optimization at once:
+Do not change every optimization at once. Follow these steps:
 
-1. check whether the target region is above an entity-throttling limit;
-2. temporarily disable kaiiju-entity-throttling and compare;
-3. inspect Dynamic Activation start-distance, activation-distance-mod, and maximum interval;
-4. inspect POI intervals in villager areas;
-5. restore one feature at a time while recording output, CPU, and logs.
+1. Check whether the target region is above an entity-throttling limit.
+2. Disable `kaiiju-entity-throttling` for a test.
+3. Check Dynamic Activation `start-distance`, `activation-distance-mod`, and `maximum-activation-prio`.
+4. Check POI intervals in villager areas.
+5. Restore one feature at a time. Record output, CPU, and logs.
 
 Do not use removal as a permanent way to clean up normal production entities. Trading halls, iron farms, and item sorters need a limit and removal value with enough headroom.
 
 ## Pathfinding or entity movement looks wrong
 
-Disable async-pathfinding in a test server first. If the symptom disappears, start with a smaller async-pathfinding-max-threads and increase it gradually. Do not hide path failures by only adding threads; also check whether a plugin reads entities or chunks across regions.
+Disable `async-pathfinding` on a test server. If the symptom disappears, set a smaller `async-pathfinding-max-threads` value. Increase it in small steps. Also check whether a plugin reads entities or chunks across regions.
 
 ## An AFK player is out of sync after resuming
 
-Confirm that:
+Check these values:
 
 - afk-network-optimization.enabled is true;
 - resync-on-resume is true;
@@ -76,16 +76,16 @@ Confirm that:
 - max-suppressed-bytes-before-category-resync was not set so low that it causes constant refreshes;
 - the problem is not limited to one proxy, compression, or protocol-plugin combination.
 
-Have the player move once and watch whether chunks and entities recover. An administrator can use /afknetstats to see whether statistics are still accumulating.
+Ask the player to move once. Check whether chunks and entities recover. An administrator can use `/afknetstats` to check whether statistics still increase.
 
 ## What to include in a useful report
 
-Include at least:
+Include these details:
 
-- DeerFolia tag, Minecraft version, and Java version;
+- core build identifier, server release, and Java runtime;
 - startup command and complete startup log;
 - relevant configuration with passwords, tokens, and private data removed;
-- affected plugins and their versions;
+- affected plugins and their build identifiers;
 - reproduction steps, frequency, and expected behavior;
 - whether the issue occurs only on Folia/DeerFolia;
 - recent configuration changes and the result of a rollback test.

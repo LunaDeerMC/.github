@@ -1,6 +1,6 @@
 ---
 title: DeerFoliaPlus · Commands and permissions
-description: List DeerFoliaPlus fake-player, posture, utility, and administrator commands with their permission nodes.
+description: Use DeerFoliaPlus commands and set their permission nodes.
 icon: Terminal
 sidebar:
   label: Commands and permissions
@@ -9,13 +9,13 @@ sidebar:
 
 ## Permission model
 
-Commands use Bukkit permissions. Posture permissions default to TRUE; quick-workbench permissions default to OP; confirm the effective defaults of other utility commands with your permission plugin and startup log. A command appearing in completion does not make it safe for every player.
+All commands use Bukkit permissions. Posture permissions default to `TRUE`. Quick-workbench permissions default to `OP`. Check the effective default for other utility commands in your permission plugin and startup log.
 
-Test with a non-admin account before exposing a command. Grant individual nodes rather than the broad deerfoliaplus.command parent.
+Command completion does not make a command safe for every player. Test each command with a non-admin account. Grant individual nodes instead of the broad `deerfoliaplus.command` parent.
 
 ## Posture commands
 
-These commands require posture.enabled:
+These commands require `posture.enabled`:
 
 | Command | Permission | Effect |
 | --- | --- | --- |
@@ -24,7 +24,7 @@ These commands require posture.enabled:
 | /crawl | deerfoliaplus.command.crawl | Enter crawling while retaining movement. |
 | /get-up | deerfoliaplus.command.get-up | Stand up from a posture. |
 
-Empty-hand right-click chair interaction also requires chair-interaction. With require-side-signs enabled, the chair-row sign condition must also pass.
+Empty-hand right-click chair interaction also requires `chair-interaction`. When `require-side-signs` is enabled, signs at both ends of the chair row are required.
 
 ## Time, weather, and player state
 
@@ -39,7 +39,7 @@ Empty-hand right-click chair interaction also requires chair-interaction. With r
 | /fly [player] | deerfoliaplus.command.fly | Toggle flight for yourself or a target player. |
 | /god [player] | deerfoliaplus.command.god | Toggle invulnerability for yourself or a target player. |
 
-Time, weather, target-player state, and item-copy commands can affect a survival server's economy or gameplay. Keep them with trusted administrators by default.
+Time, weather, target-player state, and item-copy commands can affect a survival server's economy or gameplay. Give these commands to trusted administrators by default.
 
 ## Items and inspection
 
@@ -50,11 +50,11 @@ Time, weather, target-player state, and item-copy commands can affect a survival
 | /inspect player | deerfoliaplus.command.inspect | Inspect and operate the target player's inventory and equipment. |
 | /suicide | deerfoliaplus.command.suicide | Kill yourself. |
 
-inspect is an administrative capability and should be isolated from ordinary players. more can create unintended item quantities, so keep it with a management group.
+`/inspect` is an administrative capability. Keep it away from ordinary players. `/more` can create unintended item quantities. Give it to a management group.
 
 ## Quick workbench commands
 
-These commands default to OP permissions under deerfoliaplus.command:
+These commands default to `OP` permissions under `deerfoliaplus.command`:
 
 | Command | Permission | Effect |
 | --- | --- | --- |
@@ -68,11 +68,11 @@ These commands default to OP permissions under deerfoliaplus.command:
 | /cartographytable | deerfoliaplus.command.cartographytable | Open a cartography-table interface. |
 | /smithingtable | deerfoliaplus.command.smithingtable | Open a smithing-table interface. |
 
-These interfaces can open without a nearby block, so permission design must account for the server economy.
+These interfaces can open without a nearby block. Set permissions with the server economy in mind.
 
 ## FakePlayer commands
 
-When FakePlayer is enabled, the root command also requires bukkit.command.bot. A normal player's count is controlled by amount-per-player or a bot.amount.N permission; OPs bypass the count limit. A creator normally controls only their own fake players.
+When FakePlayer is enabled, the root command also requires `bukkit.command.bot`. A normal player's count is controlled by `amount-per-player` or a `bot.amount.N` permission. OPs bypass the count limit. A creator normally controls only their own fake players.
 
 ~~~text
 /bot create name
@@ -93,7 +93,7 @@ When FakePlayer is enabled, the root command also requires bukkit.command.bot. A
 /bot load name
 ~~~
 
-Action and dynamic-config subcommands have additional nodes:
+Action and dynamic-config subcommands require additional nodes:
 
 | Capability | Permission |
 | --- | --- |
@@ -102,7 +102,7 @@ Action and dynamic-config subcommands have additional nodes:
 | /bot save | bukkit.command.bot.save |
 | /bot load | bukkit.command.bot.load |
 
-Use completion for action names and arguments:
+Use command completion for action names and arguments:
 
 ~~~text
 /bot action name list
@@ -113,4 +113,4 @@ Use completion for action names and arguments:
 /bot config name config_name value
 ~~~
 
-Fake-player data includes world position, inventory, and custom state. Confirm whether data must be retained before using remove or save.
+Fake-player data includes world position, inventory, and custom state. Confirm whether you must keep the data before you use `remove` or `save`.

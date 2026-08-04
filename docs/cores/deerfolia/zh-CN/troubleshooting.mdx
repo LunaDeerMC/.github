@@ -7,25 +7,25 @@ sidebar:
   order: 40
 ---
 
-## 排查顺序
+## 确认问题层级
 
-先确认问题属于哪一层：
+按以下顺序检查：
 
-1. Java 或启动命令；
-2. 核心版本与补丁应用；
+1. Java 和启动命令；
+2. 核心 jar 和补丁加载；
 3. DeerFolia 配置；
 4. Folia 插件兼容；
 5. 某个高密度区域或单个功能。
 
-每次只改变一个变量。完整保留启动日志、配置备份和复现步骤，比只截取一行报错更有用。
+每次只改变一个变量。保留完整启动日志、配置备份和复现步骤。
 
 ## 核心无法启动
 
-按以下顺序检查：
+检查以下项目：
 
-- java -version 是否为 Java 25；
+- `java -version` 是否满足所选发行文件的要求；
 - 启动命令引用的是否是 DeerFolia jar，而不是 Paper、Purpur 或旧 Folia jar；
-- jar 是否来自当前 Minecraft 版本；
+- jar 是否与服务器使用的游戏发行版本匹配；
 - eula.txt 是否已经按要求设置；
 - 运行用户是否有读写服务器目录的权限；
 - 日志是否在 DeerFolia 配置生成前就因 YAML、依赖或补丁错误停止。
@@ -34,7 +34,7 @@ sidebar:
 
 ## 配置文件报错
 
-先停止服务器，复制当前文件，然后恢复最后一份可启动的备份。重点检查：
+停止服务器。复制当前文件。恢复最后一份可启动的备份。重点检查：
 
 - Tab 缩进；
 - 冒号后是否有空格；
@@ -42,33 +42,33 @@ sidebar:
 - 列表和空列表是否写法正确；
 - 数值是否写成了带引号的文本。
 
-恢复后一次只重新加入一个修改。deer-folia.yml 和 kaiiju-entity-throttling.yml 都需要完整重启才能验证。
+恢复后一次只重新加入一个修改。编辑 `deer-folia.yml` 或 `kaiiju-entity-throttling.yml` 后，完整重启服务器。
 
 ## 插件没有加载
 
-Folia 会拒绝没有明确标记 Folia 支持的插件，或者插件虽然能加载但在运行时错误地访问了不属于当前区域的数据。查看插件作者的兼容性说明和启动日志，不要仅因为插件在 Paper 上正常就认为它适合 DeerFolia。
+Folia 可能拒绝没有明确支持 Folia 的插件。插件也可能在访问当前区域以外的数据时失败。查看插件兼容性说明和启动日志。插件支持 Paper 不代表支持 DeerFolia。
 
-复现时使用一个空插件目录或只保留核心插件。若问题消失，再逐个加入插件。提交反馈时提供插件版本、DeerFolia tag、Minecraft 版本和完整异常堆栈。
+在空插件目录或只保留核心插件的环境中复现。问题消失后，再逐个加入插件。反馈问题时，提供核心构建标识、服务器发行版本、Java 运行时、相关插件构建标识和完整异常堆栈。
 
 ## 刷怪场或村民行为变慢
 
-先不要同时修改所有性能功能：
+不要同时修改所有性能功能：
 
-1. 检查目标区域是否超过实体节流的 limit；
-2. 暂时关闭 kaiiju-entity-throttling，确认是否恢复；
-3. 检查 Dynamic Activation 的 start-distance、activation-distance-mod 和最大间隔；
-4. 对村民区域检查 POI 优化的检查间隔；
-5. 每次只恢复一个功能并记录产出、CPU 和日志。
+1. 检查目标区域是否超过实体节流的 `limit`。
+2. 在测试环境关闭 `kaiiju-entity-throttling`。
+3. 检查 Dynamic Activation 的 `start-distance`、`activation-distance-mod` 和 `maximum-activation-prio`。
+4. 检查村民区域的 POI 间隔。
+5. 每次只恢复一个功能。记录产出、CPU 和日志。
 
-实体节流的 removal 不适合用来长期“清理”正常生产实体。对交易所、铁傀儡农场和物品分类机，优先设置足够高的 limit 与 removal。
+不要用实体节流的 `removal` 长期清理正常生产实体。对交易所、铁傀儡农场和物品分类机，请为 `limit` 和 `removal` 留出足够空间。
 
 ## 路径查找或实体移动异常
 
-先在测试服务器关闭 async-pathfinding。若问题消失，再把 async-pathfinding-max-threads 从较小值开始逐步增加。不要只提高线程数来掩盖路径失败；同时检查是否有插件跨区域读取实体或区块。
+在测试服务器关闭 `async-pathfinding`。如果问题消失，将 `async-pathfinding-max-threads` 设为较小值，再逐步增加。不要只提高线程数。还要检查是否有插件跨区域读取实体或区块。
 
 ## AFK 玩家恢复后画面不同步
 
-确认：
+检查以下值：
 
 - afk-network-optimization.enabled 为 true；
 - resync-on-resume 为 true；
@@ -76,16 +76,16 @@ Folia 会拒绝没有明确标记 Folia 支持的插件，或者插件虽然能�
 - max-suppressed-bytes-before-category-resync 没有被设置成过小的频繁刷新值；
 - 问题是否只发生在某个代理、压缩或协议插件组合中。
 
-先让玩家移动一次，观察区块和实体是否恢复。管理员可以使用 /afknetstats 检查统计是否仍在累计。
+让玩家移动一次。检查区块和实体是否恢复。管理员可以使用 `/afknetstats` 检查统计是否继续增加。
 
 ## 如何提交有效反馈
 
-至少提供以下信息：
+提供以下信息：
 
-- DeerFolia tag、Minecraft 版本和 Java 版本；
+- 核心构建标识、服务器发行版本和 Java 运行时；
 - 启动命令与完整启动日志；
 - 相关配置片段，删除密码、令牌和隐私信息；
-- 出问题的插件及版本；
+- 出问题的插件及构建标识；
 - 复现步骤、发生频率和预期行为；
 - 是否只在 Folia/DeerFolia 上出现；
 - 最近修改过的配置和可回滚的测试结果。

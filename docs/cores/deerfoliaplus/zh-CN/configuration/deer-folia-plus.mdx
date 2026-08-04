@@ -1,15 +1,15 @@
 ---
 title: DeerFoliaPlus · 配置详解
-description: 按当前源码默认值说明 deer-folia-plus.yml 的每个功能组、参数和风险。
+description: 配置 DeerFoliaPlus 功能组和安全限制。
 icon: SlidersHorizontal
 sidebar:
   label: DeerFoliaPlus 配置详解
   order: 21
 ---
 
-## 当前默认文件
+## 文件结构
 
-以下结构以当前源码配置类生成规则为准。启动后文件会包含更完整的注释；如果实际版本新增或减少字段，以实际生成文件为准。README 中部分 FakePlayer 字段名称和默认值较旧，下面以源码为准。
+下面的结构用于参考。启动后生成的文件还会包含注释。如果实际生成的文件不同，请以实际文件为准。
 
 ~~~yaml
 fake-player:
@@ -56,23 +56,23 @@ custom-recipe:
 
 ## FakePlayer
 
-FakePlayer 默认关闭。开启后，玩家可以使用 /bot 创建和管理服务器假人；假人数据保存在世界目录的 fakeplayer.dat 和 fakeplayerdata/，不是 config/。
+FakePlayer 默认关闭。开启后，玩家可以使用 `/bot` 创建和管理服务器假人。假人数据保存在世界目录的 `fakeplayer.dat` 和 `fakeplayerdata/`，不在 `config/` 中。
 
 | 键 | 默认值 | 说明 |
 | --- | ---: | --- |
-| enable | false | FakePlayer 总开关。关闭时 /bot 不可用。 |
+| enable | false | FakePlayer 总开关。为 `false` 时 `/bot` 不可用。 |
 | always-send-data | true | 即使创建者不在线，也持续向客户端发送假人数据。 |
 | spawn-phantom | true | 假人可以参与幻翼生成检测。 |
 | skip-sleep-check | true | 假人不阻塞夜晚跳过睡眠检查。 |
 | invulnerable | true | 假人不受伤害。 |
-| prefix | BOT_ | 假人名称前缀，总名称长度仍需符合 Minecraft 限制。 |
+| prefix | BOT_ | 假人名称前缀。总名称长度仍需符合限制。 |
 | suffix | 空字符串 | 假人名称后缀。 |
 | resident-bot | true | 停服前保存假人，并在启动时尝试恢复。 |
 | cache-skin | true | 缓存假人皮肤数据。 |
 | regen-amount | 0.0 | 每秒恢复的生命值；0 表示不自动恢复。 |
-| amount-per-player | 2 | 每名非 OP 玩家默认最多创建的假人数量。可用 bot.amount.N 权限覆盖，其中 N 是数字。 |
+| amount-per-player | 2 | 每名非 OP 玩家默认最多创建的假人数量。可用 `bot.amount.N` 权限覆盖，`N` 为数字。 |
 
-假人名称需要是 4–16 个英数字符或下划线，不能和在线玩家或其他假人重复。普通玩家只能控制自己创建的假人，OP 可以绕过创建数量和控制者限制。
+假人名称需要包含 4–16 个英数字符或下划线。名称不能和在线玩家或其他假人重复。普通玩家只能控制自己创建的假人。OP 可以绕过数量和控制者限制。
 
 ## 基岩版风格要塞
 
@@ -82,7 +82,7 @@ FakePlayer 默认关闭。开启后，玩家可以使用 /bot 创建和管理服
 | spacing | 48 | 要塞平均间距，单位为区块。 |
 | separation | 12 | 要塞最小间距，单位为区块，必须小于 spacing。 |
 
-这是世界生成规则。不要在已经长期运行的生产世界中直接切换并假设旧区块会重新生成；先在新世界或测试副本中确认要塞位置与探索体验。
+这是世界生成规则。不要在长期运行的生产世界中直接切换，也不要假设旧区块会重新生成。先在新世界或测试副本中确认要塞位置和探索体验。
 
 ## 姿态系统
 
@@ -93,7 +93,7 @@ FakePlayer 默认关闭。开启后，玩家可以使用 /bot 创建和管理服
 | require-side-signs | false | 开启后，一排椅子的两端都需要普通告示牌或墙上告示牌。 |
 | max-chair-chain-length | 8 | 一排连续楼梯或台阶最多被识别的数量。 |
 
-坐下和躺下会锁定玩家位置；爬行仍然允许移动。潜行、跳跃或 /get-up 可以结束部分姿态。
+坐下和躺下会锁定玩家位置。爬行仍然允许移动。潜行、跳跃或 `/get-up` 可以结束部分姿态。
 
 ## Syncmatica
 
@@ -103,33 +103,33 @@ FakePlayer 默认关闭。开启后，玩家可以使用 /bot 创建和管理服
 | use-quota | false | 开启上传配额。 |
 | quota-limit | 40000000 | 配额上限，单位为字节。 |
 
-投影文件写入服务器根目录的 syncmatica/litematica/，上传临时文件位于 syncmatica/temp/。开启前要确认玩家客户端安装了兼容的 Syncmatica/Litematica 组件，并将该目录纳入备份和空间监控。
+投影文件写入服务器根目录的 `syncmatica/litematica/`。上传临时文件位于 `syncmatica/temp/`。开启前确认玩家客户端安装了兼容的 Syncmatica/Litematica 组件。将这些目录纳入备份和空间监控。
 
 ## Servux
 
-structure-protocol 用于结构边界框叠加，entity-protocol 用于实体和方块实体 NBT 数据查看。两者默认关闭；开启后仍需要玩家使用支持 Servux 的 MiniHUD 或 Litematica 客户端。
+`structure-protocol` 用于结构边界框叠加。`entity-protocol` 用于查看实体和方块实体 NBT 数据。两者默认关闭。开启后仍需要支持 Servux 的 MiniHUD 或 Litematica 客户端。
 
 ## Recipe Sync
 
 | 键 | 默认值 | 说明 |
 | --- | ---: | --- |
-| neoforge | true | 向 NeoForge 客户端发送 neoforge:recipe_content 配方同步。 |
-| fabric | true | 向 Fabric 客户端发送 fabric:recipe_sync 配方同步。 |
+| neoforge | true | 通过 `neoforge:recipe_content` 向 NeoForge 客户端发送配方。 |
+| fabric | true | 通过 `fabric:recipe_sync` 向 Fabric 客户端发送配方。 |
 | skip-fabric-on-via-non-native | true | 玩家通过 ViaVersion/ViaBackwards 使用非原生协议时跳过 Fabric 同步。 |
 
-配方同步只传递服务器已有的配方数据，不会替玩家安装 JEI 或其他客户端模组。遇到客户端协议错误时，先保留一个协议开启，确认客户端平台后再调整。
+配方同步只传递服务器已有的配方数据，不会替玩家安装 JEI 或其他客户端模组。遇到协议错误时，先保留一个协议开启。确认客户端平台后，再调整其他选项。
 
 ## Custom Recipe
 
-custom-recipe.enabled 默认关闭。开启后核心从 config/custom-recipes.yml 加载自定义配方，支持 shaped、shapeless、smelting、blasting、smoking、campfire_cooking 和 stonecutting。配方文件的完整结构与结果物属性见[功能与客户端协议](../features)中的自定义配方部分。
+`custom-recipe.enabled` 默认关闭。开启后核心从 `config/custom-recipes.yml` 加载自定义配方。支持 `shaped`、`shapeless`、`smelting`、`blasting`、`smoking`、`campfire_cooking` 和 `stonecutting`。完整结构与结果物属性见[功能与客户端协议](../features)中的自定义配方部分。
 
-修改此文件后完整重启服务器。YAML 能成功读取不代表物品 ID、配方类型或配方结果一定有效，必须同时查看日志和游戏内配方。
+修改此文件后重启服务器。YAML 能成功读取不代表物品 ID、配方类型或配方结果有效。请同时查看日志和游戏内配方。
 
 ## 什么时候不要直接改默认值
 
-- 不要为了让假人“看起来在线”就默认开启 FakePlayer；
-- 不要在已有世界中直接改变要塞生成策略；
-- 不要在没有客户端模组和空间监控时开启 Syncmatica；
-- 不要在没有测试自定义配方的情况下覆盖原版配方；
-- 不要一次同时打开姿态、协议和全部快捷命令；
+- 不要为了让假人“看起来在线”就开启 FakePlayer。
+- 不要在已有世界中直接改变要塞生成策略。
+- 没有客户端组件和空间监控时，不要开启 Syncmatica。
+- 没有测试自定义配方时，不要覆盖原版配方。
+- 不要一次打开姿态、协议和全部快捷命令。
 - 每次只改一个功能组，并保留可回滚配置。

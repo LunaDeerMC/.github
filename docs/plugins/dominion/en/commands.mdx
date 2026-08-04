@@ -1,6 +1,6 @@
 ---
 title: Command index
-description: Current player and administrator commands in Dominion 4.9.1-release.
+description: Player and administrator commands in Dominion.
 icon: ScrollText
 link: /docs/plugins/dominion/commands
 sidebar:
@@ -10,9 +10,9 @@ sidebar:
 
 ## Usage
 
-All commands below use `/dominion` as the root. The current `plugin.yml` also provides `/dom` as an alias. A player running the root command opens the current UI; the console receives help output.
+All commands below use `/dominion` as the root. The `plugin.yml` file also provides `/dom` as an alias. A player running the root command opens the UI. The console receives help output.
 
-Start with the version's registered help and page navigation:
+Use the registered help and page navigation:
 
 ```text
 /dominion help
@@ -39,7 +39,7 @@ Start with the version's registered help and page navigation:
 | Set a message | `/dominion set_msg <dominion_name> <enter\|leave> <message>` |
 | Set a map color | `/dominion set_map_color <dominion_name> <color>` |
 
-`direction` accepts `north`, `east`, `south`, `west`, `up`, or `down`. When omitted, the current location or facing direction is used as appropriate. Add `force` to a delete command only when the confirmation is requested.
+`direction` accepts `north`, `east`, `south`, `west`, `up`, or `down`. When you omit it, the plugin uses the current location or facing direction. Add `force` to a delete command only when the command requests confirmation.
 
 ## Flags, members, and groups
 
@@ -69,7 +69,7 @@ Start with the version's registered help and page navigation:
 /dominion title_use <title_id>
 ```
 
-`title_use -1` disables the current group title. Choose flag names from the current `flags.yml` and command completion.
+`title_use -1` disables the current group title. Choose flag names from `flags.yml` and command completion.
 
 ## Copy and Residence migration
 
@@ -82,7 +82,7 @@ Start with the version's registered help and page navigation:
 /dominion migrate_all
 ```
 
-Enable `residence-migration` in `config.yml` before using the Residence commands. `migrate_all` is an administrator command; keep backups of the Residence data and the Dominion database before a bulk migration.
+Enable `residence-migration` in `config.yml` before using the Residence commands. `migrate_all` is an administrator command. Keep backups of the Residence data and the Dominion database before a bulk migration.
 
 ## Administrator commands
 
@@ -95,6 +95,6 @@ These commands require `dominion.admin`, which defaults to OP:
 /dominion update_language [confirm]
 ```
 
-`import db` is for migration or backup restoration, not for merging databases. A non-empty current database can produce errors, corruption, or data loss, so back up first and confirm the target directory. `update_language confirm` regenerates language files and may overwrite local language edits.
+Use `import db` for migration or backup restoration. Do not use it to merge databases. A non-empty target database can cause errors, corruption, or data loss. Back up first and confirm the target directory. `update_language confirm` regenerates language files and may overwrite local edits.
 
-The old `/dominion list` and `/dominion trust` commands are not in the currently verified command set. Use `/dominion` and the `member_*` commands for the current workflow.
+`/dominion list` and `/dominion trust` are not available. Use `/dominion` and the `member_*` commands.

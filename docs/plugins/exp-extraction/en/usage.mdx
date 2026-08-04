@@ -8,10 +8,10 @@ sidebar:
   order: 20
 ---
 
-## Quick start
+## Start quickly
 
 1. Confirm that ExpExtraction is installed and enabled on the server.
-2. Run `/extract 100`, or run `/extract` and let the plugin calculate the amount from your current experience.
+2. Run `/extract 100`. You can also run `/extract` and let the plugin calculate the amount from your experience.
 3. Pick up the generated experience bottle near the player.
 4. Hold the bottle and right-click to return its stored experience to yourself.
 
@@ -28,9 +28,14 @@ For the enchanting-table path, hold an empty glass bottle, sneak, and right-clic
 | `amount` | Optional non-negative integer for the amount to extract |
 | Omitted | Use the player's current total experience, still subject to the per-bottle limit |
 
-On success, the plugin drops an experience bottle near the player and removes the stored amount from the player's total experience. The default per-bottle limit is `2000` points; when a requested amount is higher, the plugin warns and clamps this extraction to `2000`.
+On success, the plugin drops an experience bottle near the player. It removes the stored amount from the player's total experience. The default per-bottle limit is `2000` points. If the requested amount is higher, the plugin warns and limits the extraction to `2000`.
 
-The plugin does not create a bottle when the argument is not an integer, is negative, exceeds the player's available experience, or the player has no experience to extract.
+The plugin does not create a bottle when any of these conditions apply:
+
+- The argument is not an integer.
+- The argument is negative.
+- The amount exceeds the player's available experience.
+- The player has no experience to extract.
 
 ## Extract at an enchanting table
 
@@ -40,7 +45,7 @@ The enchanting-table path has no amount argument:
 2. Start sneaking.
 3. Right-click an enchanting table.
 
-Each successful extraction consumes one empty glass bottle and creates one experience bottle. The default amount is `100`; when less experience is available, the actual amount is reduced to the player's remaining experience.
+Each successful extraction consumes one empty glass bottle and creates one experience bottle. The default amount is `100`. If the player has less experience, the plugin extracts the remaining amount.
 
 ## Use an experience bottle
 
@@ -56,6 +61,6 @@ An ordinary vanilla experience bottle has no ExpExtraction custom data and does 
 ## Permissions and common limits
 
 - `/extract` requires `expextraction.extract`, which the plugin declares as granted by default.
-- The current enchanting-table path has no separate permission check, so revoking `expextraction.extract` does not automatically disable table extraction.
+- The enchanting-table path has no separate permission check. Revoking `expextraction.extract` does not disable table extraction.
 - The console cannot run `/extract`; it is a player command, not an administrator console command.
 - If the command stops working, check `commandExtraction.enable`, the permission, and the player's current experience before troubleshooting the server.

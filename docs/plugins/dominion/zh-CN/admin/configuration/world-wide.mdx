@@ -40,7 +40,7 @@ privilege:
   container: false
 ```
 
-`flag-schema-version` 当前为 `2`，由插件用于迁移旧 flag 名称或结构，不要为了绕过提示手工改成插件版本号。`environment` 与 `privilege` 的键名来自 [`flags.yml`](./flags)，只填写当前版本存在的 flag。
+`flag-schema-version` 为 `2`，由插件用于迁移旧 flag 名称或结构。不要手工修改它。`environment` 与 `privilege` 的键名来自 [`flags.yml`](./flags)。只填写该文件中存在的 flag。
 
 ## 与领地内规则的区别
 
@@ -54,14 +54,14 @@ privilege:
 | 已认领根领地 | 访客 | 领地 guest flag |
 | 已认领根领地 | 成员/组成员 | member 或 group flag |
 | 已认领子领地 | 普通玩家 | 子领地自身规则与父领地边界 |
-| 任意位置 | 管理员 | `admin-bypass` 是否符合预期 |
+| 任意位置 | 管理员 | `admin-bypass` 的实际结果 |
 
 ## 使用步骤
 
-1. 先复制当前生成的 `default.yml`，不要从旧版本手工拼接 flag。
+1. 先复制服务器生成的 `default.yml`，不要从其他文件手工拼接 flag。
 2. 用世界名创建或修改对应的 YAML 文件。
 3. 只调整需要的 flag，保持 `enabled` 与 `flag-schema-version` 存在。
 4. 执行 `/dominion reload config`，查看控制台加载结果。
 5. 用普通玩家在未认领区域测试放置、破坏、容器、移动和目标环境事件。
 
-如果发现世界级规则没有生效，先确认玩家站在未认领区域、文件名与世界名一致、`enabled: true`，再检查是否被管理员权限或其他插件绕过。删除 `default.yml` 会失去兜底配置，不建议这样做。
+如果世界级规则没有生效，请依次确认玩家站在未认领区域、文件名与世界名一致、`enabled: true`。然后检查管理员权限和其他插件的绕过行为。删除 `default.yml` 会失去兜底配置。请保留该文件。

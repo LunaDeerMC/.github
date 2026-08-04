@@ -1,72 +1,72 @@
 ---
 title: DeerFoliaPlus · Troubleshooting
-description: Diagnose DeerFoliaPlus startup, configuration, client-protocol, fake-player, custom-recipe, and Folia threading problems.
+description: Fix DeerFoliaPlus startup, configuration, protocol, FakePlayer, recipe, and Folia threading problems.
 icon: CircleHelp
 sidebar:
   label: Troubleshooting
   order: 40
 ---
 
-## Order of operations
+## Start with a safe test
 
-Stop the server and back up the current directory first. Record the DeerFoliaPlus tag, Minecraft version, Java version, launch arguments, plugin list, client mods, and full log. Change one variable at a time; do not start by deleting worlds, config, or fake-player data.
+Stop the server and back up the current directory. Record the core build identifier, server release, Java runtime, launch arguments, plugins, client components, and complete log. Change one variable at a time. Do not start by deleting worlds, config, or FakePlayer data.
 
 ## The core will not start
 
-Check:
+Check these items:
 
-1. whether the actual process uses Java 25;
-2. whether the launch command loads only one core jar;
-3. whether applyAllPatches or the source build completed;
-4. whether the server user can read and write the core, config, and world directories;
-5. the first ERROR in the log, rather than the final cascade of errors.
+1. the actual process uses the Java runtime required by the selected release;
+2. the launch command loads only one core jar;
+3. `applyAllPatches` or the source build completed;
+4. the server user can read and write the core, config, and world directories;
+5. the first `ERROR` in the log, not the final cascade of errors.
 
-For a configuration parsing error, move config/deer-folia-plus.yml to a recoverable backup location, let the core generate a fresh file, and migrate old values group by group. Do not rename a DeerFolia config into the DeerFoliaPlus config.
+For a configuration parsing error, move `config/deer-folia-plus.yml` to a recoverable backup location. Let the core generate a new file. Migrate old values one group at a time. Do not rename a DeerFolia config to use it as a DeerFoliaPlus config.
 
 ## Configuration has no effect
 
-deer-folia-plus.yml is loaded at startup, so fully restart after editing. Check kebab-case keys such as resident-bot, amount-per-player, and skip-fabric-on-via-non-native. Do not accidentally turn true, false, numbers, or lists into unexpected strings.
+`deer-folia-plus.yml` is loaded at startup. Restart the server after editing. Check kebab-case keys such as `resident-bot`, `amount-per-player`, and `skip-fabric-on-via-non-native`. Do not turn booleans, numbers, or lists into strings.
 
-custom-recipes.yml registers recipes only when custom-recipe.enabled is true. Check parse errors, unknown item IDs, recipe type, and pattern before testing the relevant container.
+`custom-recipes.yml` registers recipes only when `custom-recipe.enabled` is `true`. Check parse errors, unknown item IDs, recipe type, and pattern before testing the relevant container.
 
 ## Client-protocol problems
 
 When only some players cannot see recipes, schematics, overlays, or entity data:
 
-- confirm whether the client is Fabric or NeoForge;
-- confirm that the client mod matches Minecraft 26.2;
-- check the server's recipe-sync, syncmatica, or servux switch;
-- keep skip-fabric-on-via-non-native enabled for ViaVersion/ViaBackwards connections while testing;
-- disable one protocol group at a time and reconnect instead of turning everything off at once.
+- Check whether the client uses Fabric or NeoForge.
+- Check that the client component and server release form a supported pair.
+- Check the server `recipe-sync`, `syncmatica`, or `servux` switch.
+- Keep `skip-fabric-on-via-non-native` enabled for ViaVersion/ViaBackwards connections while testing.
+- Disable one protocol group at a time. Reconnect after each change.
 
 Enabling a server protocol does not install a client mod for players.
 
 ## FakePlayer problems
 
-When a bot cannot be created, check fake-player.enable, bukkit.command.bot, name length, name collisions, and amount-per-player. A bot.amount.N permission overrides the default limit for a non-OP player.
+When a bot cannot be created, check `fake-player.enable`, `bukkit.command.bot`, name length, name collisions, and `amount-per-player`. A `bot.amount.N` permission overrides the default limit for a non-OP player.
 
-When a bot does not return after restart, confirm resident-bot is true and that fakeplayer.dat and fakeplayerdata/ under the relevant world are readable and writable. This is world-save data; back it up separately from config.
+When a bot does not return after restart, confirm that `resident-bot` is `true`. Check that `fakeplayer.dat` and `fakeplayerdata/` under the relevant world are readable and writable. This data belongs to the world save. Back it up separately from config.
 
-For action or inventory problems, stop the action, check the region location and client view, and reduce bot count before changing more settings. Do not use reload as a substitute for restart.
+For action or inventory problems, stop the action. Check the region location and client view. Reduce the bot count before you change more settings. Do not use reload instead of restart.
 
 ## Posture and chairs
 
-Confirm posture.enabled, chair-interaction, and the relevant permission node. A locked sitting or lying position is intentional; use sneak, jump, or /get-up to recover. For chair detection, check contiguous stairs/slabs, their orientation, and require-side-signs.
+Confirm `posture.enabled`, `chair-interaction`, and the relevant permission node. A locked sitting or lying position is intentional. Use sneak, jump, or `/get-up` to recover. For chair detection, check contiguous stairs or slabs, their orientation, and `require-side-signs`.
 
 ## Custom recipes
 
 Check each item:
 
-- the top-level key is recipes;
-- every recipe ID is unique;
-- type is shaped, shapeless, smelting, blasting, smoking, campfire_cooking, or stonecutting;
-- ingredient, pattern, ingredients, and result match the selected type;
-- item IDs use a valid namespace;
-- enchantments, custom-id, and nbt use supported values;
-- the restart log reports the expected registration count.
+- The top-level key is `recipes`.
+- Every recipe ID is unique.
+- `type` is `shaped`, `shapeless`, `smelting`, `blasting`, `smoking`, `campfire_cooking`, or `stonecutting`.
+- `ingredient`, `pattern`, `ingredients`, and `result` match the selected type.
+- Item IDs use a valid namespace.
+- `enchantments`, `custom-id`, and `nbt` use supported values.
+- The restart log reports the expected registration count.
 
-Start with one minimal recipe, then add names, enchantments, and NBT. For recipe-overlap problems, remove or rename the test recipe instead of experimenting in the production world.
+Start with one minimal recipe. Add names, enchantments, and NBT in separate steps. For recipe-overlap problems, remove or rename the test recipe. Do not experiment in the production world.
 
 ## Folia compatibility
 
-DeerFoliaPlus still uses a regionized threading model. Plugins or scripts that force entity, world, or Bukkit API calls onto a traditional single main thread can produce thread-context errors or incorrect behavior. Reproduce without the suspected plugin in a test directory before contacting its author or opening a DeerFoliaPlus issue.
+DeerFoliaPlus uses a regionized threading model. A plugin or script that forces entity, world, or Bukkit API calls onto a traditional single main thread can produce thread-context errors or incorrect behavior. Reproduce the problem without the suspected plugin in a test directory before you contact its author or open an issue.

@@ -1,6 +1,6 @@
 ---
 title: 管理员文档 · config.yml 参考
-description: 逐项解释 Dominion 4.9.1-release 当前 config.yml 的键、默认值和修改边界。
+description: 逐项解释 Dominion 的 config.yml 键、默认值和修改边界。
 icon: FileText
 sidebar:
   label: 管理员文档 · config.yml 参考
@@ -44,7 +44,7 @@ ui:
   default: CHEST
 ```
 
-`language` 对应 `plugins/Dominion/languages/` 中的语言文件名；当前发行版包含 `en_us` 与 `zh_cn` 等语言文件。`ui.default` 只接受 `CHEST` 或 `DIALOG`，它决定没有个人 UI 偏好的玩家使用哪种界面。玩家自己的选择可通过 `/dominion ui chest`、`/dominion ui dialog` 覆盖；`/dominion ui default` 恢复默认值。
+`language` 对应 `plugins/Dominion/languages/` 中的语言文件名。语言目录通常包含 `en_us` 与 `zh_cn` 等文件。`ui.default` 只接受 `CHEST` 或 `DIALOG`，它决定没有个人 UI 偏好的玩家使用哪种界面。玩家自己的选择可通过 `/dominion ui chest`、`/dominion ui dialog` 覆盖。`/dominion ui default` 会恢复默认值。
 
 ## 创建、清理与距离
 
@@ -98,7 +98,7 @@ group-title:
 ```
 
 - `residence-migration` 控制 Residence 数据迁移能力。迁移完成后应关闭开关，并按[管理员命令](../commands)核对结果。
-- `admin-bypass` 为 `true` 时，拥有 `dominion.admin` 的玩家通常会绕过领地限制和规则检查；这也是为什么 OP 账号不能代表普通玩家进行权限测试。若关闭，管理员也会受到正常规则影响。
+- `admin-bypass` 为 `true` 时，拥有 `dominion.admin` 的玩家通常会绕过领地限制和规则检查。因此，OP 账号不能代表普通玩家进行权限测试。关闭此项后，管理员也会受到正常规则影响。
 - `group-title.enable` 开启后，玩家可以把组名显示为称号；`prefix`、`suffix` 定义包裹文本。这个功能只影响显示，不等于权限组文件中的 `priority`。
 
 ## 外部链接、飞行与调试
@@ -116,12 +116,12 @@ debug: false
 timer: false
 ```
 
-`external-links` 用于命令帮助和文档跳转；本网站的文档是面向当前版本重新整理的说明，不会改变插件内置链接的实际值。`fly-permission-nodes` 中的权限节点玩家不会受到 Dominion 飞行限制影响，需根据服务器实际使用的飞行插件调整。`check-update` 控制联网检查更新；排查问题时可临时打开 `debug`，`timer` 是性能记录器，不建议在日常生产环境开启。
+`external-links` 用于命令帮助和文档跳转。它不会改变插件内置链接的实际值。`fly-permission-nodes` 中的权限节点玩家不会受到 Dominion 飞行限制影响，需根据服务器实际使用的飞行插件调整。`check-update` 控制联网检查更新。排查问题时可临时打开 `debug`。`timer` 是性能记录器，不建议在日常生产环境开启。
 
-## 修改后如何生效
+## 修改后的生效方式
 
 ```text
 /dominion reload config
 ```
 
-重载后查看控制台是否报告配置解析、数据库或 flag 加载错误。修改插件 JAR、Java、服务端核心、数据库类型或多服拓扑时，应完整重启；不要用配置重载代替这些操作。
+重载后查看控制台。确认没有配置解析、数据库或 flag 加载错误。修改插件 JAR、Java、服务端核心、数据库类型或多服拓扑时，应完整重启。不要用配置重载代替这些操作。

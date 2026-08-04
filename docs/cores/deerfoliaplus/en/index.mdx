@@ -1,6 +1,6 @@
 ---
 title: DeerFoliaPlus
-description: Consumer-facing DeerFoliaPlus documentation for installation, features, configuration, commands, and client protocols.
+description: Install, configure, operate, and troubleshoot DeerFoliaPlus.
 icon: Server
 link: /docs/cores/deerfoliaplus
 documentSet:
@@ -8,18 +8,21 @@ documentSet:
   status: active
 ---
 
-## Scope
+## Use DeerFoliaPlus
 
-This set is for server owners, administrators, and players using client mods with DeerFoliaPlus. The reference build is DeerFoliaPlus 26.2.0-eb43c5e on Minecraft 26.2 with Java 25.
+Use DeerFoliaPlus as the server core in your startup command. It is not a plugin. Do not put its jar in `plugins/`.
 
-DeerFoliaPlus is a complete server core, not a jar for plugins/. The docs first cover installation and a safe test directory, then explain config/deer-folia-plus.yml, config/custom-recipes.yml, client protocols, and permission nodes.
+Players who use Syncmatica, Servux, or Recipe Sync also need the matching client components. Check client compatibility before you enable a protocol.
 
-## Recommended order
+## Choose a task
 
-1. [Installation and first start](./installation): verify Java, download the core, test it in a copied directory, and migrate safely.
-2. [Configuration overview](./configuration): identify which feature reads each file and what must be backed up.
-3. [DeerFoliaPlus configuration](./configuration/deer-folia-plus): read each switch and value against the source defaults.
-4. [Features and client protocols](./features): decide whether fake players, Syncmatica, Servux, recipe sync, and posture fit the server.
-5. [Commands and permissions](./commands): choose which utilities are available to players and which remain administrator-only.
+| Task | Start here |
+| --- | --- |
+| Install or migrate the core | [Installation and first start](./installation) |
+| Find files and restart rules | [Configuration overview](./configuration) |
+| Change DeerFoliaPlus settings | [DeerFoliaPlus configuration](./configuration/deer-folia-plus) |
+| Review features and client protocols | [Features and client protocols](./features) |
+| Manage commands and permissions | [Commands and permissions](./commands) |
+| Fix startup or feature problems | [Troubleshooting](./troubleshooting) |
 
-Test upgrades and new features in a copy first. The generated configuration and full startup log take priority over older documentation.
+Test upgrades and new features in a copy of the server. Use the generated configuration and the complete startup log when they differ from an example.

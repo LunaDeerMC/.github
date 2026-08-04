@@ -1,6 +1,6 @@
 ---
 title: 玩家文档 · 命令参考
-description: 当前 Dominion 4.9.1-release 面向玩家的命令、参数和使用示例。
+description: Dominion 面向玩家的命令、参数和使用示例。
 icon: Terminal
 link: /docs/plugins/dominion/player/commands
 sidebar:
@@ -37,7 +37,7 @@ sidebar:
 /dominion contract <size> [direction]
 ```
 
-自动创建使用管理员的 `auto-create-radius`。`resize` 的方向名是完整的 `north`、`east`、`south`、`west`、`up`、`down`，不是旧文档中可能出现的单字母写法。
+自动创建使用管理员的 `auto-create-radius`。`resize` 使用完整的方向名：`north`、`east`、`south`、`west`、`up` 和 `down`。
 
 ```text
 /dominion set_tp <dominion_name>
@@ -76,7 +76,7 @@ sidebar:
 /dominion set_guest <dominion_name> <guest_flag_name> <true|false>
 ```
 
-`set_env` 修改领地环境规则；`set_guest` 修改访客权限。当前命令补全只会显示 `flags.yml` 中 `enable: true` 的 flag。成员和组权限使用前一节中的 `member_set_pri`、`group_set_flag`。
+`set_env` 修改领地环境规则。`set_guest` 修改访客权限。命令补全只显示 `flags.yml` 中 `enable: true` 的 flag。成员和组权限使用前一节中的 `member_set_pri` 和 `group_set_flag`。
 
 ## 复制与所有权
 
@@ -93,8 +93,8 @@ sidebar:
 
 ## 常见命令错误的排查顺序
 
-1. 先检查命令拼写和参数顺序；
-2. 检查自己是否在目标领地内，或是否拥有该领地的管理权限；
-3. 检查 flag 是否在 `flags.yml` 启用；
-4. 检查 `limitations/` 是否限制了数量、尺寸、子领地或传送；
-5. 仍有问题时，记录完整错误消息、服务端版本、插件版本和触发命令，不要只截取最后一行。
+1. 检查命令拼写和参数顺序；
+2. 确认自己位于目标领地内，或拥有该领地的管理权限；
+3. 确认 flag 在 `flags.yml` 中已启用；
+4. 检查 `limitations/` 中的数量、尺寸、子领地和传送限制；
+5. 仍有问题时，记录完整错误消息、运行环境信息和触发命令。不要只截取最后一行。

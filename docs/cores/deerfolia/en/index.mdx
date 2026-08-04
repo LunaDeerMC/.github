@@ -1,6 +1,6 @@
 ---
 title: DeerFolia
-description: Consumer-facing DeerFolia documentation for installation, configuration, upgrades, and troubleshooting.
+description: Install, configure, operate, and troubleshoot DeerFolia.
 icon: Server
 link: /docs/cores/deerfolia
 documentSet:
@@ -8,45 +8,38 @@ documentSet:
   status: active
 ---
 
-## Who this documentation is for
+## Use DeerFolia
 
-These docs are for server owners, operators, and consumers who need to download, deploy, and maintain DeerFolia. They explain whether the core is a good fit and how to start it safely before discussing performance tuning. You do not need to understand Java source code or Paperweight patch development.
+Use DeerFolia as the server core in your startup command. It is not a plugin. Do not put its jar in `plugins/`. Do not load its configuration in a Paper or Purpur process.
 
-DeerFolia is a server core, not a plugin. Use it as the server jar in your startup command. Do not put it in the plugins directory, and do not load DeerFolia configuration inside a Paper or Purpur process.
+You can operate DeerFolia without reading Java source code or Paperweight patch code. Check plugin compatibility before you migrate.
 
-## Recommended reading order
+## Choose a task
 
 | What you want to do | Start here |
 | --- | --- |
 | Install or switch cores for the first time | [Installation and first start](./installation) |
-| Understand where configuration lives and when it applies | [Configuration overview](./configuration) |
-| Change every DeerFolia default | [DeerFolia configuration](./configuration/deer-folia) |
+| Find configuration files and restart rules | [Configuration overview](./configuration) |
+| Change DeerFolia settings | [DeerFolia configuration](./configuration/deer-folia) |
 | Limit entities such as zombified piglins and villagers | [Entity throttling](./configuration/entity-throttling) |
-| Understand every optimization and its trade-offs | [Features and optimizations](./features) |
-| Fix startup, plugin, farm, or synchronization problems | [Troubleshooting](./troubleshooting) |
+| Review optimizations and their effects | [Features and optimizations](./features) |
+| Diagnose startup, plugin, farm, or sync problems | [Troubleshooting](./troubleshooting) |
 
-## Version baseline
+## Back up before migration
 
-- DeerFolia: repository tag 26.2.0-bbeb1d1.
-- Minecraft: 26.2.
-- Java: 25.
-- Upstream: PaperMC Folia, with the exact commit pinned by foliaRef in the repository's gradle.properties.
-
-The release and source may move forward. If the downloaded tag, startup log, or generated configuration differs from this documentation, prefer the files produced by the build you are actually running and report the difference in [DeerFolia Issues](https://github.com/LunaDeerMC/DeerFolia/issues).
-
-## Safety boundaries before you start
-
-Back up at least the following before switching server cores:
+Back up the following files before you switch server cores:
 
 - every world directory;
 - server.properties, eula.txt, and configuration directories;
 - plugin data, databases, and scheduled jobs;
 - the current server jar and startup scripts.
 
-Use a copy of the production server for the first start. Verify plugin loading, player login, teleportation, chunk loading, and common machines before moving the core to production.
+Start with a copy of the production server. Check plugin loading, player login, teleportation, chunk loading, and common machines. Move the core to production only after these checks pass.
 
-## Decide whether the architecture fits
+## Check whether DeerFolia fits
 
-Folia benefits from running naturally separated player regions in parallel. If players stay in one small area, a Folia-derived core may not be faster, and many traditional Paper plugins will not work without explicit Folia support. Check each plugin's compatibility statement before migrating.
+Folia can run separate player regions in parallel. This can help when players use separate areas. It may not help when players stay in one small area.
 
-DeerFolia's own optimizations can also change update cadence in high-density entity areas, villager POI checks, pathfinding, and network synchronization for AFK players. Defaults are a starting point for observation, not a universal tuning prescription.
+Many Paper plugins need explicit Folia support. Check the compatibility statement for each plugin before you migrate.
+
+DeerFolia can change update timing for dense entity areas, villager POI checks, pathfinding, and AFK network synchronization. Use the default settings as a starting point. Test each change on a copy of the server.

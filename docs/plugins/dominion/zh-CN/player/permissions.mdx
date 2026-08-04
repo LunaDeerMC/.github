@@ -13,12 +13,12 @@ sidebar:
 对一个领地内的玩家，普通交互权限的判断可以按下面的顺序理解：
 
 1. `dominion.admin` 管理员绕过（如果管理员配置允许绕过）；
-2. 领地内是否存在该玩家的成员记录；
-3. 成员是否属于权限组：属于权限组时，使用权限组的 flag；否则使用成员自己的 flag；
+2. 检查领地内的该玩家成员记录；
+3. 检查成员所属的权限组。属于权限组时，使用权限组的 flag；否则使用成员自己的 flag；
 4. 没有成员记录时，使用领地的访客 flag；
 5. 未认领区域则可能使用 `world-wide/<world>.yml` 的世界范围规则。
 
-环境 flag 不区分具体玩家，直接由领地或世界范围规则控制。`flags.yml` 的 `enable` 为 `false` 时，该 flag 不参与拦截，不能只通过 UI 的开关状态判断它是否生效。
+环境 flag 不区分具体玩家，直接由领地或世界范围规则控制。`flags.yml` 的 `enable` 为 `false` 时，该 flag 不参与拦截。不能只通过 UI 的开关状态判断结果。
 
 ## 四种管理方式
 
@@ -86,7 +86,7 @@ sidebar:
 
 应用模板是把模板中的可用 privilege flag 写入成员，并不是建立实时继承关系；之后修改模板不会自动追溯已经应用过的成员。需要持续批量维护时，优先使用权限组。
 
-## 权限 flag 怎么选
+## 常用的 flag
 
 常见建造组可以从这些 flag 开始：
 
@@ -100,7 +100,7 @@ sidebar:
 | 交通与移动 | `vehicle_spawn`, `vehicle_destroy`, `riding`, `teleport`, `fly` |
 | 战斗 | `pvp`, `monster_killing`, `animal_killing`, `villager_killing`, `shoot`, `trident` |
 
-flag 的最终可用名称取决于管理员在 `flags.yml` 中是否启用它；命令补全只会列出当前启用的 flag。不要把环境 flag（例如 `creeper_explode`）填到 `member_set_pri` 中。
+flag 的最终可用名称取决于管理员在 `flags.yml` 中启用的项目。命令补全只会列出已启用的 flag。不要把环境 flag（例如 `creeper_explode`）填到 `member_set_pri` 中。
 
 ## 给朋友开放仓库的推荐步骤
 
@@ -110,7 +110,7 @@ flag 的最终可用名称取决于管理员在 `flags.yml` 中是否启用它�
 4. 用另一名普通测试账号实际尝试打开箱子、破坏方块和使用按钮；
 5. 不需要时移除成员或撤回组权限。
 
-如果玩家“明明是成员却不能操作”，先检查他是否已经被加入一个权限组：加入组后应检查组 flag，而不是继续修改成员 flag。
+成员无法操作时，先检查他的权限组。加入组后应检查组 flag，不要继续修改成员 flag。
 
 ## 组称号
 

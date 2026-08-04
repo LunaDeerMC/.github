@@ -8,35 +8,26 @@ documentSet:
   status: active
 ---
 
-## Who this documentation is for
+## Start here
 
-These pages serve server owners and administrators who need to deploy the plugin, as well as ordinary players who only want to adjust their own view. TimeManager has a focused feature set, so the documentation stays at two pages: this page covers installation, first start, and configuration; the next page covers commands, time formats, and permissions.
+Install the plugin first. Edit `config.yml` after the first server start. Use [commands, time formats, and permissions](./commands) to change personal time, freeze the view, and set permissions.
 
-## What TimeManager changes
+## Behavior
 
-TimeManager sets client-side time for the player who uses it without changing the server world time. Other players continue to follow the server day-night cycle, and crops, mobs, redstone, weather, and scheduled events are not changed by one player's command.
+TimeManager sets client-side time for the player who uses it. It does not change the server world time. Other players follow the server day-night cycle. A player's command does not change crops, mobs, redstone, weather, or scheduled events.
 
-This makes it useful for photographing builds, checking a scene under different lighting, or freezing a personal view without affecting the server. It is not a server-wide time controller and does not permanently set the world to day or night.
-
-## Compatibility and requirements
-
-- Minecraft API: `1.21`.
-- Java: `21`.
-- Servers: Paper, Spigot, and Folia.
-- Plugin type: Bukkit/Paper plugin installed in the server's `plugins/` directory.
-
-If your server, Java runtime, or plugin version differs from this range, validate it on a test server first. On Folia, check that the rest of the installed plugins are Folia-compatible as well; TimeManager declares Folia support in `plugin.yml`.
+Use it to photograph builds, check a scene under different lighting, or freeze a personal view. It does not control time for the whole server. It does not permanently set the world to day or night.
 
 ## Installation and first start
 
 1. Stop the server and back up the worlds, `plugins/`, and server logs.
-2. Get a JAR suitable for the current version from the [TimeManager GitHub repository](https://github.com/LunaDeerMC/TimeManager). If the repository has no pre-built file, run `mvn clean package` with Java 21 according to the project's Maven configuration, then choose the build artifact from `target/`.
-3. Put the JAR in the server's `plugins/` directory. Do not keep multiple TimeManager versions there.
+2. Get a JAR from the [TimeManager GitHub repository](https://github.com/LunaDeerMC/TimeManager). If the repository has no pre-built file, run `mvn clean package` with the project's build toolchain. Choose the artifact from `target/`.
+3. Put the JAR in the server's `plugins/` directory. Keep only one TimeManager JAR there.
 4. Start the server and check the console for a successful plugin enable message.
-5. On first enable, the plugin generates `plugins/TimeManager/config.yml`. Restart the server after editing it; the current project does not provide a configuration reload command.
-6. Use a normal player account to run `/ptime info` and `/ptime set day`. Confirm that only that account's view changes, then use `/ptime reset` to clean up the test.
+5. On first enable, the plugin generates `plugins/TimeManager/config.yml`. Restart the server after editing it. The plugin has no configuration reload command.
+6. Use a normal player account to run `/ptime info` and `/ptime set day`. Confirm that only that account's view changes. Then use `/ptime reset` to clean up the test.
 
-If the plugin does not load, start with Java, API, and dependency errors in the server log; do not infer compatibility from the JAR filename alone.
+If the plugin does not load, check Java, API, and dependency errors in the server log. Do not use the JAR filename to decide if the plugin can load.
 
 ## Configuration
 
@@ -49,8 +40,8 @@ TimeManager creates its configuration from the source configuration class on fir
 | `show-welcome-message` | `true` | Try to show a welcome message when a player joins. |
 | `welcome-message` | `&aTimeManager is enabled! Use &e/ptime help &afor commands.` | Join message; Bukkit `&` color codes are supported. |
 
-The current repository's join listener checks the `timeessence.use` permission, while `plugin.yml` declares only `ptime.set` and `ptime.freeze`. As a result, the welcome message may not appear even when `show-welcome-message` is `true`. Do not use that message as the health check; prefer the server log and an actual command.
+The join listener checks the `timeessence.use` permission. The `plugin.yml` file declares only `ptime.set` and `ptime.freeze`. The welcome message may not appear even when `show-welcome-message` is `true`. Use the server log and a command to check the plugin.
 
 ## Next step
 
-Continue with [Commands, time formats, and permissions](./commands). Administrators should verify the final result with a non-OP test account before opening the feature to players.
+Continue with [Commands, time formats, and permissions](./commands). Use a non-OP test account to verify the result before opening the feature to players.

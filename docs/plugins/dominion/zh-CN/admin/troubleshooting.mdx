@@ -9,7 +9,7 @@ sidebar:
 
 ## 排查原则
 
-先记录“版本、账号、位置、命令、日志”，再改配置。每次只改一个变量，并用普通账号复测；不要在 OP 账号下把所有结果都归因于 Dominion 已放行。
+先记录运行环境、账号、位置、命令和日志，再改配置。每次只改一个变量，并用普通账号复测。不要在 OP 账号下把所有结果都归因于 Dominion 已放行。
 
 ## 插件没有加载
 
@@ -17,28 +17,28 @@ sidebar:
 
 **检查：**
 
-1. JAR 是否放在目标服务端的 `plugins/`，是否同时存在多个 Dominion JAR；
-2. Java、服务端核心和 Dominion 版本是否在同一兼容范围；
-3. 控制台是否出现依赖缺失、NMS 实现缺失、类版本或 YAML 解析错误；
-4. 是否把开发版、源码目录或错误平台构建产物放进了 `plugins/`。
+1. 确认 JAR 位于目标服务端的 `plugins/`，且目录中只有一个 Dominion JAR；
+2. 确认 Java、服务端核心和 Dominion 可以一起运行；
+3. 检查控制台中的依赖缺失、NMS 实现缺失、类加载或 YAML 解析错误；
+4. 确认没有把开发版、源码目录或错误平台构建产物放进 `plugins/`。
 
 ## Dialog 打不开或自动回退
 
 **现象：** `/dominion ui dialog` 后仍显示 ChestUI，或 Dialog 页面报错。
 
-**检查：** 查看启动日志是否加载了目标 Minecraft 小版本的 Dialog/NMS 后端；确认客户端和服务端都是同一目标版本；用 `/dominion ui default` 重新验证默认 UI。当前网站截图使用的是 Paper Minecraft `26.2` 与 Dominion `4.9.1-release`，其他版本不要直接套用这个结论。
+**检查：** 查看启动日志，确认 Dialog/NMS 后端已加载。确认客户端和服务端匹配。用 `/dominion ui default` 重新验证默认 UI。
 
 ## 玩家不能创建领地
 
 依次确认：
 
-- 选点是否在同一个世界，选择工具是否为 `select-tool` 配置的物品；
-- 领地数量、世界数量和尺寸是否超过 `limitations`；
-- 出生点保护半径、领地最小距离或已有领地是否冲突；
-- `dominion.default` 是否被权限插件撤销；
-- 是否开启经济收费而余额不足；
-- `auto-create-radius` 是否被设为 `-1`；
-- Y 轴是否超出 `no-lower-than`/`no-higher-than`。
+- 确认选点位于同一个世界，选择工具与 `select-tool` 配置一致；
+- 检查领地数量、世界数量和尺寸限制；
+- 检查出生点保护半径、领地最小距离和已有领地冲突；
+- 确认权限插件没有撤销 `dominion.default`；
+- 检查经济收费和玩家余额；
+- 检查 `auto-create-radius` 的值；
+- 检查 Y 轴范围与 `no-lower-than`/`no-higher-than` 的关系。
 
 ## 能进领地但不能操作
 
@@ -46,7 +46,7 @@ sidebar:
 
 ## 爆炸、活塞或漏斗仍然跨界
 
-环境事件通常有多个来源。分别检查 `tnt_explode`、`tnt_damage_entity`、`creeper_explode`、`block_explode`、`piston_outside`、`hopper_outside` 和相关 `*_damage_entity` flag；同时确认其他插件没有在更高事件优先级直接改写或取消事件。用只安装 Dominion 的测试世界复现，能快速判断是否为插件冲突。
+环境事件通常有多个来源。分别检查 `tnt_explode`、`tnt_damage_entity`、`creeper_explode`、`block_explode`、`piston_outside`、`hopper_outside` 和相关 `*_damage_entity` flag。同时确认其他插件没有在更高事件优先级直接改写或取消事件。用只安装 Dominion 的测试世界复现，有助于区分插件冲突。
 
 ## 修改配置后没有变化
 
@@ -58,12 +58,12 @@ sidebar:
 
 ## 多服数据异常
 
-确认所有实例连接的是同一个预期数据库，`server-id` 唯一且没有在已有数据后改变，`server-name` 与代理一致，插件版本和配置 schema 一致。先关闭多服入口、保留日志和数据库备份，再逐台恢复验证，不要直接删除服务器字段来“清空”异常。完整检查矩阵见[跨服务器功能](./multi-server)。
+确认所有实例连接同一个预期数据库，`server-id` 唯一且没有在已有数据后改变，`server-name` 与代理一致，所有实例使用相同的插件文件和配置 schema。先关闭多服入口，保留日志和数据库备份，再逐台恢复验证。不要直接删除服务器字段来“清空”异常。完整检查矩阵见[跨服务器功能](./multi-server)。
 
 ## 导入命令提示风险
 
 这是预期的防护。`/dominion import db` 不带 `confirm` 不会执行；带 `confirm` 只应在迁移或恢复备份时使用，而且不能用来合并两个非空数据库。执行前确认备份可读、维护窗口已开始、回滚路径已准备。
 
-## 仍无法定位时应提供什么
+## 无法定位时的信息
 
-请提供 Dominion 版本、Minecraft/核心版本、Java 版本、启动日志中 Dominion 段落、相关配置（删去密码）、玩家权限、复现步骤和可复现的领地边界。若安装了 Vault、PlaceholderAPI、WorldGuard、Residence 或权限插件，也要列出版本。完整上下文比单独一条错误提示更有用。
+请提供运行环境信息、启动日志中的 Dominion 段落、相关配置（删去密码）、玩家权限、复现步骤和可复现的领地边界。若安装了 Vault、PlaceholderAPI、WorldGuard、Residence 或权限插件，也请列出这些依赖。完整上下文比单独一条错误提示更有用。

@@ -10,13 +10,12 @@ sidebar:
 
 ## Requirements
 
-- A Paper or Folia server; the plugin declares the Minecraft `1.20` API and marks itself as Folia-supported.
-- The target Minecraft version should match the plugin and server core. The Maven project compiles against Paper API `1.21.1` with Java 17 as its source and target version; the runtime Java requirement is still determined by the server core.
+- A Paper or Folia server.
 - The server process must be able to read `plugins/` and write the plugin data directory.
 
 ## Obtain and install
 
-If the repository provides a release for the target server, get it from [GitHub Releases](https://github.com/LunaDeerMC/ExpExtraction/releases). When no suitable release is available, build from source:
+Get a release from [GitHub Releases](https://github.com/LunaDeerMC/ExpExtraction/releases). If no suitable release is available, build from source:
 
 ```sh
 git clone https://github.com/LunaDeerMC/ExpExtraction.git
@@ -24,7 +23,7 @@ cd ExpExtraction
 mvn clean package
 ```
 
-Put the resulting `target/ExpExtraction-1.3.2.jar` in the server's `plugins/` directory, then fully restart the server. Do not put the plugin JAR in `mods/`, and do not keep multiple versions of the same project in the plugin directory.
+Put the generated JAR from `target/` in the server's `plugins/` directory. Fully restart the server. Do not put the plugin JAR in `mods/`. Keep only one ExpExtraction JAR in the plugin directory.
 
 After the first successful start, check that the following file exists:
 
@@ -42,7 +41,7 @@ The plugin declares one permission node:
 | --- | --- | --- |
 | `expextraction.extract` | Use `/extract` | `true` |
 
-The current enchanting-table event does not check this permission separately. Restricting the node therefore restricts the command path but does not, by itself, prevent players from using an enchanting table with an empty glass bottle.
+The enchanting-table event does not check this permission separately. Restricting the node limits the command path. It does not prevent players from using an enchanting table with an empty glass bottle.
 
 ## Configuration
 
@@ -60,22 +59,22 @@ enchantingTable:
 
 | Setting | Default | Purpose |
 | --- | ---: | --- |
-| `commandExtraction.enable` | `true` | Controls command extraction; the current enchanting-table event checks it too |
+| `commandExtraction.enable` | `true` | Controls command extraction. The enchanting-table event also checks it |
 | `commandExtraction.maximum` | `2000` | Maximum amount stored by `/extract` in one bottle |
-| `enchantingTable.enable` | `true` | Written to the config, but not read by the current `1.3.2` enchanting-table event |
-| `enchantingTable.amount` | `100` | Amount the enchanting-table path attempts to extract; it is reduced when the player has less |
+| `enchantingTable.enable` | `true` | Written to the config, but not read by the enchanting-table event |
+| `enchantingTable.amount` | `100` | Amount for the enchanting-table path. The plugin reduces it when the player has less experience |
 
-Fully restart the server after editing the configuration. The current project does not document a dedicated config-reload command, and replacing the file while the server is running is not recommended.
+Fully restart the server after editing the configuration. The plugin has no dedicated config-reload command. Do not replace the file while the server is running.
 
-### Current configuration boundary
+### Configuration behavior
 
-To disable both bottle-creation paths, set `commandExtraction.enable` to `false`. The bottle-use event does not check this switch, so existing bottles can still be used.
+To disable both bottle-creation paths, set `commandExtraction.enable` to `false`. The bottle-use event does not check this switch. Players can still use existing bottles.
 
-Changing only `enchantingTable.enable` does not reliably disable enchanting-table extraction in the current version; this is a known mismatch between the generated field and the event implementation.
+Changing only `enchantingTable.enable` does not disable enchanting-table extraction. The configuration field and the event use different settings.
 
 ## Upgrades and troubleshooting
 
-Stop the server before upgrading and back up the current JAR, `plugins/ExpExtraction/config.yml`, and the server log. Replace the JAR, restart, and run a small command extraction and enchanting-table test after the plugin reports that it is enabled.
+Stop the server before upgrading. Back up the JAR, `plugins/ExpExtraction/config.yml`, and the server log. Replace the JAR and restart the server. Run a small command extraction and enchanting-table test after the plugin reports that it is enabled.
 
 When troubleshooting, check:
 

@@ -1,6 +1,6 @@
 ---
 title: 玩家文档 · ChestUI 与 Dialog
-description: 对照当前 Minecraft 26.2 实机界面，了解两种 UI 的入口、页面和输入方式。
+description: 了解两种 UI 的入口、页面和输入方式。
 icon: LayoutGrid
 link: /docs/plugins/dominion/player/ui
 sidebar:
@@ -27,7 +27,7 @@ ui:
 
 ## Dialog：原生对话框式界面
 
-Dialog 使用 Minecraft 版本提供的原生对话框能力，页面更紧凑，适合直接阅读领地信息、表单和按钮。当前站点使用 Dominion `4.9.1-release` 在 Minecraft `26.2` 中现场采集了以下页面：
+Dialog 使用服务端提供的原生对话框能力。页面更紧凑，适合直接阅读领地信息、表单和按钮。
 
 ![Dominion Dialog 主菜单](/assets/works/dominion/dominion-26-2-v2-dialog-main.png)
 
@@ -53,7 +53,7 @@ Dialog 页面中的输入框（领地名称、消息、地图颜色、扩缩容�
 
 ## ChestUI：容器菜单式界面
 
-ChestUI 使用 Minecraft 物品栏网格表示菜单，适合没有 Dialog 支持的版本，也适合喜欢用物品图标操作的玩家：
+ChestUI 使用 Minecraft 物品栏网格表示菜单，适合 Dialog 不可用的服务端，也适合喜欢用物品图标操作的玩家：
 
 ![Dominion ChestUI 主菜单](/assets/works/dominion/dominion-26-2-v2-chest-main.png)
 
@@ -76,12 +76,3 @@ ChestUI 使用 Minecraft 物品栏网格表示菜单，适合没有 Dialog 支�
 *ChestUI 外观设置：修改名称、进入/离开消息和地图颜色。*
 
 ChestUI 里的文本输入通常会关闭物品栏并要求玩家在聊天栏输入；输入完成后再由插件刷新菜单。输入期间不要同时执行其他管理命令，以免把聊天内容误当作配置值。
-
-## Dialog 不可用时怎么办
-
-- 先确认服务端启动日志是否出现 `Loaded Dominion Dialog NMS backend for Minecraft 26.2.`；
-- 确认客户端版本属于当前发行构建支持的范围；
-- 执行 `/dominion ui default`，让插件选择可用的默认后端；
-- 如果仍然无法打开，使用 `/dominion ui chest`，再把问题和完整启动日志交给管理员。
-
-Dialog 是版本相关的后端能力，不能通过单纯修改 `ui.default` 强行让不支持的 Minecraft 版本使用它。

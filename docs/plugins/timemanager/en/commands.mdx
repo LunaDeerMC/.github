@@ -7,9 +7,9 @@ sidebar:
   order: 20
 ---
 
-## Before you start
+## Command rules
 
-TimeManager uses `/ptime` as its main command. Every subcommand can only be run by a player; the console receives a player-only error. With no arguments, `/ptime` displays the help message.
+TimeManager uses `/ptime` as its main command. Players can run its subcommands. The console receives a player-only error. With no arguments, `/ptime` displays the help message.
 
 ## Command overview
 
@@ -81,6 +81,6 @@ Both feature permissions are declared with a default value of `true` in `plugin.
 | `ptime.set` | `true` | `/ptime set`. |
 | `ptime.freeze` | `true` | `/ptime freeze` and `/ptime unfreeze`. |
 
-If only a photography or administration group should use personal time, disable inheritance for ordinary groups in your permission manager and grant these nodes as needed. Verify the result with a non-OP account; OP may bypass the normal group rules.
+To limit personal time to a photography or administration group, disable inheritance for ordinary groups in the permission manager. Grant these nodes to the selected groups. Verify the result with a non-OP account. OP may bypass the normal group rules.
 
-TimeManager does not provide a command for an administrator to set another player's time. The executor is always the current player. When investigating a problem, record the player's permission nodes, exact command, server core version, and console log.
+TimeManager does not provide a command to set another player's time. The executor is always the current player. When investigating a problem, record the player's permission nodes, the exact command, the server core, and the console log.

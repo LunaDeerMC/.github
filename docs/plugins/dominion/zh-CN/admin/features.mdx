@@ -1,6 +1,6 @@
 ---
 title: 管理员文档 · 功能清单
-description: 从领地边界到数据库与跨服，按职责了解 Dominion 当前提供的能力。
+description: 从领地边界到数据库与跨服，按职责了解 Dominion 的功能。
 icon: LayoutGrid
 sidebar:
   label: 管理员文档 · 功能清单
@@ -9,13 +9,13 @@ sidebar:
 
 ## 功能总览
 
-Dominion 的核心职责是把“一个三维区域内允许发生什么”集中管理起来。领地边界、访客权限、成员权限、权限组、环境规则和数据库数据彼此关联，但不是同一层配置。管理员在规划服务器规则时，建议先按下面的层次理解功能，再决定哪些按钮和 flag 对玩家开放。
+Dominion 集中管理三维区域中的行为。领地边界、访客权限、成员权限、权限组、环境规则和数据库数据彼此关联，但属于不同配置层。按下面的层次规划服务器规则，再决定向玩家开放的按钮和 flag。
 
 | 能力 | 作用 | 主要入口 |
 | --- | --- | --- |
 | 领地边界 | 创建、扩展、收缩、删除、重命名、设置传送点和地图颜色 | 玩家命令、ChestUI、Dialog |
 | 子领地 | 在父领地内划出权限不同的区域 | `create_sub`、UI |
-| 玩家权限 | 区分访客、成员、组成员能否放置、破坏、交互、传送等 | `flags.yml`、UI |
+| 玩家权限 | 区分访客、成员、组成员执行放置、破坏、交互、传送等动作的权限 | `flags.yml`、UI |
 | 环境规则 | 控制生物生成、爆炸、火焰、液体流动、活塞、农作物等世界行为 | `flags.yml`、UI |
 | 权限组与模板 | 为多人服务器批量保存和套用一组 flag | group/template 命令、UI |
 | 经济与限制 | 按权限组控制数量、尺寸、费用、传送和高度 | `limitations/*.yml` |
@@ -34,21 +34,19 @@ Dominion 的核心职责是把“一个三维区域内允许发生什么”集�
 
 ### 权限 flag
 
-权限 flag 描述玩家在领地内能否执行动作，例如 `place`、`break`、`container`、`door`、`craft`、`pvp` 和 `animal_killing`。它们通常影响当前玩家的操作判定。
+权限 flag 描述玩家在领地内执行动作的权限，例如 `place`、`break`、`container`、`door`、`craft`、`pvp` 和 `animal_killing`。它们通常影响当前玩家的操作判定。
 
 ### 环境 flag
 
-环境 flag 描述世界事件能否发生，例如 `tnt_explode`、`fire_spread`、`monster_spawn`、`hopper_outside`、`piston_outside` 和 `show_border`。它们通常影响事件或区块行为，而不是某一个玩家的按钮操作。
+环境 flag 描述允许发生的世界事件，例如 `tnt_explode`、`fire_spread`、`monster_spawn`、`hopper_outside`、`piston_outside` 和 `show_border`。它们通常影响事件或区块行为，而不是某一个玩家的按钮操作。
 
 ### 生效顺序
 
-在领地内，插件会先判断当前玩家是否为管理员；管理员绕过开启时直接放行。普通玩家如果是权限组成员，使用组 flag；如果是普通成员，使用成员自己的 flag；如果不属于成员，则使用访客 flag。成员被添加时会以当时的访客权限创建初始设置，访客设置后续改变不会自动覆盖已经保存的成员设置。
+在领地内，插件会先检查当前玩家的管理员状态。管理员绕过开启时直接放行。权限组成员使用组 flag，普通成员使用成员 flag，访客使用访客 flag。成员被添加时会以当时的访客权限创建初始设置。之后修改访客设置不会自动覆盖已经保存的成员设置。
 
-## 界面、数据库与版本能力
+## 界面与数据库
 
-插件同时提供 ChestUI 与 Dialog 两种界面，玩家可以使用 `/dominion ui chest`、`/dominion ui dialog` 或 `/dominion ui default` 切换。UI 只是命令的可视化入口，权限限制、尺寸限制和数据库校验仍由服务端逻辑统一执行。
-
-当前网站演示以 Dominion `4.9.1-release` 和 Minecraft `26.2` 为基准。Paper、Spigot、Bukkit 与 Folia 的具体可用版本仍应以发行版元数据和启动日志为准；跨版本时，尤其要检查 Dialog 后端、NMS 实现和服务端事件行为。
+插件同时提供 ChestUI 与 Dialog 两种界面。玩家可以使用 `/dominion ui chest`、`/dominion ui dialog` 或 `/dominion ui default` 切换。UI 是命令的可视化入口。权限限制、尺寸限制和数据库校验仍由服务端逻辑统一执行。切换服务端核心后，请检查启动日志，并测试 Dialog、事件、权限、创建和传送流程。
 
 ## 数据和运维能力
 

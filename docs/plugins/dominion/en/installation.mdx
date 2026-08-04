@@ -1,29 +1,22 @@
 ---
 title: Install Dominion
-description: Install Dominion 4.9.1-release and confirm server compatibility.
+description: Install Dominion and confirm that the server loads it.
 icon: Download
 link: /docs/plugins/dominion/installation
 sidebar:
   order: 10
 ---
 
-## Supported range
+## Optional dependencies
 
-The current source contains implementations for:
-
-- Minecraft `1.20.1–1.20.6`, `1.21.x`, and `26.1.2–26.2`;
-- Bukkit, Spigot, Paper, and Folia server platforms.
-
-Spigot is supported, but the project README recommends Paper or a fork such as Purpur for better performance. On Folia, use a release matching the server version and test the full workflow before going live.
-
-Vault, PlaceholderAPI, and WorldGuard are optional soft dependencies. Dominion's core claim features can run without them.
+Vault, PlaceholderAPI, and WorldGuard are optional. Dominion's core claim features can run without them.
 
 ## Download and install
 
-1. Download the current stable release from the [acquisition section on the work page](/works/dominion) or Dominion's [GitHub Releases](https://github.com/LunaDeerMC/Dominion/releases). Hangar, Modrinth, and Spigot also publish releases.
-2. Put the plugin JAR in the server's `plugins/` directory. A GitHub release may provide both `lite` and `full` variants; follow the release notes and never put both variants of the same version in the folder.
-3. Start or restart the server. Confirm that the console reports Dominion's version, a database connection, and `Plugin Enabled!`.
-4. Run `/dominion help` in game; `/dominion` should open the current UI for a player and print help from the console.
+1. Download a release from the [acquisition section on the work page](/works/dominion) or Dominion's [GitHub Releases](https://github.com/LunaDeerMC/Dominion/releases). Hangar, Modrinth, and Spigot also publish releases.
+2. Put the plugin JAR in the server's `plugins/` directory. A release may provide `lite` and `full` variants. Put only one variant in the folder.
+3. Start or restart the server. Confirm that the console reports a database connection and `Plugin Enabled!`.
+4. Run `/dominion help` in game. `/dominion` should open the UI for a player and print help from the console.
 
 ```text
 /dominion help
@@ -43,4 +36,4 @@ The first start creates or updates files under `plugins/Dominion/`:
 
 Back up these files and the world before editing them. For an upgrade, replace the plugin JAR without deleting `dominion.db` or overwriting the existing database with an empty one.
 
-If the server does not start, keep the full log, plugin version, and server-core version before opening an issue on [GitHub Issues](https://github.com/LunaDeerMC/Dominion/issues).
+If the server does not start, keep the full log and server details before opening an issue on [GitHub Issues](https://github.com/LunaDeerMC/Dominion/issues).

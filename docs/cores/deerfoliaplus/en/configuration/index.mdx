@@ -1,15 +1,15 @@
 ---
 title: DeerFoliaPlus · Configuration overview
-description: Understand the responsibilities, locations, load boundaries, and backup scope of DeerFoliaPlus configuration and runtime data.
+description: Find DeerFoliaPlus configuration files, runtime data, and restart rules.
 icon: Settings
 sidebar:
   label: Configuration overview
   order: 20
 ---
 
-## File map
+## Configuration files and data
 
-DeerFoliaPlus core settings live in config/:
+DeerFoliaPlus core settings live in `config/`:
 
 | File or directory | Purpose | Load boundary |
 | --- | --- | --- |
@@ -20,37 +20,37 @@ DeerFoliaPlus core settings live in config/:
 | syncmatica/litematica/ | Uploaded Syncmatica schematic files | Used when Syncmatica is enabled |
 | syncmatica/temp/ | Temporary Syncmatica upload files | During Syncmatica transfers |
 
-Fake-player data follows the world save and is not stored in plugins/. Syncmatica files live in the server-root syncmatica/ directory and should be included with worlds and configuration in backups.
+Fake-player data follows the world save. It is not stored in `plugins/`. Syncmatica files live in the server-root `syncmatica/` directory. Include this directory with worlds and configuration in backups.
 
 ## How files are generated
 
-The core creates config/deer-folia-plus.yml during its first configuration load. Java camelCase names become kebab-case keys: amountPerPlayer becomes amount-per-player, and skipFabricOnViaNonNative becomes skip-fabric-on-via-non-native.
+The core creates `config/deer-folia-plus.yml` during the first configuration load. Java camelCase names become kebab-case keys. For example, `amountPerPlayer` becomes `amount-per-player`, and `skipFabricOnViaNonNative` becomes `skip-fabric-on-via-non-native`.
 
-When custom-recipe.enabled is true, the core creates custom-recipes.yml under config/. The default file has no active recipes; add definitions under recipes. If parsing fails, start with the full log rather than deleting the file.
+When `custom-recipe.enabled` is `true`, the core creates `custom-recipes.yml` under `config/`. The file has no active recipes by default. Add definitions under `recipes`. If parsing fails, start with the full log. Do not delete the file first.
 
 ## Recommended edit order
 
-1. stop the server and wait for world saves;
-2. back up config/deer-folia-plus.yml, config/custom-recipes.yml, world data, and syncmatica/;
-3. change one feature group or one recipe;
-4. check YAML indentation, quotes, lists, and namespaces;
-5. start the test directory and read the complete log;
-6. verify with real players, client mods, and target worlds;
-7. move the tested change to production.
+1. Stop the server. Wait for world saves.
+2. Back up `config/deer-folia-plus.yml`, `config/custom-recipes.yml`, world data, and `syncmatica/`.
+3. Change one feature group or one recipe.
+4. Check YAML indentation, quotes, lists, and namespaces.
+5. Start the test directory. Read the complete log.
+6. Test with real players, client components, and target worlds.
+7. Move the tested change to production.
 
 ## Restart and client boundaries
 
-deer-folia-plus.yml is loaded during core startup. Fully restart after changing it; Bukkit/Paper reload is not a core configuration hot-reload mechanism. Custom recipes are registered during the server load phase, so restart after edits and check the registered count.
+`deer-folia-plus.yml` is loaded during core startup. Restart the server after changing it. Bukkit or Paper reload does not reload core configuration. Custom recipes are registered during server loading. Restart after edits and check the registered count.
 
-Syncmatica, Servux, and Recipe Sync depend on the server switch, client support, and protocol versions together. A server-side true value does not make the feature usable for players without the matching client mod.
+Syncmatica, Servux, and Recipe Sync depend on the server switch, client support, and protocol compatibility. A server-side `true` value does not make the feature usable without the matching client component.
 
 ## YAML notes
 
-- use spaces, never tabs;
-- write booleans as true or false, not quoted strings;
-- quote messages, namespaces, and values containing colons;
-- use fully namespaced item IDs in custom recipes, such as minecraft:diamond;
-- keep a recoverable copy before editing;
-- restore the last known-good file first when unknown keys or parsing errors appear.
+- Use spaces. Never use tabs.
+- Write booleans as `true` or `false`. Do not quote them.
+- Quote messages, namespaces, and values that contain colons.
+- Use fully namespaced item IDs in custom recipes, such as `minecraft:diamond`.
+- Keep a recoverable copy before editing.
+- Restore the last known-good file when unknown keys or parsing errors appear.
 
 Continue with [DeerFoliaPlus configuration](./deer-folia-plus) and [Features and client protocols](../features).

@@ -10,15 +10,15 @@ sidebar:
 
 ## Optional plugins
 
-The current `plugin.yml` declares Vault, PlaceholderAPI, and WorldGuard as soft dependencies. They are not required for core claim protection; when installed, Dominion enables each integration if the plugin is available at startup.
+The `plugin.yml` file declares Vault, PlaceholderAPI, and WorldGuard as soft dependencies. They are not required for core claim protection. When installed, Dominion enables each integration if the plugin is available at startup.
 
 ### Vault: economy limitations
 
-When economy rules are enabled under `limitations/`, Dominion can use Vault to connect an economy provider and charge for claim creation or resizing according to the configured rules. Install both Vault (or a compatible implementation supported by the project) and an actual economy plugin. Do not enable balance-based limitations without a working economy service.
+When you enable economy rules under `limitations/`, Dominion uses Vault to connect to an economy provider. It charges for claim creation or resizing according to the configured rules. Install Vault or a compatible implementation and an economy plugin. Do not enable balance-based limitations without a working economy service.
 
 ### PlaceholderAPI: message placeholders
 
-With PlaceholderAPI installed, Dominion registers the `dominion` expansion. Examples from the current implementation include:
+With PlaceholderAPI installed, Dominion registers the `dominion` expansion. The expansion includes these placeholders:
 
 ```text
 %dominion_current_dominion%
@@ -32,7 +32,7 @@ With PlaceholderAPI installed, Dominion registers the `dominion` expansion. Exam
 %dominion_pri_flag_<flag>%
 ```
 
-Selected-point coordinates, members of a named claim, and teleport coordinates have additional parameter forms. Use values that exist on the current server for `<flag>` and claim names; placeholders resolve only when PlaceholderAPI is loaded correctly.
+Selected-point coordinates, members of a named claim, and teleport coordinates have additional parameter forms. Use existing `<flag>` and claim names. Placeholders resolve only when PlaceholderAPI loads correctly.
 
 ### WorldGuard: claim conflict checks
 
@@ -46,7 +46,7 @@ If WorldGuard already has an incompatible flag with that name, the startup log r
 
 ## Database and multi-server mode
 
-SQLite is the default, stored at `plugins/Dominion/dominion.db`. The current database types are:
+SQLite is the default, stored at `plugins/Dominion/dominion.db`. The available database types are:
 
 - `sqlite`;
 - `mysql`;
@@ -62,7 +62,7 @@ multi-server:
   server-id: 1
 ```
 
-Multi-server mode requires a shared database; SQLite is not supported. Do not change `server-id` after data exists, and assign each server a unique positive integer. Stop the servers and back up the database before changing storage or enabling multi-server mode.
+Multi-server mode requires a shared database. SQLite is not supported. Do not change `server-id` after data exists. Give each server a unique positive integer. Stop the servers and back up the database before changing storage or enabling multi-server mode.
 
 ## Residence migration
 
@@ -78,7 +78,7 @@ A player can migrate one of their residences:
 /dominion migrate <residence_name>
 ```
 
-An administrator can run `/dominion migrate_all`. Migration creates Dominion claims and attempts to preserve Residence subzones, teleport points, and enter/leave messages; back up first and inspect boundaries and permissions afterward.
+An administrator can run `/dominion migrate_all`. Migration creates Dominion claims and attempts to preserve Residence subzones, teleport points, and enter/leave messages. Back up first. Inspect boundaries and permissions afterward.
 
 ## Database import and export
 
@@ -89,4 +89,4 @@ Administrators can use:
 /dominion import db confirm
 ```
 
-Import is for migration or backup restoration, not for merging two databases. A non-empty target can fail and cause corruption or data loss. `export mca` creates an MCA list related to claims; it is not a database backup.
+Use import for migration or backup restoration. Do not use it to merge databases. A non-empty target can fail and cause corruption or data loss. `export mca` creates an MCA list for claims. It is not a database backup.

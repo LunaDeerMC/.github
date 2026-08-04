@@ -1,6 +1,6 @@
 ---
 title: DeerFolia
-description: 面向服主与服务器消费者的 DeerFolia 安装、配置、升级和故障排查文档。
+description: 安装、配置、运行和排查 DeerFolia。
 icon: Server
 link: /docs/cores/deerfolia
 documentSet:
@@ -8,45 +8,38 @@ documentSet:
   status: active
 ---
 
-## 这套文档服务谁
+## 使用 DeerFolia
 
-这套文档面向需要下载、部署和维护 DeerFolia 的服务器服主、运维人员和普通服务器消费者。文档会先说明“能不能用”和“怎么安全启动”，再解释性能配置，不要求读者先了解 Java 源码或 Paperweight 补丁开发。
+将 DeerFolia 作为启动命令中的服务端核心使用。它不是插件。不要把 jar 放入 `plugins/`，也不要在 Paper 或 Purpur 进程中加载 DeerFolia 配置。
 
-DeerFolia 是服务端核心，不是插件。你需要把它作为启动命令中的服务器 jar 使用；不要把它放进 plugins 目录，也不要在 Paper 或 Purpur 进程里加载 DeerFolia 配置。
+你不需要先阅读 Java 源码或 Paperweight 补丁代码。迁移前，请先确认插件兼容性。
 
-## 建议阅读顺序
+## 选择要做的事
 
 | 你要做的事 | 从这里开始 |
 | --- | --- |
 | 第一次安装或切换核心 | [安装与首次启动](./installation) |
-| 了解配置文件在哪里、什么时候生效 | [配置文件总览](./configuration) |
-| 逐项修改 DeerFolia 默认配置 | [DeerFolia 配置详解](./configuration/deer-folia) |
+| 查找配置文件和重启规则 | [配置文件总览](./configuration) |
+| 修改 DeerFolia 配置 | [DeerFolia 配置详解](./configuration/deer-folia) |
 | 限制僵尸猪灵、村民等实体数量 | [实体节流配置](./configuration/entity-throttling) |
-| 了解所有性能功能与副作用 | [功能与优化](./features) |
-| 启动失败、插件不兼容或刷怪场异常 | [故障排查](./troubleshooting) |
+| 查看优化功能及其影响 | [功能与优化](./features) |
+| 排查启动、插件、农场或同步问题 | [故障排查](./troubleshooting) |
 
-## 本文档的版本基准
+## 迁移前备份
 
-- DeerFolia：仓库 tag 26.2.0-bbeb1d1。
-- Minecraft：26.2。
-- Java：25。
-- 上游：PaperMC Folia，具体提交由仓库 gradle.properties 中的 foliaRef 固定。
-
-发行版和源码可能继续更新。如果下载页的 tag、日志或自动生成配置与本文不同，应优先使用当前构建实际生成的文件，并将差异反馈到 [DeerFolia Issues](https://github.com/LunaDeerMC/DeerFolia/issues)。
-
-## 开始前的安全边界
-
-切换服务端核心前，至少备份以下内容：
+切换服务端核心前，备份以下内容：
 
 - 所有世界目录；
 - server.properties、eula.txt、配置目录；
 - 插件数据、数据库和定时任务；
 - 当前正在使用的服务端 jar 与启动脚本。
 
-第一次启动建议使用复制出来的测试服务器。确认插件加载、玩家登录、传送、区块加载和常用机器都正常后，再迁移生产服务器。
+先使用生产服务器的副本启动。检查插件加载、玩家登录、传送、区块加载和常用机器。全部检查通过后，再迁移生产服务器。
 
-## 先判断是否适合
+## 判断 DeerFolia 是否适合
 
-Folia 的优势来自把相互分离的玩家区域并行运行。服务器玩家长期集中在同一片区域时，换用 Folia 衍生核心不一定更快；同时，很多传统 Paper 插件无法直接在 Folia 上工作。请先看插件作者是否明确提供 Folia 支持，再决定迁移。
+Folia 可以并行运行相互分离的玩家区域。玩家分散在不同区域时，这种方式可能有效。玩家长期集中在一小片区域时，收益可能不明显。
 
-DeerFolia 的自定义优化也可能改变高密度实体、村民 POI、路径查找和挂机玩家的数据同步节奏。默认值适合先启动和观察，不代表每种服务器拓扑都应保持不变。
+许多 Paper 插件需要明确支持 Folia。迁移前，请逐个查看插件的兼容性说明。
+
+DeerFolia 可能改变高密度实体区域、村民 POI、路径查找和挂机网络同步的更新节奏。先使用默认值。每次修改都在服务器副本中测试。

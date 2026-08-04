@@ -1,26 +1,26 @@
 ---
 title: DeerFolia · Entity throttling
-description: Configure entity names, ticking limits, removal thresholds, and safe tuning in kaiiju-entity-throttling.yml.
+description: Set entity limits and removal thresholds in kaiiju-entity-throttling.yml.
 icon: SlidersHorizontal
 sidebar:
   label: Entity throttling
   order: 22
 ---
 
-## What the file does
+## What the file controls
 
-config/kaiiju-entity-throttling.yml is read by the Kaiiju entity throttler. For selected entity types, it sets a normal ticking limit and a removal threshold per Folia region:
+The Kaiiju entity throttler reads `config/kaiiju-entity-throttling.yml`. For each selected entity type, the file sets a normal update limit and a removal threshold in each Folia region:
 
-- entities at or below limit keep normal per-tick updates;
-- entities above limit still exist, but excess updates are throttled and do not run every tick;
-- entities above removal are gradually removed;
-- entity types absent from the file are not limited by this file.
+- Entities at or below `limit` keep normal per-tick updates.
+- Entities above `limit` still exist. The throttler skips some updates.
+- Entities above `removal` are removed over time.
+- Entity types that are not in the file are not limited by this file.
 
-The count is per region, not a server-wide total across every world. Folia regions change with player and chunk activity, so this is not a global mob cap.
+The count is per region. It is not a server-wide count across all worlds. Folia regions change with player and chunk activity. This file is not a global mob cap.
 
 ## Default format
 
-When enabled for the first time, the core creates a file similar to:
+The core creates a file similar to this when you enable the feature for the first time:
 
 ~~~yaml
 ZombifiedPiglin:
@@ -32,35 +32,35 @@ Axolotl:
   removal: 3000
 ~~~
 
-Each entity type is a named section. Use names printed as available by the core startup log, such as ZombifiedPiglin, Axolotl, Villager, IronGolem, Item, and ExperienceOrb. Match the log's capitalization; do not invent names with a Minecraft namespace, underscores, or an extra Entity suffix.
+Each entity type is a named section. Use a name printed in the core startup log. Examples include `ZombifiedPiglin`, `Axolotl`, `Villager`, `IronGolem`, `Item`, and `ExperienceOrb`. Match the capitalization. Do not add a Minecraft namespace, underscores, or an `Entity` suffix.
 
 ## Fields
 
 | Field | Requirement | Meaning |
 | --- | --- | --- |
 | limit | At least 1 | Number of that entity type in one region that keeps normal per-tick updates. |
-| removal | -1 or greater than limit | Start gradual removal above this count. -1 disables removal by this threshold but still allows throttling. |
+| removal | `-1` or greater than `limit` | Start gradual removal above this count. `-1` disables removal by this threshold but keeps throttling. |
 
-If removal is less than or equal to limit and is not -1, startup logs an error and replaces it with limit multiplied by 10. Do not rely on that correction instead of setting a clear value.
+If `removal` is less than or equal to `limit` and is not `-1`, startup logs an error. The core replaces it with `limit * 10`. Set a valid value instead of relying on this correction.
 
 ## Tuning a farm
 
-Entity throttling can affect AI, movement, pickup, breeding, attacking, and drops. Tune by purpose:
+Entity throttling can affect AI, movement, pickup, breeding, attacks, and drops. Tune one use case at a time:
 
-1. add entries only for entity types that create pressure in the target region;
-2. set limit to the number required for the test area to work normally;
-3. keep removal well above limit to allow short-lived peaks;
-4. observe entity count, CPU, TPS, and farm output for 10–20 minutes;
-5. remove the entry or disable the master switch when behavior is wrong.
+1. Add an entry only for an entity type that creates pressure in the target region.
+2. Set `limit` to the count required by the test area.
+3. Set `removal` well above `limit` to allow short peaks.
+4. Observe entity count, CPU, TPS, and farm output for 10–20 minutes.
+5. Remove the entry or disable the master switch when behavior is wrong.
 
-Do not give Villager, Item, Player, or every Mob a very low limit just to reduce CPU. Trading halls, item sorters, farms, and player interactions can make a healthy server look like an overloaded region.
+Do not give `Villager`, `Item`, `Player`, or every mob a very low limit to reduce CPU. Trading halls, item sorters, farms, and player actions can make a healthy server look overloaded.
 
 ## Errors and rollback
 
-- unknown entity names are logged and skipped;
-- limits below 1 are ignored;
-- YAML syntax errors prevent normal loading;
-- restart the complete server after changes;
-- restore the whole file when rolling back instead of deleting one error line and continuing with an unknown state.
+- The core logs and skips unknown entity names.
+- The core ignores limits below 1.
+- A YAML syntax error prevents normal loading.
+- Restart the complete server after every change.
+- Restore the whole file when you roll back. Do not delete one error line and continue with an unknown state.
 
-If you are unsure whether an entity should be limited, turn off kaiiju-entity-throttling in deer-folia.yml, verify that the symptom disappears, and restore one tested entry at a time.
+If you are unsure whether to limit an entity, set `kaiiju-entity-throttling` to `false` in `deer-folia.yml`. Check whether the symptom disappears. Restore one tested entry at a time.

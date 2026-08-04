@@ -1,6 +1,6 @@
 ---
 title: First configuration
-description: Check the Dominion 4.9.1-release configuration, UI, and database options.
+description: Configure Dominion, its UI, and its database.
 icon: Settings
 link: /docs/plugins/dominion/configuration
 sidebar:
@@ -10,18 +10,18 @@ sidebar:
 
 ## File locations and order of changes
 
-The main file is `plugins/Dominion/config.yml`. Claim flags, limits, and world-wide rules live in `flags.yml`, `limitations/`, and `world-wide/`; do not merge them into a legacy configuration layout.
+The main file is `plugins/Dominion/config.yml`. Claim flags, limits, and world-wide rules use `flags.yml`, `limitations/`, and `world-wide/`. Keep these files separate.
 
-Back up the database and configuration first. Then change database or multi-server settings before tuning claim limits and UI. Apply changes with `/dominion reload config` as an administrator or restart the server, and check the full log after bulk edits.
+Back up the database and configuration first. Change database or multi-server settings before claim limits and UI. Apply changes with `/dominion reload config` as an administrator, or restart the server. Check the full log after bulk edits.
 
 ## Common settings
 
 | Key | Default | Purpose |
 | --- | --- | --- |
 | `database.type` | `sqlite` | Choose `sqlite`, `mysql`, `mariadb`, or `pgsql`. The default database file is `plugins/Dominion/dominion.db`. |
-| `multi-server.enable` | `false` | Enable multi-server mode through a shared database; SQLite is not supported in this mode. |
+| `multi-server.enable` | `false` | Enable multi-server mode through a shared database. SQLite is not supported in this mode |
 | `multi-server.server-name` | `server` | The server name corresponding to the proxy configuration. |
-| `multi-server.server-id` | `1` | A unique positive integer in multi-server mode; do not change it after data exists. |
+| `multi-server.server-id` | `1` | A unique positive integer in multi-server mode. Do not change it after data exists |
 | `language` | `en_us` | Select a language file from `languages/`. |
 | `ui.default` | `CHEST` | Default UI, either `CHEST` or `DIALOG`. |
 | `auto-create-radius` | `10` | The radius used by `/dominion auto_create`; set `-1` to disable it. |
@@ -32,17 +32,17 @@ Back up the database and configuration first. Then change database or multi-serv
 
 ## Messages and border display
 
-`plugin-message` controls enter, leave, and no-permission notices. It supports `BOSS_BAR`, `ACTION_BAR`, `TITLE`, `SUBTITLE`, and `CHAT`; built-in placeholders include `{OWNER}` and `{DOM}`.
+`plugin-message` controls enter, leave, and no-permission notices. It supports `BOSS_BAR`, `ACTION_BAR`, `TITLE`, `SUBTITLE`, and `CHAT`. Built-in placeholders include `{OWNER}` and `{DOM}`.
 
 `border-display` controls the block border used while selecting or editing and the particles shown when crossing a claim boundary. Check performance on the target server before increasing particle density.
 
 ## Permission nodes
 
-The current `plugin.yml` exposes two base nodes:
+The `plugin.yml` file exposes two base nodes:
 
 | Permission | Purpose |
 | --- | --- |
 | `dominion.default` | Regular Dominion commands, enabled by default for players |
 | `dominion.admin` | Administrator commands and management UI, enabled by default for OPs |
 
-Do not add `dominion.create` or `dominion.manage` based on older docs; the current commands use the base nodes above, while the owner, member flags, and limitation files decide the operation. Refresh your permissions plugin cache after changing access.
+Do not add `dominion.create` or `dominion.manage`. The base nodes above control command access. Ownership, member flags, and limitation files control each operation. Refresh the permissions plugin cache after changing access.

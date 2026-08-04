@@ -1,38 +1,38 @@
 ---
 title: DeerFolia · 安装与首次启动
-description: 下载 DeerFolia、准备 Java 25、首次启动服务器、验证生成文件并安全升级。
+description: 下载、启动、迁移、升级和构建 DeerFolia。
 icon: Download
 sidebar:
   label: 安装与首次启动
   order: 10
 ---
 
-## 安装前准备
+## 准备运行环境
 
-DeerFolia 当前构建基准使用 Java 25。先在运行服务器的同一台机器上确认 Java 主版本：
+确认所选发行文件要求的 Java 运行时。在实际运行服务器的机器上执行：
 
 ~~~sh
 java -version
 ~~~
 
-输出中的主版本应为 25。面板、Docker 容器和 systemd 服务可能使用另一套 Java；不要只检查你当前登录用户的终端。可以在启动脚本的第一行打印 java -version，确认实际进程使用的版本。
+在实际启动环境中再次检查运行时。面板、Docker 容器和 systemd 服务可能使用另一套 Java。不能确定时，在启动脚本中执行 `java -version`。
 
 同时确认：
 
 - 服务器硬盘有足够空间保存世界、备份和日志；
 - 服务器运行用户对工作目录有读写权限；
 - 防火墙、端口映射和面板启动命令已经准备好；
-- 你已经确认主要插件明确支持 Folia 或 DeerFolia。
+- 主要插件明确支持 Folia 或 DeerFolia。
 
-## 下载发行版
+## 下载核心
 
-从 [GitHub Releases](https://github.com/LunaDeerMC/DeerFolia/releases) 下载与 Minecraft 版本匹配的发行文件。当前资料基准的 tag 是 26.2.0-bbeb1d1；下载其他版本时，以 release 标题和文件名为准，不要把旧版本 jar 重命名成新版本。
+从 [GitHub Releases](https://github.com/LunaDeerMC/DeerFolia/releases) 下载与服务器匹配的发行文件。以 release 标题和文件名为准。不要把旧 jar 重命名成其他发行文件。
 
 将 jar 放进一个独立的服务器目录，例如：
 
 ~~~text
 deerfolia-server/
-├── DeerFolia-26.2.0-bbeb1d1.jar
+├── DeerFolia-<release>.jar
 └── start.sh
 ~~~
 
@@ -40,13 +40,13 @@ DeerFolia 是完整服务端核心。不要将 jar 放进 plugins/，也不要�
 
 ## 首次启动
 
-在服务器目录执行启动命令。内存参数只是示例，应根据玩家数量、视距、世界数量和机器内存调整：
+在服务器目录执行启动命令。将 `<release>` 替换为已下载的文件名。下面的内存参数只是示例，请根据玩家数量、视距、世界数量和机器内存调整：
 
 ~~~sh
-java -Xms4G -Xmx8G -jar DeerFolia-26.2.0-bbeb1d1.jar --nogui
+java -Xms4G -Xmx8G -jar DeerFolia-<release>.jar --nogui
 ~~~
 
-第一次启动通常会生成 eula.txt 并停止。阅读并接受 [Minecraft EULA](https://www.minecraft.net/eula) 后，将 eula.txt 中的 eula=false 改为 eula=true，再重新执行启动命令。
+第一次启动通常会生成 `eula.txt` 并停止。阅读并接受 [Minecraft EULA](https://www.minecraft.net/eula)。将 `eula=false` 改为 `eula=true`。再次执行启动命令。
 
 不要直接复制一套来源不明的启动参数。先用最小参数确认核心能启动，再逐步加入 GC、调试或面板参数，这样出现问题时更容易定位。
 
@@ -89,7 +89,7 @@ java -Xms4G -Xmx8G -jar DeerFolia-26.2.0-bbeb1d1.jar --nogui
 
 ## 从源码构建
 
-需要参与开发或当前没有适合版本的发行文件时，可以从源码构建：
+需要参与开发或无法使用发行文件时，可以从源码构建：
 
 ~~~sh
 git clone https://github.com/LunaDeerMC/DeerFolia.git
@@ -98,4 +98,4 @@ cd DeerFolia
 ./gradlew createPaperclipJar
 ~~~
 
-完成后，核心文件位于 DeerFolia-server/build/libs/。构建过程需要 Java 25，并会根据仓库当前的 Folia 上游提交应用补丁。普通服主优先使用 GitHub Releases；源码构建更适合需要自行验证补丁或参与开发的场景。
+完成后，核心文件位于 `DeerFolia-server/build/libs/`。请使用项目构建要求的 Java 运行时。除非需要验证补丁或参与开发，否则优先使用发行文件。

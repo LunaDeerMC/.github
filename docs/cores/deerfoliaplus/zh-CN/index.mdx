@@ -1,6 +1,6 @@
 ---
 title: DeerFoliaPlus
-description: 面向服务器消费者的 DeerFoliaPlus 安装、功能、配置、命令和客户端协议文档。
+description: 安装、配置、运行和排查 DeerFoliaPlus。
 icon: Server
 link: /docs/cores/deerfoliaplus
 documentSet:
@@ -8,18 +8,21 @@ documentSet:
   status: active
 ---
 
-## 文档范围
+## 使用 DeerFoliaPlus
 
-这套文档面向准备运行 DeerFoliaPlus 的服主、管理员和需要配合客户端模组的玩家。当前版本基准为 DeerFoliaPlus 26.2.0-eb43c5e、Minecraft 26.2 和 Java 25。
+将 DeerFoliaPlus 作为启动命令中的服务端核心使用。它不是插件。不要把 jar 放入 `plugins/`。
 
-DeerFoliaPlus 是完整服务端核心，不是可放入 plugins/ 的插件。文档会先解释如何在独立目录完成安装和验证，再逐项说明 config/deer-folia-plus.yml、config/custom-recipes.yml、客户端协议和权限节点。
+需要使用 Syncmatica、Servux 或 Recipe Sync 的玩家还需要匹配的客户端组件。开启协议前，请先确认客户端兼容性。
 
-## 推荐阅读顺序
+## 选择要做的事
 
-1. [安装与首次启动](./installation)：确认 Java、下载核心、启动测试目录并完成迁移。
-2. [配置文件总览](./configuration)：知道每个文件由哪个功能读取，以及哪些文件需要备份。
-3. [DeerFoliaPlus 配置详解](./configuration/deer-folia-plus)：按源码默认值理解开关和参数。
-4. [功能与客户端协议](./features)：判断假人、Syncmatica、Servux、配方同步和姿态是否适合服务器。
-5. [命令与权限](./commands)：决定哪些能力开放给普通玩家，哪些只给管理员。
+| 要做的事 | 从这里开始 |
+| --- | --- |
+| 安装或迁移核心 | [安装与首次启动](./installation) |
+| 查找文件和重启规则 | [配置文件总览](./configuration) |
+| 修改 DeerFoliaPlus 配置 | [DeerFoliaPlus 配置详解](./configuration/deer-folia-plus) |
+| 查看功能和客户端协议 | [功能与客户端协议](./features) |
+| 管理命令和权限 | [命令与权限](./commands) |
+| 排查启动或功能问题 | [故障排查](./troubleshooting) |
 
-升级或启用新功能前，先在复制的测试目录中验证；真实生成的配置和启动日志优先于旧文档。
+升级或启用新功能前，先在服务器副本中测试。实际生成的配置和完整启动日志与示例不一致时，以实际内容为准。

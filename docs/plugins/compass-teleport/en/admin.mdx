@@ -1,6 +1,6 @@
 ---
 title: CompassTeleport · Administrator configuration
-description: Install CompassTeleport, verify Paper and Folia compatibility, tune its settings, and manage teleport permissions.
+description: Install CompassTeleport, configure its settings, and manage teleport permissions.
 icon: Settings
 sidebar:
   label: Administrator configuration
@@ -10,17 +10,15 @@ sidebar:
 ## Installation and first start
 
 1. Stop the server and back up the worlds, the `plugins/` directory, and the server log.
-2. Download a JAR for the current Minecraft version from [CompassTeleport GitHub Releases](https://github.com/LunaDeerMC/CompassTeleport/releases).
-3. Put the JAR in the server's `plugins/` directory. Do not keep multiple versions there.
+2. Download a JAR from [CompassTeleport GitHub Releases](https://github.com/LunaDeerMC/CompassTeleport/releases).
+3. Put the JAR in the server's `plugins/` directory. Keep only one CompassTeleport JAR there.
 4. Start the server and confirm in the console that the plugin enabled successfully.
-5. On first enable, inspect `plugins/CompassTeleport/config.yml`. Restart the server after editing it; the current project does not provide a configuration reload command.
+5. On first enable, inspect `plugins/CompassTeleport/config.yml`. Restart the server after editing it. The plugin has no configuration reload command.
 6. Test binding, renaming, and teleporting with a non-OP account before opening the feature to ordinary players.
-
-The `plugin.yml` declares API version `1.20` and sets `folia-supported: true`. The repository Maven configuration compiles for Java `21`; use a Java 21 toolchain when building from source. The runtime requirement of the target Minecraft server still takes precedence for a production deployment.
 
 ## Configuration
 
-The configuration is generated from the source configuration class. The current `v1.4.1` source defaults are:
+The default configuration is:
 
 ~~~yaml
 cooldown-sec: 15
@@ -34,20 +32,20 @@ cost-level: 1
 | `delay-sec` | `5` | Seconds between the air right-click and the teleport. At `0`, a short internal scheduler wait still remains. |
 | `cost-level` | `1` | Experience-level cost for renaming the lodestone compass in an anvil, not an experience cost per teleport. |
 
-The repository README previously listed `cooldown-sec: 12` and `delay-sec: 3`, while the current `v1.4.1` source configuration class uses `15` and `5`. If a server already has an older `config.yml`, the existing file values remain in use; use the file generated on that server as the final authority.
+If the server already has a `config.yml`, the plugin keeps the values in that file. Use that file as the source of truth.
 
-## Permission
+## Permission node
 
 | Node | Default | Controls |
 | --- | --- | --- |
 | `compassteleport.use` | `true` | Allows a player to use an already prepared teleport compass. |
 
-The node is checked when a player right-clicks the air to teleport. It does not prevent players from binding a compass to a lodestone or renaming it in an anvil. If only a specific group should teleport, disable the default inheritance for ordinary groups in your permission manager and grant this node explicitly.
+The plugin checks this node when a player right-clicks the air to teleport. It does not prevent binding a compass to a lodestone. It does not prevent renaming the compass in an anvil. To limit teleport use to one group, disable default inheritance for ordinary groups. Then grant this node to the selected group.
 
 ## Operational checks and troubleshooting
 
-- Test with a non-OP account rather than only an OP account; OP may bypass the effective rules of a permission manager.
-- If there is no teleport message, confirm that the item is an anvil result created by the plugin and that the player has `compassteleport.use`.
-- If the compass is reported invalid, check that the lodestone still exists, that the compass still tracks it, and that the target world is available.
-- If a teleport starts but does not complete as expected, record the server version, plugin version, configuration values, and full console log, then reproduce it on a test server.
-- The cooldown and pending teleport tasks live in runtime memory; restarting the plugin or server does not restore a player's previous cooldown.
+- Test with a non-OP account. OP can bypass the rules from a permission manager.
+- If no teleport message appears, confirm that the item is an anvil result created by the plugin. Also confirm that the player has `compassteleport.use`.
+- If the compass is invalid, check that the lodestone exists, that the compass tracks it, and that the target world is loaded.
+- If a teleport starts but does not complete, record the server core, configuration values, and full console log. Reproduce the problem on a test server.
+- The plugin stores the cooldown and pending teleport tasks in memory. A restart clears a player's previous cooldown.

@@ -7,7 +7,7 @@ sidebar:
   order: 31
 ---
 
-## 这项集成做什么
+## PlaceholderAPI 集成
 
 PlaceholderAPI 可以把 Dominion 当前领地、成员、权限组、选点和传送点信息提供给记分板、TAB、聊天、菜单或其他支持 PlaceholderAPI 的插件。
 
@@ -15,7 +15,7 @@ Dominion 自己注册的扩展标识符是 `dominion`。安装 PlaceholderAPI �
 
 ## 安装和确认
 
-1. 将与目标 Minecraft/服务端版本兼容的 PlaceholderAPI 放入 `plugins/`；
+1. 将 PlaceholderAPI 放入 `plugins/`；
 2. 将 Dominion 放入同一个服务端，启动并确认控制台显示两个插件都已启用；
 3. 在游戏内用 PlaceholderAPI 的解析命令验证一个最简单的占位符：
 
@@ -23,7 +23,7 @@ Dominion 自己注册的扩展标识符是 `dominion`。安装 PlaceholderAPI �
 /papi parse me %dominion_current_dominion%
 ```
 
-如果玩家站在 `showcase` 领地内，结果应为该领地名称；站在未认领区域时，返回空值是正常结果。不同 PlaceholderAPI 版本的诊断命令可能略有差异，解析命令以当前安装版本的帮助为准。
+如果玩家站在 `showcase` 领地内，结果应为该领地名称。站在未认领区域时，返回空值是正常结果。诊断命令可能略有差异，请以安装包提供的帮助为准。
 
 ## 占位符的三种上下文
 
@@ -41,7 +41,7 @@ Dominion 自己注册的扩展标识符是 `dominion`。安装 PlaceholderAPI �
 %dominion_group_count%
 ```
 
-这类占位符适合显示“我现在站在哪里”“我是不是当前领地成员”等信息。玩家不在领地内时，名称、成员、组等信息会为空；`is_member` 在有效领地内会返回字符串 `true` 或 `false`。
+这类占位符适合显示当前位置和成员状态。玩家不在领地内时，名称、成员、组等信息会为空。`is_member` 在有效领地内会返回字符串 `true` 或 `false`。
 
 ### 指定领地
 
@@ -96,8 +96,8 @@ Dominion 自己注册的扩展标识符是 `dominion`。安装 PlaceholderAPI �
 
 | 占位符 | 返回内容 |
 | --- | --- |
-| `%dominion_is_member%` | 玩家是否为当前位置领地成员 |
-| `%dominion_is_member_<dominion_name>%` | 玩家是否为指定领地成员 |
+| `%dominion_is_member%` | 玩家在当前位置的成员状态 |
+| `%dominion_is_member_<dominion_name>%` | 玩家在指定领地的成员状态 |
 | `%dominion_members%` | 当前领地成员名称，以逗号分隔 |
 | `%dominion_members_<dominion_name>%` | 指定领地成员名称，以逗号分隔 |
 | `%dominion_member_count%` | 当前领地成员数量 |
@@ -108,7 +108,7 @@ Dominion 自己注册的扩展标识符是 `dominion`。安装 PlaceholderAPI �
 | `%dominion_groups_<dominion_name>%` | 指定领地权限组名称，以逗号分隔 |
 | `%dominion_group_count%` | 当前领地权限组数量 |
 
-组名称和称号使用 Dominion 的 Bukkit 颜色格式；具体显示插件是否保留颜色，要看该插件对 PlaceholderAPI 结果的处理。
+组名称和称号使用 Dominion 的 Bukkit 颜色格式。目标显示插件可能保留或删除这些颜色。
 
 ### 传送点
 
@@ -164,11 +164,11 @@ Dominion 自己注册的扩展标识符是 `dominion`。安装 PlaceholderAPI �
 
 ### 占位符原样显示
 
-检查 PlaceholderAPI 是否加载、目标插件是否真的调用了 PlaceholderAPI、占位符两侧的 `%` 是否完整，以及参数是否写成 `dominion`。如果只有 Dominion 未解析，确认 Dominion 启动日志没有软依赖或扩展注册错误。
+检查 PlaceholderAPI 已加载，目标插件确实调用了 PlaceholderAPI，占位符两侧的 `%` 完整，参数写成 `dominion`。如果只有 Dominion 未解析，检查 Dominion 启动日志中的软依赖和扩展注册错误。
 
 ### 结果为空
 
-先判断这是不是预期上下文：玩家可能不在领地内、尚未完成选点、领地没有传送点、指定名称不存在，或指定 flag 已被删除。对当前领地类占位符，使用普通玩家站在测试领地内重新解析。
+先确认上下文。玩家可能不在领地内、尚未完成选点、领地没有传送点、指定名称不存在，或指定 flag 已被删除。对于当前位置占位符，使用普通玩家站在测试领地内重新解析。
 
 ### 结果不是最新
 
@@ -176,4 +176,4 @@ Dominion 自己注册的扩展标识符是 `dominion`。安装 PlaceholderAPI �
 
 ### 成员/权限显示与游戏行为不一致
 
-`is_member` 只判断是否存在成员记录；权限 flag 的结果还会受到访客、成员、权限组、子领地和管理员绕过影响。需要判断“能否打开箱子”等实际行为时，使用对应的 `pri_flag`，并用普通账号复测。
+`is_member` 只判断成员记录。权限 flag 的结果还会受到访客、成员、权限组、子领地和管理员绕过影响。要检查“打开箱子”等实际行为时，使用对应的 `pri_flag`，并用普通账号复测。

@@ -1,6 +1,6 @@
 ---
 title: DeerFolia · 功能与优化
-description: 解释 DeerFolia 的原版机制恢复、性能优化、AFK 网络抑制和各项可能的行为影响。
+description: 说明 DeerFolia 的行为、优化功能和运行影响。
 icon: Sparkles
 sidebar:
   label: 功能与优化
@@ -11,7 +11,7 @@ sidebar:
 
 | 功能 | 默认状态 | 主要目标 | 需要注意 |
 | --- | --- | --- | --- |
-| 原版机制恢复 | 开启 | 恢复刷沙等 Folia 环境中缺失或不一致的机制 | 会改变部分上游默认行为 |
+| 原版机制恢复 | 开启 | 恢复部分原版行为 | 会改变部分上游默认行为 |
 | Dynamic Activation of Brain | 开启 | 降低远处实体 AI 计算 | 刷怪塔和村民行为可能出现延迟 |
 | Async Pathfinding | 开启 | 减少路径查找对区域 tick 的阻塞 | 线程数过大可能增加 GC 压力 |
 | Kaiiju Entity Throttling | 开启 | 控制高密度实体更新 | 低 limit 会影响农场和交易所 |
@@ -22,36 +22,36 @@ sidebar:
 
 ## 原版机制恢复
 
-DeerFolia 的补丁恢复了 Folia 环境下的刷沙相关原版行为，并调整了部分末地传送处理。它不是一个可以在配置文件中单独切换的开关；如果服务器必须严格遵守上游 Folia 行为，应在测试服确认差异后再迁移。
+DeerFolia 在 Folia 环境中恢复与刷沙相关的原版行为，也调整末地传送的一部分逻辑。这些行为没有单独的开关。需要匹配上游 Folia 时，请先在服务器副本中测试。
 
 ## Dynamic Activation of Brain
 
-通过距离和最大激活间隔降低远处实体的 AI 计算。配置解释和刷怪场调优方式见 [DeerFolia 配置详解](./configuration/deer-folia#dynamic-activation-of-brain)。
+DeerFolia 会减少远处实体的 AI 计算。它使用距离和最大激活间隔控制更新频率。字段和调优步骤见 [DeerFolia 配置详解](./configuration/deer-folia#dynamic-activation-of-brain)。
 
 ## Async Pathfinding
 
-将部分路径查找放入异步任务，并用虚拟线程池处理。配置解释、推荐线程数和异常回滚方式见 [DeerFolia 配置详解](./configuration/deer-folia#async-pathfinding)。
+DeerFolia 会通过虚拟线程池异步执行部分路径查找。线程设置和回滚步骤见 [DeerFolia 配置详解](./configuration/deer-folia#async-pathfinding)。
 
 ## Kaiiju Entity Throttling
 
-以区域为单位对指定实体进行节流和逐步移除。它适合限制极端高密度区域，不适合在不了解用途时对所有实体统一设低上限。完整写法见[实体节流配置](./configuration/entity-throttling)。
+DeerFolia 会按区域节流选定的实体类型，并在超出阈值后逐步移除实体。请把它用于处理目标区域的高密度实体。不要给所有实体设置很低的限制。完整格式见 [实体节流配置](./configuration/entity-throttling)。
 
 ## 网络优化
 
-DeerFolia 在 VarInt 读写和帧编码路径上做了轻量优化。它们通常不会改变游戏功能；如果只在使用代理、压缩或协议转换插件时出现网络异常，可以在测试副本中关闭对应选项验证。
+DeerFolia 优化 VarInt 读写和网络帧编码。这些优化不应改变玩法。如果问题出现在代理、压缩插件或协议桥接中，请在测试副本中一次关闭一个选项。
 
 ## Lithium 衍生优化
 
-DeerFolia 移植了部分 Lithium 服务端热路径，并按 Paper、Moonrise 和 Folia 的线程模型做了适配。当前包含分配、AI、集合、实体、数学和世界路径优化；没有把客户端专属逻辑或依赖单一主线程的实现直接带入核心。
+DeerFolia 使用部分 Lithium 服务端优化，并按 Paper、Moonrise 和 Folia 的线程模型做了适配。优化分为分配、AI、集合、实体、数学和世界路径。客户端专属逻辑和依赖单一主线程的代码不会直接带入核心。
 
 ## POI 优化
 
-POI 优化降低村民的铁傀儡检查、次级传感器扫描和村庄距离计算频率。大型村民区可以先保持默认值观察；对时间敏感的铁傀儡农场应在调整后比较产出。
+POI 优化降低村民铁傀儡检查、次级传感器和村庄距离计算的频率。大型村民区域先使用默认值并观察 CPU。如果铁傀儡农场依赖时序，每次修改后都比较产出。
 
 ## AFK 网络抑制
 
-AFK 玩家仍然参与服务器世界逻辑，但核心会抑制区块、方块、实体、世界效果和 UI 等部分下行数据。恢复活动时，核心会按配置补做区块和实体同步。需要查看累计节省量时使用管理员命令 /afknetstats。
+AFK 玩家仍参与服务端世界逻辑。DeerFolia 会抑制发送给该玩家的部分区块、方块、实体、世界效果和 UI 数据。玩家恢复活动后，DeerFolia 会重新同步所需区块和实体。管理员可以使用 `/afknetstats` 查看节省的流量。
 
 ## 为什么默认全部开启
 
-默认值提供一个能启动、能观察的基线，不代表它适合每台机器。出现行为差异时，不要一次关闭全部优化；按照配置文档每次只改变一个组，记录结果，再决定是否保留。
+默认值提供一个可启动的起点，不是适用于所有服务器的调优配置。出现行为差异时，不要一次关闭全部优化。每次修改一个功能组并记录结果，只保留对服务器有帮助的修改。

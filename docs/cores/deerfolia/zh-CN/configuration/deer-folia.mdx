@@ -1,15 +1,15 @@
 ---
 title: DeerFolia · 配置详解
-description: 逐项说明 deer-folia.yml 的默认值、单位、影响和服主调优建议。
+description: 配置 DeerFolia 优化组和 AFK 网络设置。
 icon: SlidersHorizontal
 sidebar:
   label: DeerFolia 配置详解
   order: 21
 ---
 
-## 默认文件
+## 文件结构
 
-以下是当前源码生成的主要结构。启动后文件会带有同等含义的注释；如果你的版本新增或减少了字段，以实际生成文件为准。
+下面的结构用于参考。服务器生成的文件还会包含注释。如果实际生成的文件包含不同字段，请以实际文件为准。
 
 ~~~yaml
 dynamic-activation-brain:
@@ -59,110 +59,110 @@ afk-network-optimization:
 
 ## Dynamic Activation of Brain
 
-这一组配置让远离玩家的实体降低 AI 激活频率，减少没有玩家观察时的实体计算。
+这一组配置会让远处实体降低 AI 更新频率，减少没有玩家观察时的计算。
 
 | 键 | 默认值 | 说明 |
 | --- | ---: | --- |
-| enabled | true | 总开关。关闭后恢复较接近上游默认的实体激活节奏。 |
+| enabled | true | 总开关。设为 `false` 后使用接近上游默认的实体激活节奏。 |
 | start-distance | 12 | 开始降低激活频率的距离。 |
-| activation-distance-mod | 8 | 距离衰减参数。数值越小，远处实体通常越早或越明显地降低计算频率。 |
-| maximum-activation-prio | 20 | 最大间隔上限，20 表示实体即使很远也至少按约每 20 tick 计算一次。 |
+| activation-distance-mod | 8 | 距离衰减参数。数值越小，远处实体越早或越明显地降低计算频率。 |
+| maximum-activation-prio | 20 | 最大间隔上限。远处实体至少每 20 tick 计算一次。 |
 
-如果刷怪塔、村民交易区或红石装置的行为出现明显延迟，可以先把 activation-distance-mod 调小，或把 start-distance 调大。每次只改一个值，并在实体密集区域测试。
+如果刷怪塔、村民交易区或红石装置出现延迟，请调小 `activation-distance-mod` 或调大 `start-distance`。每次只改一个值。在目标区域测试。
 
 ## Async Pathfinding
 
-这一组配置把部分路径查找放到异步任务中，减少实体路径查找阻塞当前区域 tick 的机会。
+这一组配置会把部分路径查找放入异步任务，减少路径查找阻塞当前区域 tick 的机会。
 
 | 键 | 默认值 | 说明 |
 | --- | ---: | --- |
 | enabled | true | 异步路径查找总开关。 |
-| async-pathfinding-keep-alive | 60 | 单个路径线程的最大活跃时间，单位为 tick。 |
-| async-pathfinding-max-threads | 20 | 异步路径线程池大小。项目实现使用虚拟线程，不等同于物理核心数。 |
+| async-pathfinding-keep-alive | 60 | 单个路径任务的最大活跃时间，单位为 tick。 |
+| async-pathfinding-max-threads | 20 | 异步路径线程池大小。DeerFolia 使用虚拟线程。该值不会为每个线程预留一个物理核心。 |
 
-README 给出的经验范围是 10–20。过小可能让路径任务排队，过大通常不会立即产生明显收益，但会增加调度与垃圾回收压力。遇到实体寻路异常或 CPU、GC 波动时，先降低线程数；相关配置修改后必须重启。
+建议从 10–20 个线程开始。线程过少会让任务排队。线程过多会增加调度和 GC 压力。遇到寻路异常或 CPU、GC 使用量明显变化时，先降低线程数。修改后重启服务器。
 
 ## Kaiiju Entity Throttling
 
-kaiiju-entity-throttling 是总开关，详细规则在[实体节流配置](./entity-throttling)。关闭后，DeerFolia 不会使用 kaiiju-entity-throttling.yml 中的限制。文件可以保留，之后重新开启时会继续使用，但不要在没有验证的情况下给所有实体添加很低的 limit。
+`kaiiju-entity-throttling` 是总开关。详细规则见[实体节流配置](./entity-throttling)。设为 `false` 后，DeerFolia 不会使用 `kaiiju-entity-throttling.yml` 中的限制。你可以保留此文件供以后使用。添加 limit 前先进行测试。
 
 ## Network Optimizations
 
-这一组没有单独的 enabled 总开关：
+这一组没有单独的 `enabled` 总开关：
 
 | 键 | 默认值 | 作用 |
 | --- | ---: | --- |
 | optimized-var-int | true | 优化网络包长度字段的 VarInt 读写。 |
-| optimized-frame-encoding | true | 优化网络帧编码路径，减少准备出站数据时的开销。 |
+| optimized-frame-encoding | true | 优化网络帧编码，减少准备出站数据的开销。 |
 
-它们影响网络包处理的内部路径，不会改变玩家可见功能。遇到代理、压缩插件或网络协议相关问题时，可以在测试副本中逐项关闭，以判断是否与优化路径有关。
+它们只影响网络包处理的内部路径，不应改变玩家可见功能。遇到代理、压缩插件或网络协议问题时，在测试副本中一次关闭一个选项。
 
 ## Lithium Optimize
 
-这一组移植了部分 Lithium 服务端热路径优化，并按 Folia 的区域线程模型做了适配。enabled 是总开关，其他键控制优化类别：
+这一组使用部分 Lithium 服务端优化，并按 Folia 的区域线程模型做了适配。`enabled` 是总开关，其他键选择优化类别：
 
 | 键 | 主要作用 |
 | --- | --- |
 | allocations | 减少高频路径中的临时对象分配。 |
-| ai | 优化实体 AI 行为遍历。 |
+| ai | 优化实体 AI 遍历。 |
 | collections | 在实体属性等路径使用更轻量的集合访问方式。 |
 | entity | 跳过不必要的实体工作和仅客户端需要的粒子逻辑。 |
-| math | 使用更容易被 JVM 优化的数学热路径。 |
-| world | 优化世界生成、天气和冻结检查等路径。 |
+| math | 使用更容易被 JVM 优化的数学路径。 |
+| world | 优化世界生成、天气和冻结路径。 |
 
-这些选项都要求服务器重启。它们不是完整的 Lithium 功能集合，也不替代 Paper、Folia 或 Moonrise 已经提供的优化。遇到实体、红石或天气行为异常时，先在测试服关闭 enabled，而不是同时修改多个子项。
+修改这一组中的任意选项后都要重启服务器。这些选项不是完整的 Lithium 功能集合，也不替代 Paper、Folia 或 Moonrise 已提供的优化。遇到实体、红石或天气异常时，先在测试服将 `enabled` 设为 `false`，再修改子项。
 
 ## POI Optimizations
 
-这一组面向村民的 Point of Interest 检查。数值单位都是 tick 或方块距离：
+这一组调整村民的 Point of Interest 检查。数值单位为 tick 或方块：
 
 | 键 | 默认值 | 说明 |
 | --- | ---: | --- |
 | enabled | true | POI 优化总开关。 |
-| golem-spawn-check-interval | 200 | 每名村民进行铁傀儡生成检查的最小间隔，约 10 秒。 |
-| secondary-poi-sensor-interval | 80 | 次级 POI 传感器扫描的最小间隔，约 4 秒。 |
-| village-distance-cache-duration | 100 | 村庄距离计算缓存时间，约 5 秒。 |
+| golem-spawn-check-interval | 200 | 每名村民进行铁傀儡生成检查的最小间隔。 |
+| secondary-poi-sensor-interval | 80 | 次级 POI 传感器扫描的最小间隔。 |
+| village-distance-cache-duration | 100 | 村庄距离计算缓存时间。 |
 | golem-spawn-player-distance-limit | 128 | 玩家距离超过该值时，跳过部分铁傀儡生成检查。 |
 
-大规模村民区可以从默认值开始观察 CPU。若铁傀儡农场或职业站点对时序非常敏感，先降低检查间隔，或暂时关闭 enabled 验证差异。
+大型村民区域先使用默认值并观察 CPU。如果铁傀儡农场或职业站点依赖时序，请调低相关间隔，或将 `enabled` 设为 `false` 进行比较。
 
 ## AFK Network Optimization
 
-启用后，玩家连续一段时间没有活动时，核心会抑制部分非必要的客户端数据包；玩家恢复活动后，核心会补做必要同步。它主要节省挂机场景的带宽，不应被理解为让挂机玩家停止世界逻辑。
+玩家在设定时间内没有活动时，DeerFolia 会抑制部分非必要的客户端数据包。玩家恢复活动后，DeerFolia 会重新同步必要状态。此功能用于节省带宽，不会停止该玩家的世界逻辑。
 
 | 键 | 默认值 | 说明 |
 | --- | --- | --- |
 | enabled | true | AFK 网络抑制总开关。 |
-| afk-threshold-ticks | 1200 | 连续 1200 tick 无活动后进入 AFK，约 60 秒。 |
+| afk-threshold-ticks | 1200 | 连续经过该数量的无活动 tick 后进入 AFK。 |
 | count-look-changes-as-activity | true | 只转动视角是否算恢复活动。 |
-| resync-on-resume | true | 恢复活动时补发附近区块和实体同步，建议保持开启。 |
+| resync-on-resume | true | 恢复活动时补发附近区块和实体同步。请保持开启。 |
 | stats-enabled | true | 是否累计 /afknetstats 使用的统计数据。 |
 | suppression-whitelist-categories | [] | AFK 时仍然放行的类别列表。 |
-| max-suppressed-bytes-before-category-resync | -1 | 单玩家、单类别累计抑制的字节阈值；-1 表示恢复活动前不强制类别刷新。 |
+| max-suppressed-bytes-before-category-resync | -1 | 单玩家、单类别累计抑制的字节阈值。`-1` 表示不在恢复活动前强制刷新。 |
 
-可配置类别为：
+支持以下类别：
 
-- chunk-stream：区块、光照和区块批次；
-- block-updates：方块、批量方块和方块实体更新；
-- entity-stream：实体生成、移动、元数据、装备和属性；
-- world-effects：声音、粒子、爆炸和世界事件；
-- ui-stream：BossBar、Title、TabList、计分板、地图等界面同步。
+- `chunk-stream`：区块、光照和区块批次；
+- `block-updates`：方块、批量方块和方块实体更新；
+- `entity-stream`：实体生成、移动、元数据、装备和属性；
+- `world-effects`：声音、粒子、爆炸和世界事件；
+- `ui-stream`：BossBar、Title、TabList、计分板、地图等界面同步。
 
-suppression-whitelist-categories 中的名称必须使用上面的小写键名。字段会在启动时去重、转成小写并忽略未知类别。
+`suppression-whitelist-categories` 必须使用上面的小写键名。启动时会统一大小写、删除重复项并忽略未知类别。
 
-进入和退出消息支持传统颜色代码（例如 &7、&a）和十六进制颜色（例如 &#55FFFF）。占位符如下：
+进入和退出消息支持传统颜色代码（例如 `&7`、`&a`）和十六进制颜色（例如 `&#55FFFF`）。支持以下占位符：
 
 | 占位符 | 可用消息 | 含义 |
 | --- | --- | --- |
 | `{player}` | 进入、退出 | 玩家名称。 |
 | `{saved_traffic}` | 退出 | 本次 AFK 会话节省的流量。 |
-| `{saved_bandwidth}` | 退出 | 本次 AFK 会话记录的峰值节省带宽。 |
+| `{saved_bandwidth}` | 退出 | 本次 AFK 会话节省的峰值带宽。 |
 
-清空消息字符串可以关闭对应提示。管理员可以执行以下命令查看累计统计：
+清空消息字符串可以关闭对应提示。管理员可以使用以下命令查看累计统计：
 
 ~~~text
 /afknetstats
 /afknetstats <player>
 ~~~
 
-命令需要管理员命令权限。若玩家看到客户端短暂不同步，先确认 resync-on-resume 为 true；只有在明确知道某类数据必须持续发送时，才把它加入白名单。
+命令需要管理员权限。若玩家恢复后短暂不同步，先确认 `resync-on-resume` 为 `true`。只有确定某类数据必须持续发送时，才把它加入白名单。

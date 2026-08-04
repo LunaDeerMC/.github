@@ -1,6 +1,6 @@
 ---
 title: DeerFoliaPlus · Features and client protocols
-description: Explain DeerFoliaPlus features, client requirements, runtime data, and the custom recipe format.
+description: Use DeerFoliaPlus features, client protocols, runtime data, and custom recipes.
 icon: Sparkles
 sidebar:
   label: Features and client protocols
@@ -12,17 +12,17 @@ sidebar:
 | Feature | Default | Requires | Main risk |
 | --- | --- | --- | --- |
 | FakePlayer | off | server switch, permissions, and bot-data backups | entity, chunk, and network cost |
-| Bedrock-style strongholds | off | a new or fully tested world | changed stronghold distribution |
+| Bedrock-style strongholds | off | a new or tested world | changed stronghold distribution |
 | Syncmatica | off | Syncmatica/Litematica client | storage, uploads, and privacy |
 | Servux | off | MiniHUD/Litematica client | entity or block-entity data exposure |
 | Recipe Sync | on | Fabric/NeoForge client support | ViaVersion protocol compatibility |
-| Custom Recipe | off | config/custom-recipes.yml | recipe overrides and economy |
-| Posture | off | permissions and posture config | position locking and chair timing |
+| Custom Recipe | off | `config/custom-recipes.yml` | recipe overrides and economy |
+| Posture | off | permissions and posture settings | position locking and chair timing |
 | Utility commands | command-level defaults | permission nodes | administrative powers exposed to players |
 
 ## FakePlayer
 
-Fake players are server-side entities and do not need a real client to stay connected. A common workflow is to create one, issue actions, inspect its inventory, then remove it or save it into world data. resident-bot controls whether saved bots are restored after a restart.
+Fake players are server-side entities. They do not need a real client connection. Create a bot, issue actions, inspect its inventory, and then remove or save it. `resident-bot` controls whether saved bots return after a restart.
 
 Create a bot with a name and optional skin name:
 
@@ -40,7 +40,7 @@ Create a bot with a name and optional skin name:
 /bot remove <name>
 ~~~
 
-The action system uses bot action subcommands; use command completion for the exact action names and arguments:
+The action system uses `bot action` subcommands. Use command completion for action names and arguments:
 
 ~~~text
 /bot action <name> list
@@ -49,35 +49,35 @@ The action system uses bot action subcommands; use command completion for the ex
 /bot action <name> <action_name> <arguments>
 ~~~
 
-Do not use fake players as a substitute for performance testing. Observe entity count, region-thread load, memory, and network traffic before changing amount-per-player, always-send-data, or action frequency.
+Do not use fake players as a substitute for performance tests. Observe entity count, region-thread load, memory, and network traffic. Then change `amount-per-player`, `always-send-data`, or action frequency.
 
 ## Bedrock-style strongholds
 
-When enabled, strongholds use a random unlimited distribution. spacing is the average chunk distance and separation is the minimum chunk distance. This fits new worlds or servers intentionally changing exploration; do not toggle it in an existing world without a test.
+When enabled, strongholds use a random, unlimited distribution. `spacing` is the average chunk distance. `separation` is the minimum chunk distance. Use this feature in a new world or a tested copy. Do not enable it in an existing world without a test.
 
 ## Syncmatica and Servux
 
-Syncmatica lets the server and clients share Litematica schematics, including upload, download, and modification flows. The server manages schematic and temporary upload files under its root directory. Enable use-quota and set quota-limit when storage or upload limits are required.
+Syncmatica lets the server and clients share Litematica schematics. It supports upload, download, and modification. The server stores schematic and temporary upload files under its root directory. Enable `use-quota` and set `quota-limit` when you need storage or upload limits.
 
 Servux has two protocol groups:
 
-- structure-protocol provides structure-boundary overlays for MiniHUD;
-- entity-protocol provides entity and block-entity NBT inspection.
+- `structure-protocol` provides structure-boundary overlays for MiniHUD.
+- `entity-protocol` provides entity and block-entity NBT inspection.
 
-Expose these protocols only to trusted players. Do not enable entity-protocol on a public server without an access policy; disable one switch at a time when debugging protocol compatibility.
+Expose these protocols only to trusted players. Do not enable `entity-protocol` on a public server without an access policy. Disable one switch at a time when you debug protocol compatibility.
 
 ## Recipe Sync
 
-Recipe Sync sends server recipes to clients so mods such as JEI can show the complete set. The server does not install Fabric, NeoForge, JEI, or another client mod. Keep skip-fabric-on-via-non-native enabled for Fabric players using a non-native protocol through ViaVersion/ViaBackwards unless testing proves otherwise.
+Recipe Sync sends server recipes to clients. Mods such as JEI can then show the complete set. The server does not install Fabric, NeoForge, JEI, or another client mod. Keep `skip-fabric-on-via-non-native` enabled for Fabric players using a non-native protocol through ViaVersion/ViaBackwards unless testing proves otherwise.
 
 ## Custom recipes
 
-Custom recipes live in config/custom-recipes.yml under recipes. Seven type values are supported:
+Custom recipes live in `config/custom-recipes.yml` under `recipes`. The core supports these seven `type` values:
 
-- shaped: pattern plus character-based ingredients;
-- shapeless: an ingredients list or indexed objects;
-- smelting, blasting, smoking, campfire_cooking: ingredient, result, experience, and cooking-time;
-- stonecutting: ingredient and result.
+- `shaped`: `pattern` plus character-based `ingredients`.
+- `shapeless`: an `ingredients` list or indexed objects.
+- `smelting`, `blasting`, `smoking`, `campfire_cooking`: `ingredient`, `result`, `experience`, and `cooking-time`.
+- `stonecutting`: `ingredient` and `result`.
 
 Example shaped recipe with a result name and custom identity:
 
@@ -104,12 +104,12 @@ recipes:
         ExampleTag: enabled
 ~~~
 
-Results support item, amount, name, custom-id, enchantments, and simple NBT values. An input custom-id distinguishes a custom item from an ordinary item of the same Minecraft type. Item IDs must exist in the current server registry.
+Results support `item`, `amount`, `name`, `custom-id`, `enchantments`, and simple NBT values. An input `custom-id` distinguishes a custom item from an ordinary item of the same Minecraft type. Item IDs must exist in the server registry.
 
 ### Custom-recipe debugging
 
-When parsing fails, the core logs missing fields, unknown items, an invalid type, or an invalid pattern. Restart after editing, check the registered count in the log, and test the relevant crafting, furnace, or stonecutter interface.
+When parsing fails, the core logs missing fields, unknown items, an invalid type, or an invalid pattern. Restart after editing. Check the registered count in the log. Test the relevant crafting, furnace, or stonecutter interface.
 
 ## Posture system
 
-When posture.enabled is true, players can sit, lie down, crawl, and stand up. chair-interaction allows empty-hand right-click on stairs or bottom slabs; require-side-signs requires signs at both ends of a chair row. Commands use Folia-compatible player scheduling, but test plugin and interaction-event compatibility before production use.
+When `posture.enabled` is `true`, players can sit, lie down, crawl, and stand up. `chair-interaction` allows an empty-hand right-click on stairs or bottom slabs. `require-side-signs` requires signs at both ends of a chair row. Test plugin and interaction-event compatibility before production use.

@@ -7,7 +7,7 @@ sidebar:
   order: 10
 ---
 
-## What you need
+## Required items
 
 Prepare:
 
@@ -26,7 +26,7 @@ Hold the compass and right-click a placed lodestone. The plugin records the dest
 
 ### 2. Rename it in an anvil
 
-Put the compass in an anvil, enter a name, and take the result. The experience cost is controlled by the administrator's `cost-level` setting. The result includes a “teleport compass” description, the target world, and the target coordinates.
+Put the compass in an anvil. Enter a name and take the result. The administrator sets the experience cost with `cost-level`. The result includes a “teleport compass” description, the target world, and the target coordinates.
 
 If the result has no teleport instructions, confirm that the compass was bound to a lodestone and check that the server has enabled CompassTeleport.
 
@@ -34,18 +34,18 @@ If the result has no teleport instructions, confirm that the compass was bound t
 
 Hold the compass produced by the anvil and right-click the air. The plugin shows a status message, waits for the configured `delay-sec`, and then teleports you near the lodestone.
 
-Right-click the air rather than a block. Right-clicking a lodestone starts the normal binding flow again; right-clicking the air uses an already prepared teleport compass.
+Right-click the air rather than a block. Right-clicking a lodestone starts the binding flow. Right-clicking the air uses a prepared teleport compass.
 
 ## Delay, cooldown, and repeated use
 
-- The pre-teleport wait is controlled by `delay-sec`; avoid moving or starting another interaction while you are waiting for the status message to resolve.
-- After the teleport task completes, the player enters the per-player cooldown configured by `cooldown-sec`. It does not make every player on the server wait together.
-- Using the compass again while a teleport task is still pending does not create a second task; the plugin reports that the current attempt cannot continue.
+- The `delay-sec` setting controls the pre-teleport wait. Do not move or start another interaction during this wait.
+- After the teleport task completes, the player enters the cooldown from `cooldown-sec`. The cooldown applies to that player only.
+- Using the compass while a teleport task is pending does not create a second task. The plugin reports that the attempt cannot continue.
 - When an administrator sets `delay-sec` to `0`, the plugin omits the visible delay message but still keeps a very short internal scheduler wait. It should not be read as an exact same-tick teleport.
 
-## If the compass becomes invalid
+## Invalid compass
 
-If the chat says that the compass can no longer track its lodestone, check these common causes:
+If the chat says that the compass cannot track its lodestone, check these causes:
 
 1. The lodestone was broken, moved, or is no longer valid.
 2. The compass lost its vanilla lodestone-tracking state.

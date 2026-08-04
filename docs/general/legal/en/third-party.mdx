@@ -1,14 +1,52 @@
 ---
 title: Third-party software
-description: Responsibility boundaries for dependencies and external services.
+description: Responsibility boundaries for work dependencies, open-source licenses, external platforms, and third-party services.
 icon: Component
 link: /docs/general/legal/third-party
 sidebar:
   order: 40
 ---
 
-## Dependencies and platforms
+> Last updated: August 4, 2026. The effective date is the date this page is publicly published.
 
-Work may depend on Minecraft servers, Java, Paper, Folia, Gradle, or other open-source components. Check each project's public license and version notes.
+## 1. Scope of this notice
 
-We do not describe a third-party platform's brand or service as a LunaDeerMC feature.
+LunaDeerMC work may be based on, compatible with, or connected to Minecraft server software, Java, Paper, Folia, Spigot, Gradle, GitHub, Modrinth, Afdian, KeyAnchor, QQ, and other open-source software, platforms, or network services. This page explains the relationship between those third-party projects and LunaDeerMC work; it does not mean that we own or control those projects.
+
+Dependencies and version information listed on work pages, in distribution packages, source repositories, or NOTICE/license files may change between versions. Use the files included with the version you actually run and the latest notices from the relevant third-party project.
+
+## 2. Open-source dependencies and licenses
+
+Each third-party component keeps its own copyright, trademarks, license, attribution, and usage restrictions. A third-party component does not become LunaDeerMC work merely because it is packaged with, referenced by, or listed in LunaDeerMC docs. Likewise, a LunaDeerMC work license does not automatically replace a third-party component's license.
+
+When redistributing, modifying, or building work, comply with all of the following:
+
+- the work's own license and copyright/attribution notices;
+- the licenses for every third-party component that is directly or indirectly redistributed;
+- the applicable rules of Minecraft, the server core, the platform, and the hosting environment.
+
+If a license requires retaining copyright, NOTICE, a source-code offer, or modification information, do not evade those obligations by repackaging, renaming, or deleting files. If a distribution package appears to have incomplete license or attribution information, contact the maintenance team at [zhangyuheng@lunadeer.cn](mailto:zhangyuheng@lunadeer.cn).
+
+## 3. External platforms and services
+
+Work downloads, source hosting, Release information, payments, license activation, file extraction, and community communication may use third-party platforms. The platform is responsible for its accounts, payments, personal information, content moderation, interfaces, prices, availability, and service changes, including but not limited to:
+
+- GitHub: code repositories, Issues, Releases, and some version-information APIs;
+- Modrinth or other public publishing platforms: work distribution and version pages;
+- Afdian: sponsorships and paid-product transactions;
+- KeyAnchor: paid-resource license activation, extraction, and one-on-one support;
+- QQ, website hosts, CDNs, and other network services: community communication and site access.
+
+When using these services, you must follow their current user agreements, privacy policies, community rules, and fee rules. Outages, bans, interface changes, data loss, failed payments, or account problems on third-party services are outside LunaDeerMC's complete control; use the platform's official support channel first.
+
+## 4. Brand, compatibility, and non-affiliation
+
+We try to describe third-party projects, platforms, and brands accurately. We do not describe a third-party platform's brand, service capability, or official support as a LunaDeerMC feature. Third-party names in the docs generally identify compatibility, dependencies, download channels, or technical context; they do not imply sponsorship, certification, partnership, agency, or another official relationship.
+
+Likewise, a LunaDeerMC page, distribution package, or user-posted content on a third-party platform does not automatically mean that the platform reviewed, certified, or endorsed LunaDeerMC. Use the entries listed on the official LunaDeerMC site and work repositories, and watch for unauthorized modified packages, impersonation pages, and fake support accounts.
+
+## 5. Third-party issues and reports
+
+If an issue clearly comes from third-party software or a platform, submit it through that project's Issue, ticket, or support rules first and follow its template and security requirements. If the issue also involves LunaDeerMC integration, packaging, or docs, report it in the relevant official work repository with the minimum reproducible information, version number, and complete error context.
+
+Report suspected malicious packages, brand impersonation, license bypasses, or issues that may threaten user security privately to [zhangyuheng@lunadeer.cn](mailto:zhangyuheng@lunadeer.cn). Do not publish exploitable vulnerability details, keys, or personal information in public channels.
