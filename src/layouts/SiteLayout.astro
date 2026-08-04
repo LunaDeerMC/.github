@@ -86,6 +86,27 @@ const alternateEn = new URL(withLocale("en", canonicalPath), site.url).toString(
         const labels = locale === 'en'
           ? { empty: 'No matching content.', clear: 'Clear search' }
           : { empty: '没有找到匹配内容。', clear: '清除搜索' };
+        const menuCloseDelay = 140;
+        const menuTransitionDuration = 220;
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+        let menuCloseTimer = null;
+        let menuOpenFrame = null;
+        let menuTriggerPointerDown = false;
+        let menuOpenedByHover = false;
+
+        const clearMenuCloseTimer = () => {
+          if (menuCloseTimer) {
+            window.clearTimeout(menuCloseTimer);
+            menuCloseTimer = null;
+          }
+        };
+
+        const clearMenuOpenFrame = () => {
+          if (menuOpenFrame) {
+            window.cancelAnimationFrame(menuOpenFrame);
+            menuOpenFrame = null;
+          }
+        };
 
         function setTheme(preference) {
           const allowed = ['system', 'light', 'dark'];
@@ -103,10 +124,44 @@ const alternateEn = new URL(withLocale("en", canonicalPath), site.url).toString(
 
         function setMenu(open) {
           if (!menu || !menuTrigger) return;
-          menu.hidden = !open;
+          clearMenuCloseTimer();
+          clearMenuOpenFrame();
           menuTrigger.setAttribute('aria-expanded', String(open));
           menuTrigger.setAttribute('aria-label', open ? (locale === 'en' ? 'Close utilities menu' : '关闭功能菜单') : (locale === 'en' ? 'Open utilities menu' : '打开功能菜单'));
-          header?.classList.toggle('is-menu-open', open);
+          menu.setAttribute('aria-hidden', String(!open));
+
+          if (open) {
+            if (!menu.hidden && menu.dataset.menuState === 'open') {
+              header?.classList.add('is-menu-open');
+              return;
+            }
+            menu.hidden = false;
+            menu.dataset.menuState = 'opening';
+            header?.classList.add('is-menu-open');
+            menuOpenFrame = window.requestAnimationFrame(() => {
+              menuOpenFrame = null;
+              if (!menu.hidden) menu.dataset.menuState = 'open';
+            });
+            return;
+          }
+
+          if (menu.hidden) {
+            menu.dataset.menuState = 'closed';
+            header?.classList.remove('is-menu-open');
+            menuOpenedByHover = false;
+            return;
+          }
+
+          menu.dataset.menuState = 'closing';
+          const finishClosing = () => {
+            if (menu.dataset.menuState !== 'closing') return;
+            menu.hidden = true;
+            menu.dataset.menuState = 'closed';
+            header?.classList.remove('is-menu-open');
+            menuOpenedByHover = false;
+          };
+          if (prefersReducedMotion.matches) finishClosing();
+          else menuCloseTimer = window.setTimeout(finishClosing, menuTransitionDuration);
         }
 
         function escapeHtml(value) {
@@ -162,7 +217,48 @@ const alternateEn = new URL(withLocale("en", canonicalPath), site.url).toString(
         const systemMedia = window.matchMedia('(prefers-color-scheme: dark)');
         systemMedia.addEventListener?.('change', () => { if (root.dataset.themePreference === 'system') setTheme('system'); });
         window.addEventListener('storage', (event) => { if (event.key === 'lunadeer-theme') setTheme(event.newValue || 'system'); });
-        menuTrigger?.addEventListener('click', () => setMenu(menu?.hidden));
+        menuTrigger?.addEventListener('mousedown', () => { menuTriggerPointerDown = true; });
+        menuTrigger?.addEventListener('mouseup', () => { menuTriggerPointerDown = false; });
+        menuTrigger?.addEventListener('touchstart', () => { menuTriggerPointerDown = true; }, { passive: true });
+        menuTrigger?.addEventListener('touchend', () => { menuTriggerPointerDown = false; });
+        menuTrigger?.addEventListener('click', () => {
+          menuTriggerPointerDown = false;
+          if (menuOpenedByHover) {
+            setMenu(true);
+            return;
+          }
+          setMenu(menu?.hidden);
+        });
+        const menuContains = (target) => target && (menuTrigger?.contains(target) || menu?.contains(target));
+        const cancelMenuClose = () => {
+          clearMenuCloseTimer();
+        };
+        const scheduleMenuClose = (event) => {
+          if (menuContains(event.relatedTarget)) return;
+          clearMenuCloseTimer();
+          menuCloseTimer = window.setTimeout(() => setMenu(false), menuCloseDelay);
+        };
+        menuTrigger?.addEventListener('mouseenter', () => {
+          menuOpenedByHover = true;
+          cancelMenuClose();
+          setMenu(true);
+        });
+        menu?.addEventListener('mouseenter', () => {
+          menuOpenedByHover = true;
+          cancelMenuClose();
+          setMenu(true);
+        });
+        menuTrigger?.addEventListener('mouseleave', scheduleMenuClose);
+        menu?.addEventListener('mouseleave', scheduleMenuClose);
+        menuTrigger?.addEventListener('focus', () => { if (!menuTriggerPointerDown) setMenu(true); });
+        menu?.addEventListener('focusin', () => setMenu(true));
+        const handleMenuFocusOut = () => {
+          window.setTimeout(() => {
+            if (!menuTrigger?.matches(':focus') && !menu?.contains(document.activeElement)) setMenu(false);
+          }, 0);
+        };
+        menuTrigger?.addEventListener('focusout', handleMenuFocusOut);
+        menu?.addEventListener('focusout', handleMenuFocusOut);
         document.querySelectorAll('[data-open-search]').forEach((button) => button.addEventListener('click', openSearch));
         document.querySelectorAll('[data-close-search]').forEach((button) => button.addEventListener('click', closeSearch));
         searchDialog?.addEventListener('close', () => document.body.classList.remove('search-open'));

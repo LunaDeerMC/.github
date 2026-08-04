@@ -34,13 +34,13 @@ const alternatePath = withLocale(alternateLocale, basePath);
     <div class="nav-group nav-group--actions">
       <a class:list={["nav-link", "nav-link--content", { "is-active": isActive("/works") }]} href={withLocale(locale, "/works")} aria-current={isActive("/works") ? "page" : undefined}>{copy.nav.works}</a>
       <a class:list={["nav-link", "nav-link--content", { "is-active": isActive("/docs") }]} href={withLocale(locale, "/docs")} aria-current={isActive("/docs") ? "page" : undefined}>{copy.nav.docs}</a>
-      <button class="menu-button" type="button" data-menu-trigger aria-expanded="false" aria-controls="utility-menu" aria-label={copy.nav.openMenu}>
+      <button class="menu-button" type="button" data-menu-trigger aria-expanded="false" aria-haspopup="true" aria-controls="utility-menu" aria-label={copy.nav.openMenu}>
         <LunaIcon name="Menu" size={20} />
       </button>
     </div>
   </nav>
 
-  <div class="utility-menu" id="utility-menu" data-utility-menu hidden>
+  <div class="utility-menu" id="utility-menu" data-utility-menu data-menu-state="closed" aria-hidden="true" hidden>
     <div class="utility-menu__inner page-grid">
       <div class="utility-menu__group utility-menu__group--search">
         <p class="utility-menu__label">{copy.nav.tools}</p>
