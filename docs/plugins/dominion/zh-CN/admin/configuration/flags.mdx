@@ -1,0 +1,70 @@
+---
+title: 管理员文档 · flags.yml 参考
+description: 了解环境 flag 与权限 flag 的作用、默认值、可用性开关和生效顺序。
+icon: Shield
+sidebar:
+  label: 管理员文档 · flags.yml 参考
+  order: 25
+---
+
+## 文件结构
+
+`flags.yml` 分成 `environment` 和 `privilege` 两个顶层区块。每个 flag 的结构大致如下：
+
+```yaml
+privilege:
+  container:
+    default: false
+    enable: true
+    material: CHEST
+```
+
+- `default` 是新建领地或新建成员设置的初始值，不能理解为“当前所有领地强制值”。
+- `enable` 决定这个 flag 是否可用、是否在 UI 和配置中提供给玩家；关闭后不会成为玩家可选项。
+- `material` 是 UI 中用于表示该 flag 的物品材质，必须是目标服务端支持的 Bukkit Material 名称。
+
+修改后使用 `/dominion reload config`。由于新建成员会复制当时的访客权限，修改默认值不会自动重写所有已经存在的领地、成员或权限组；存量数据需要在 UI 或命令中明确调整。
+
+## 环境 flag
+
+环境 flag 控制世界事件和领地外部边界行为。当前版本包含：
+
+| 类别 | flag |
+| --- | --- |
+| 生物 | `animal_spawn`、`animal_breed`、`animal_spawner`、`animal_spawn_egg`、`animal_move`、`villager_spawn`、`villager_breed`、`villager_spawner`、`villager_spawn_egg` |
+| 怪物 | `monster_spawn`、`monster_spawner`、`monster_spawn_egg`、`monster_move`、`monster_damage` |
+| 末影人与爆炸 | `ender_man`、`ender_man_spawn`、`ender_man_teleport`、`tnt_explode`、`tnt_damage_entity`、`wither_spawn`、`wither_explode`、`wither_break_block` |
+| 实体/投射物爆炸 | `creeper_explode`、`creeper_damage_entity`、`wither_skull_explode`、`wither_skull_damage_entity`、`ender_crystal_explode`、`ender_crystal_damage_entity`、`fireball_explode`、`fireball_damage_entity`、`block_explode`、`dragon_break_block` |
+| 火、液体与方块 | `fire_spread`、`burn_block`、`burn_entity`、`flow_in_protection`、`gravity_block`、`ice_melt`、`ice_form`、`snow_accumulation`、`snow_melt` |
+| 农作物与自然 | `trample`、`mob_trample`、`decay` |
+| 跨边界与显示 | `hopper_outside`、`piston_outside`、`trig_pressure_proj`、`trig_pressure_mob`、`trig_pressure_drop`、`item_frame_proj_damage`、`mob_drop_item`、`show_border` |
+
+名称相近的 flag 可能只控制事件的一部分。例如 `tnt_explode` 控制 TNT 爆炸，`tnt_damage_entity` 控制爆炸对实体和悬挂物的伤害；`creeper_explode` 的范围则覆盖多种非 TNT 爆炸来源。遇到爆炸仍然发生时，应按事件来源逐项检查，而不是只改一个“爆炸总开关”。
+
+## 权限 flag
+
+权限 flag 控制玩家或成员在领地内执行动作的能力，当前版本包含：
+
+| 类别 | flag |
+| --- | --- |
+| 管理领地 | `admin`、`resize`、`rename`、`create_sub`、`delete_sub`、`resize_sub`、`rename_sub` |
+| 移动与传送 | `move`、`teleport`、`fly`、`riding`、`ender_pearl`、`raid` |
+| 方块与实体 | `place`、`place_liquid`、`place_entity`、`break`、`break_liquid`、`break_entity`、`ignite` |
+| 物品与红石 | `pick_up`、`drop_item`、`door`、`button`、`lever`、`pressure`、`red_stone_powder`、`repeater`、`comparer`、`note_block` |
+| 容器与工作站 | `container`、`armor_stand_interactive`、`item_frame_content`、`hopper`、`craft`、`crafter`、`anvil`、`enchant`、`brew`、`beacon`、`jukebox`、`lectern`、`bookshelf`、`dragon_egg`、`item_frame_interactive` |
+| 生活与实体 | `edit_sign`、`bed`、`anchor`、`vehicle_spawn`、`vehicle_destroy`、`harvest`、`sowing`、`fertilizer`、`plant_tree`、`feed`、`shear`、`leash`、`dye`、`honey`、`cake`、`trade` |
+| 战斗 | `shoot`、`trident`、`fireball`、`wind_charge`、`egg`、`hook`、`pvp`、`monster_killing`、`animal_killing`、`villager_killing` |
+
+例如，想让成员可以打开箱子但不能放置或破坏方块，应分别配置 `container: true`、`place: false`、`break: false`。`admin` 不是 Bukkit 的全局管理员权限，而是领地成员层面的管理 flag；它允许成员管理普通成员和分组，不能替代 `dominion.admin`。
+
+## 生效顺序与排查方式
+
+领地内普通玩家的判断顺序是：权限组成员使用组 flag，普通成员使用成员 flag，非成员使用访客 flag。管理员绕过开启且玩家拥有 `dominion.admin` 时，会先通过管理员绕过逻辑。子领地在自己的边界内有独立的规则，父领地的设置不能简单当作子领地当前值。
+
+排查“某个玩家仍然不能操作”时，按以下顺序最省时间：
+
+1. 确认玩家所在位置属于哪一块领地/子领地；
+2. 确认他是访客、成员还是组成员；
+3. 确认目标行为对应的 flag 名称，而不是凭 UI 物品猜测；
+4. 检查该 flag 在 `flags.yml` 中是否 `enable: true`；
+5. 用普通账号重试，并检查其他插件是否提前取消事件。

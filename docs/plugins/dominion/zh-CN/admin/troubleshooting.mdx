@@ -1,0 +1,69 @@
+---
+title: 管理员文档 · 常见问题
+description: 按启动、权限、配置、UI、数据库和事件现象排查 Dominion 问题。
+icon: CircleHelp
+sidebar:
+  label: 管理员文档 · 常见问题
+  order: 34
+---
+
+## 排查原则
+
+先记录“版本、账号、位置、命令、日志”，再改配置。每次只改一个变量，并用普通账号复测；不要在 OP 账号下把所有结果都归因于 Dominion 已放行。
+
+## 插件没有加载
+
+**现象：** `/dominion` 不存在，或启动时没有 `Plugin Enabled!`。
+
+**检查：**
+
+1. JAR 是否放在目标服务端的 `plugins/`，是否同时存在多个 Dominion JAR；
+2. Java、服务端核心和 Dominion 版本是否在同一兼容范围；
+3. 控制台是否出现依赖缺失、NMS 实现缺失、类版本或 YAML 解析错误；
+4. 是否把开发版、源码目录或错误平台构建产物放进了 `plugins/`。
+
+## Dialog 打不开或自动回退
+
+**现象：** `/dominion ui dialog` 后仍显示 ChestUI，或 Dialog 页面报错。
+
+**检查：** 查看启动日志是否加载了目标 Minecraft 小版本的 Dialog/NMS 后端；确认客户端和服务端都是同一目标版本；用 `/dominion ui default` 重新验证默认 UI。当前网站截图使用的是 Paper Minecraft `26.2` 与 Dominion `4.9.1-release`，其他版本不要直接套用这个结论。
+
+## 玩家不能创建领地
+
+依次确认：
+
+- 选点是否在同一个世界，选择工具是否为 `select-tool` 配置的物品；
+- 领地数量、世界数量和尺寸是否超过 `limitations`；
+- 出生点保护半径、领地最小距离或已有领地是否冲突；
+- `dominion.default` 是否被权限插件撤销；
+- 是否开启经济收费而余额不足；
+- `auto-create-radius` 是否被设为 `-1`；
+- Y 轴是否超出 `no-lower-than`/`no-higher-than`。
+
+## 能进领地但不能操作
+
+先确认当前玩家是访客、成员还是组成员，再检查目标动作对应的 flag。打开箱子看 `container`，放置/破坏看 `place`/`break`，红石元件和门按钮分别有细分 flag。成员加入组后以组 flag 为准；只修改访客 flag 不会自动覆盖已有成员。
+
+## 爆炸、活塞或漏斗仍然跨界
+
+环境事件通常有多个来源。分别检查 `tnt_explode`、`tnt_damage_entity`、`creeper_explode`、`block_explode`、`piston_outside`、`hopper_outside` 和相关 `*_damage_entity` flag；同时确认其他插件没有在更高事件优先级直接改写或取消事件。用只安装 Dominion 的测试世界复现，能快速判断是否为插件冲突。
+
+## 修改配置后没有变化
+
+确认改的是正在运行实例的 `plugins/Dominion/`，而不是源码工程或另一台服务器；确认 YAML 缩进和键名正确；执行 `/dominion reload config`，观察控制台；如果改的是缓存、JAR、数据库连接或 NMS，改用重启。配置默认值只影响新建数据，存量领地/成员/组需要单独编辑。
+
+## 数据库连接失败
+
+检查类型拼写、主机、端口、库名、账号权限和网络；外部数据库应确认服务已启动且允许服务端 IP 连接。SQLite 不支持多服模式。如果问题发生在切换数据库之后，停止服务器、恢复备份并确认导入导出流程，不要在原数据库上反复尝试未知 SQL。
+
+## 多服数据异常
+
+确认所有实例连接的是同一个预期数据库，`server-id` 唯一且没有在已有数据后改变，`server-name` 与代理一致，插件版本和配置 schema 一致。先关闭多服入口、保留日志和数据库备份，再逐台恢复验证，不要直接删除服务器字段来“清空”异常。完整检查矩阵见[跨服务器功能](./multi-server)。
+
+## 导入命令提示风险
+
+这是预期的防护。`/dominion import db` 不带 `confirm` 不会执行；带 `confirm` 只应在迁移或恢复备份时使用，而且不能用来合并两个非空数据库。执行前确认备份可读、维护窗口已开始、回滚路径已准备。
+
+## 仍无法定位时应提供什么
+
+请提供 Dominion 版本、Minecraft/核心版本、Java 版本、启动日志中 Dominion 段落、相关配置（删去密码）、玩家权限、复现步骤和可复现的领地边界。若安装了 Vault、PlaceholderAPI、WorldGuard、Residence 或权限插件，也要列出版本。完整上下文比单独一条错误提示更有用。

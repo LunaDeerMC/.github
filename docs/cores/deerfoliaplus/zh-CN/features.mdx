@@ -1,0 +1,115 @@
+---
+title: DeerFoliaPlus · 功能与客户端协议
+description: 说明 DeerFoliaPlus 的新增功能、客户端要求、运行数据和自定义配方格式。
+icon: Sparkles
+sidebar:
+  label: 功能与客户端协议
+  order: 30
+---
+
+## 功能总览
+
+| 功能 | 默认状态 | 需要什么 | 主要风险 |
+| --- | --- | --- | --- |
+| FakePlayer | 关闭 | 服务端开启、权限和假人数据备份 | 假人会消耗实体、区块和网络资源 |
+| 基岩版风格要塞 | 关闭 | 新世界或充分验证的测试世界 | 改变要塞生成分布 |
+| Syncmatica | 关闭 | Syncmatica/Litematica 客户端 | 文件空间、上传和隐私管理 |
+| Servux | 关闭 | MiniHUD/Litematica 客户端 | 暴露实体或方块实体数据 |
+| Recipe Sync | 开启 | Fabric/NeoForge 客户端支持 | ViaVersion 协议兼容性 |
+| Custom Recipe | 关闭 | config/custom-recipes.yml | 配方覆盖和经济平衡 |
+| Posture | 关闭 | 权限和姿态配置 | 玩家位置锁定、椅子识别时序 |
+| 快捷命令 | 命令级默认 | 权限节点 | 管理能力被普通玩家使用 |
+
+## FakePlayer
+
+假人是服务端实体，不需要真实客户端持续在线。常见流程是创建、让假人执行动作、查看物品栏，最后立即移除或保存到世界数据。创建者离线时，resident-bot 决定是否在重启后恢复。
+
+假人创建需要名称和可选皮肤名：
+
+~~~text
+/bot create <name>
+/bot create <name> <skin_name>
+/bot list
+/bot tphere <name>
+/bot tp <name> <player>
+/bot inventory <name>
+/bot equipment <name>
+/bot backpack <name>
+/bot save <name>
+/bot load <name>
+/bot remove <name>
+~~~
+
+动作系统使用 bot action 子命令，具体动作名称和参数以命令补全为准：
+
+~~~text
+/bot action <name> list
+/bot action <name> stop <index>
+/bot action <name> stop all
+/bot action <name> <action_name> <arguments>
+~~~
+
+不要用假人替代真正的性能测试。先观察实体数量、区域线程负载、内存和网络，再调整 amount-per-player、always-send-data 或动作频率。
+
+## 基岩版风格要塞
+
+开启后要塞使用随机、无限分布模型，spacing 表示平均区块距离，separation 表示最小区块距离。它适合新世界或明确希望改变探索分布的服务器，不适合在没有测试的已有世界中临时打开。
+
+## Syncmatica 与 Servux
+
+Syncmatica 允许服务端和客户端共享 Litematica 投影，并支持上传、下载和修改。服务器会在根目录管理投影文件和临时上传文件。要限制空间和上传行为，可开启 use-quota 并设置 quota-limit。
+
+Servux 分为结构协议和实体协议：
+
+- structure-protocol 用于 MiniHUD 的结构边界框叠加；
+- entity-protocol 用于实体和方块实体 NBT 查看。
+
+这些协议面向可信玩家开放。不要在公共服务器无审计地开启 entity-protocol；遇到协议兼容问题时，先关闭对应开关确认是否恢复。
+
+## Recipe Sync
+
+Recipe Sync 向客户端发送服务器配方，方便 JEI 等模组显示完整配方。服务器不负责安装 Fabric、NeoForge、JEI 或其他客户端模组。Fabric 玩家经过 ViaVersion/ViaBackwards 使用非原生协议时，可保持 skip-fabric-on-via-non-native 开启。
+
+## 自定义配方
+
+自定义配方写在 config/custom-recipes.yml，顶层使用 recipes。支持七种 type：
+
+- shaped：使用 pattern 和字符 ingredients；
+- shapeless：使用 ingredients 列表或序号对象；
+- smelting、blasting、smoking、campfire_cooking：使用 ingredient、result、experience、cooking-time；
+- stonecutting：使用 ingredient 和 result。
+
+一个带结果名称和自定义标识的有序配方示例：
+
+~~~yaml
+recipes:
+  example_tool:
+    type: shaped
+    pattern:
+      - "S"
+      - "I"
+    ingredients:
+      S: minecraft:stick
+      I:
+        item: minecraft:iron_ingot
+        custom-id: example_iron
+    result:
+      item: minecraft:iron_sword
+      amount: 1
+      name: "&bExample Tool"
+      custom-id: example_tool
+      enchantments:
+        minecraft:unbreaking: 1
+      nbt:
+        ExampleTag: enabled
+~~~
+
+结果支持 item、amount、name、custom-id、enchantments 和简单 NBT 值。带 custom-id 的输入会区分同一 Minecraft 物品中的自定义物品；未填写 custom-id 时则按普通物品匹配。物品 ID 必须能在当前服务端注册表中找到。
+
+### 自定义配方排错
+
+配方解析失败时，核心会在日志中指出缺少字段、未知物品、错误 type 或无效 pattern。修改后重启，确认日志中的注册数量，再在实际工作台、熔炉或切石机中测试。
+
+## 姿态系统
+
+开启 posture.enabled 后，玩家可以坐下、躺下、爬行和起身；chair-interaction 允许空手右键楼梯或下半砖。开启 require-side-signs 时，一排座位的两端必须有告示牌。姿态命令会使用 Folia 兼容的玩家任务调度，但仍应在测试服确认插件与交互事件兼容。

@@ -1,0 +1,11 @@
+---
+interface Props {
+  locale: "zh-CN" | "en";
+}
+
+const { locale } = Astro.props;
+const currentLocale = Astro.url.pathname === "/en" || Astro.url.pathname.startsWith("/en/") ? "en" : "zh-CN";
+const shouldRender = locale === currentLocale;
+---
+
+{shouldRender && <div data-localized={locale}><slot /></div>}

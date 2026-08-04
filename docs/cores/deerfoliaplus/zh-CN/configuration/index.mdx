@@ -1,0 +1,56 @@
+---
+title: DeerFoliaPlus · 配置文件总览
+description: 了解 DeerFoliaPlus 核心配置、自定义配方和运行数据的职责、生成位置与备份边界。
+icon: Settings
+sidebar:
+  label: 配置文件总览
+  order: 20
+---
+
+## 文件地图
+
+DeerFoliaPlus 的核心设置位于服务器根目录的 config/：
+
+| 文件或目录 | 作用 | 读取时机 |
+| --- | --- | --- |
+| config/deer-folia-plus.yml | FakePlayer、要塞、协议、配方同步、姿态等开关 | 核心启动加载 |
+| config/custom-recipes.yml | 自定义配方定义 | custom-recipe.enabled 开启后加载 |
+| worlds/world-name/fakeplayer.dat | 已保存假人的列表 | 世界存档加载 |
+| worlds/world-name/fakeplayerdata/ | 已保存假人的 NBT 数据 | 假人保存或加载 |
+| syncmatica/litematica/ | Syncmatica 已上传的投影文件 | Syncmatica 开启后使用 |
+| syncmatica/temp/ | Syncmatica 上传过程的临时文件 | Syncmatica 运行时使用 |
+
+FakePlayer 数据跟随对应世界存档，不在 plugins/ 中。Syncmatica 文件位于服务器根目录的 syncmatica/，需要和世界、配置一起纳入备份策略。
+
+## 配置如何生成
+
+核心第一次加载配置时会生成 config/deer-folia-plus.yml。字段名由 Java 的 camelCase 转成 kebab-case，例如 amountPerPlayer 生成 amount-per-player，skipFabricOnViaNonNative 生成 skip-fabric-on-via-non-native。
+
+开启 custom-recipe.enabled 后，核心会在 config/ 下创建 custom-recipes.yml。默认文件没有启用配方；你需要在 recipes 节点中添加内容。文件解析失败时优先看启动日志，不要删除整个文件。
+
+## 推荐修改顺序
+
+1. 停服并等待世界保存完成；
+2. 备份 config/deer-folia-plus.yml、config/custom-recipes.yml、世界目录和 syncmatica/；
+3. 只修改一个功能组或一个配方；
+4. 检查 YAML 缩进、引号、列表和命名空间；
+5. 启动测试目录并查看完整日志；
+6. 用实际玩家、客户端模组和目标世界验证；
+7. 稳定后再迁移到生产目录。
+
+## 重启和客户端边界
+
+deer-folia-plus.yml 在核心启动阶段加载。配置修改后应完整重启，不要把 Bukkit/Paper reload 当作核心配置热重载。自定义配方由服务器加载阶段注册，修改后也应重启并检查已注册数量。
+
+Syncmatica、Servux 和 Recipe Sync 同时受服务器开关、客户端支持和协议版本影响。服务器配置为 true 不代表没有客户端模组的玩家也能使用这些能力。
+
+## YAML 注意事项
+
+- YAML 使用空格，不要使用 Tab；
+- 布尔值写 true 或 false，不要写带引号的字符串；
+- 消息、命名空间和带冒号的值使用引号；
+- 自定义配方中的 item 使用完整命名空间，例如 minecraft:diamond；
+- 修改前保留可恢复副本；
+- 出现未知键或解析错误时，先恢复最近一次能启动的文件。
+
+继续阅读[DeerFoliaPlus 配置详解](./deer-folia-plus)和[功能与客户端协议](../features)。

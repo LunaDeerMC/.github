@@ -1,0 +1,34 @@
+---
+title: 管理员文档 · 扩展与 API
+description: 给开发者和服主的 Dominion API、事件与扩展开发入口。
+icon: Puzzle
+sidebar:
+  label: 管理员文档 · 扩展与 API
+  order: 33
+---
+
+## 扩展边界
+
+Dominion 的数据库、缓存、UI 和事件处理都由插件内部统一维护。其他插件如果需要读取或联动领地，应优先使用公开 API、事件或 PlaceholderAPI，不要直接读取 `dominion.db`，也不要依赖内部缓存类和版本专用 NMS 类。
+
+当前项目提供 API 模块，并暴露领地 DTO、成员、组、flag 与位置等数据访问能力。开发扩展时应把 Dominion 作为可选依赖处理：服务器没有 Dominion 时，扩展不应阻塞核心启动。
+
+## 推荐的扩展方式
+
+- 用 Dominion API 查询当前位置领地、领地主人、成员和边界；
+- 监听项目提供的事件来响应领地创建、删除、边界变化或权限变化；
+- 用 PlaceholderAPI 把当前领地信息接入记分板、聊天、TAB 或菜单；
+- 通过配置项让服务器管理员决定联动行为，而不是把规则写死在扩展里；
+- 在目标 Paper/Spigot/Folia 版本分别验证事件线程、异步任务和传送行为。
+
+## PlaceholderAPI 的边界
+
+PlaceholderAPI 的安装、完整占位符列表和显示排错已经单独整理到[PlaceholderAPI 文档](./placeholderapi)。扩展通常不需要自己查询数据库即可使用其中的占位符；如果占位符需要传入领地名称，名称中包含特殊字符时应按 PlaceholderAPI 与目标插件的参数规则处理，不要直接拼接未经验证的玩家输入。
+
+## 版本与兼容性注意
+
+Dominion 包含按 Minecraft 版本拆分的 NMS 实现，扩展如果直接触碰 NMS，就会失去跨版本可移植性。优先依赖 API 与 Bukkit/Paper 抽象；升级 Dominion 后重新检查 API 签名、事件取消时机和异步回调。
+
+## 报错信息应如何收集
+
+向扩展作者或 Dominion 维护者反馈问题时，至少提供：插件版本、Minecraft/服务端核心版本、Java 版本、相关配置（隐藏密码）、完整异常堆栈、复现命令、玩家身份类型以及是否安装 WorldGuard/Vault/PlaceholderAPI 等可选依赖。不要只提供一张“不能用”的截图。

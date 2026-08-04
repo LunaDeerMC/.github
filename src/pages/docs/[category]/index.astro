@@ -1,0 +1,16 @@
+---
+import DocsDirectory from "../../../components/docs/DocsDirectory.astro";
+import { getDocumentSets } from "../../../lib/content/documents";
+import SiteLayout from "../../../layouts/SiteLayout.astro";
+
+export async function getStaticPaths() {
+  return ["plugins", "cores", "tools", "general"].map((category) => ({ params: { category }, props: { category } }));
+}
+
+const locale = "zh-CN" as const;
+const { category } = Astro.props as { category: string };
+const sets = await getDocumentSets(locale, category);
+---
+<SiteLayout title={category} description={`浏览${category}分类下的 LunaDeerMC 文档集。`} locale={locale} currentPath={`/docs/${category}`} contentPage>
+  <DocsDirectory locale={locale} sets={sets} category={category} />
+</SiteLayout>

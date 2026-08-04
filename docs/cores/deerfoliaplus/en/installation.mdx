@@ -1,0 +1,88 @@
+---
+title: DeerFoliaPlus · Installation and first start
+description: Prepare Java 25, download DeerFoliaPlus, complete a first start, migrate, upgrade, and build from source.
+icon: Download
+sidebar:
+  label: Installation and first start
+  order: 10
+---
+
+## Before installing
+
+The current DeerFoliaPlus build uses Java 25. Verify the major version on the machine that actually runs the server:
+
+~~~sh
+java -version
+~~~
+
+Panels, Docker containers, and systemd services may use a different Java installation, so check inside the actual launch environment. The server directory also needs write access, backup space, reachable ports, and a rollback copy of the old core.
+
+Also confirm that:
+
+- plugins, scripts, and management panels are explicitly compatible with Folia or DeerFolia;
+- players who need Syncmatica, Servux, or Recipe Sync know which matching client mods to install;
+- worlds, configuration, plugin data, and databases are backed up;
+- the first start will happen in an isolated copy of the production directory.
+
+## Download the core
+
+Get a Minecraft-matched build from [DeerFoliaPlus GitHub Releases](https://github.com/LunaDeerMC/DeerFoliaPlus/releases). The reference build is 26.2.0-eb43c5e; for another build, follow its release title, Git tag, and filename.
+
+DeerFoliaPlus is the launch core. Do not put its jar in plugins/, and do not load Folia, Paper, Purpur, or DeerFolia as a second core:
+
+~~~text
+deerfoliaplus-test/
+├── DeerFoliaPlus-26.2.x.jar
+└── start.sh
+~~~
+
+## First start
+
+Use minimal launch arguments in the test directory:
+
+~~~sh
+java -Xms4G -Xmx8G -jar DeerFoliaPlus-26.2.x.jar --nogui
+~~~
+
+The first start normally creates eula.txt and stops. Read and accept the [Minecraft EULA](https://www.minecraft.net/eula), change eula=false to eula=true, and start again.
+
+After a completed start, verify that:
+
+1. the log has no Java, patch-application, or configuration parsing errors;
+2. config/deer-folia-plus.yml exists;
+3. enabling custom recipes creates and reads config/custom-recipes.yml;
+4. a player can log in, move, load chunks, teleport, and disconnect;
+5. compatible plugins do not continuously report Folia thread-context errors;
+6. Syncmatica, Servux, and Recipe Sync are enabled only after client versions are confirmed;
+7. fake players, posture, and utility commands are tested before being exposed in production.
+
+## Migrating from DeerFolia or another core
+
+Copy the complete server directory and keep the old core for rollback. A safe order is:
+
+1. stop the old server and wait for world saves;
+2. copy worlds, config, plugins, databases, and launch scripts;
+3. replace only the core jar referenced by the copied launch script;
+4. first start with only plugins confirmed to support Folia;
+5. test login, chunks, teleportation, redstone, villagers, farms, backups, and client connections;
+6. enable extra features one group at a time instead of opening every protocol and command;
+7. point the panel or systemd service to the new directory after it is stable.
+
+DeerFoliaPlus settings live in config/deer-folia-plus.yml. This is separate from DeerFolia's config/deer-folia.yml; never overwrite one with the other.
+
+## Upgrading
+
+Back up worlds, config/deer-folia-plus.yml, config/custom-recipes.yml, plugin data, fake-player data, and Syncmatica files. Stop the server, replace the core, and read the full startup log. The configuration manager fills missing known fields, but it cannot migrate custom recipes, permissions, or client-protocol assumptions for you.
+
+## Build from source
+
+The project README gives this build sequence:
+
+~~~sh
+git clone https://github.com/LunaDeerMC/DeerFoliaPlus.git
+cd DeerFoliaPlus
+./gradlew applyAllPatches
+./gradlew createPaperclipJar
+~~~
+
+The server core is written to DeerFoliaPlus-server/build/libs/. The build uses Java 25. Use a release build unless you need to verify patches or contribute code.

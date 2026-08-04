@@ -1,0 +1,116 @@
+---
+title: DeerFoliaPlus · 命令与权限
+description: 列出 DeerFoliaPlus 的假人、姿态、快捷功能和管理员命令，以及对应权限节点。
+icon: Terminal
+sidebar:
+  label: 命令与权限
+  order: 35
+---
+
+## 权限原则
+
+命令权限由 Bukkit 权限系统判断。姿态权限默认值为 TRUE；快捷工作方块权限默认值为 OP；其他实用命令应按服务器权限插件的实际默认值和启动日志确认。不要因为命令能补全就把它视为普通玩家安全能力。
+
+为普通玩家开放前，先在测试账号上验证命令影响，并优先授予单个节点，不要直接给出 deerfoliaplus.command。
+
+## 姿态命令
+
+这些命令需要 posture.enabled 为 true：
+
+| 命令 | 权限 | 作用 |
+| --- | --- | --- |
+| /sit | deerfoliaplus.command.sit | 原地坐下。 |
+| /lay | deerfoliaplus.command.lay | 原地躺下并锁定位置。 |
+| /crawl | deerfoliaplus.command.crawl | 进入爬行状态并保留移动能力。 |
+| /get-up | deerfoliaplus.command.get-up | 从姿态中恢复站立。 |
+
+空手右键楼梯或下半砖的椅子交互还需要 chair-interaction。开启 require-side-signs 后，还要满足座椅两端告示牌条件。
+
+## 时间、天气和玩家状态
+
+| 命令 | 权限 | 作用 |
+| --- | --- | --- |
+| /day | deerfoliaplus.command.day | 将时间设置为白天，1000 tick。 |
+| /noon | deerfoliaplus.command.noon | 将时间设置为正午，6000 tick。 |
+| /night | deerfoliaplus.command.night | 将时间设置为夜晚，13000 tick。 |
+| /rain | deerfoliaplus.command.rain | 设置为下雨。 |
+| /storm | deerfoliaplus.command.storm | 设置为雷暴。 |
+| /sun | deerfoliaplus.command.sun | 清除降雨和雷暴。 |
+| /fly [player] | deerfoliaplus.command.fly | 切换自己或目标玩家的飞行能力。 |
+| /god [player] | deerfoliaplus.command.god | 切换自己或目标玩家的无敌状态。 |
+
+时间、天气、目标玩家状态和物品复制都可能改变生存服经济或玩法。默认只给可信管理员。
+
+## 物品与查看
+
+| 命令 | 权限 | 作用 |
+| --- | --- | --- |
+| /hat | deerfoliaplus.command.hat | 将主手物品与头盔交换。 |
+| /more [amount] | deerfoliaplus.command.more | 将主手物品数量设置为指定值；不填时使用最大堆叠数量。 |
+| /inspect player | deerfoliaplus.command.inspect | 查看并操作目标玩家的背包、装备和物品栏。 |
+| /suicide | deerfoliaplus.command.suicide | 让自己死亡。 |
+
+inspect 是管理能力，应和普通玩家权限隔离。more 可能制造非预期物品数量，建议只给管理组。
+
+## 快捷工作方块
+
+这些命令默认使用 deerfoliaplus.command 下的 OP 权限：
+
+| 命令 | 权限 | 作用 |
+| --- | --- | --- |
+| /enderchest | deerfoliaplus.command.enderchest | 打开自己的末影箱。 |
+| /workbench | deerfoliaplus.command.workbench | 打开 3x3 合成界面。 |
+| /craftingtable | deerfoliaplus.command.craftingtable | /workbench 的别名功能。 |
+| /stonecutter | deerfoliaplus.command.stonecutter | 打开切石机界面。 |
+| /loom | deerfoliaplus.command.loom | 打开织布机界面。 |
+| /grindstone | deerfoliaplus.command.grindstone | 打开砂轮界面。 |
+| /anvil | deerfoliaplus.command.anvil | 打开铁砧界面。 |
+| /cartographytable | deerfoliaplus.command.cartographytable | 打开制图台界面。 |
+| /smithingtable | deerfoliaplus.command.smithingtable | 打开锻造台界面。 |
+
+这些界面允许脱离附近方块直接打开，权限设计应按服务器经济规则处理。
+
+## FakePlayer 命令
+
+FakePlayer 总开关开启后，根命令还需要 bukkit.command.bot。普通玩家创建数量受 amount-per-player 或 bot.amount.N 权限控制；OP 可以绕过数量限制。创建者通常只能控制自己创建的假人。
+
+~~~text
+/bot create name
+/bot create name skin_name
+/bot remove name
+/bot remove name cancel
+/bot remove name hours minutes seconds
+/bot list
+/bot list world
+/bot tp name player
+/bot tp name x y z
+/bot tp name x y z dimension
+/bot tphere name
+/bot inventory name
+/bot equipment name
+/bot backpack name
+/bot save name
+/bot load name
+~~~
+
+动作和动态配置需要额外节点：
+
+| 能力 | 权限 |
+| --- | --- |
+| /bot action | bukkit.command.bot.action |
+| /bot config | bukkit.command.bot.config |
+| /bot save | bukkit.command.bot.save |
+| /bot load | bukkit.command.bot.load |
+
+动作使用命令补全获得名称和参数：
+
+~~~text
+/bot action name list
+/bot action name stop all
+/bot action name stop index
+/bot action name action_name arguments
+/bot config name config_name
+/bot config name config_name value
+~~~
+
+假人数据包含世界位置、物品和自定义状态。执行 remove 与 save 前先确认数据是否需要保留。

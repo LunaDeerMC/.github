@@ -1,0 +1,28 @@
+name: Dominion
+summary:
+  zh-CN: 开源免费的 Minecraft 领地保护插件，统一处理领地边界、成员权限与环境规则。
+  en: An open-source, free Minecraft land-protection plugin for claims, member permissions, and environment rules.
+type: plugin
+accessModel: free
+lifecycle: active
+featured: true
+publishedAt: "2024-02-04"
+icon: Shield
+iconSrc: /assets/works/dominion/dominion-logo-v2.png
+cover:
+  src: /assets/works/dominion/dominion-claim-cover-v2.png
+  alt:
+    zh-CN: Dominion 领地保护插件封面：游戏内聚落被绿色领地边界完整保护
+    en: "Dominion land-protection plugin cover: an in-game settlement enclosed by a green claim boundary"
+compatibility:
+  minecraft:
+    - "1.20.1–1.20.6"
+    - "1.21.x"
+    - "26.1.2–26.2"
+  platforms:
+    - Bukkit
+    - Spigot
+    - Paper
+    - Folia
+docs:
+  root: plugins/dominion

@@ -1,0 +1,53 @@
+---
+title: DeerFolia · Configuration overview
+description: Understand the two DeerFolia configuration files, their locations, edit order, and restart boundaries.
+icon: Settings
+sidebar:
+  label: Configuration overview
+  order: 20
+---
+
+## Configuration map
+
+DeerFolia-specific files live in the server root's config/ directory:
+
+| File | Purpose | Loaded by DeerFolia |
+| --- | --- | --- |
+| deer-folia.yml | Core optimization groups: Dynamic Activation, async pathfinding, network, Lithium, POI, and AFK network | On every server start |
+| kaiiju-entity-throttling.yml | Per-entity and per-region ticking limits and removal thresholds | When entity throttling is enabled in deer-folia.yml |
+
+Folia and Paper configuration such as global, world-defaults, spigot, and bukkit remains upstream-owned. These pages explain DeerFolia's own files instead of copying the upstream configuration into a second manual.
+
+## How the files are generated
+
+DeerFolia creates deer-folia.yml when its configuration is first loaded. When kaiiju-entity-throttling is true, the Kaiiju limiter also creates kaiiju-entity-throttling.yml with default entries for ZombifiedPiglin and Axolotl.
+
+The configuration manager converts Java field names to kebab-case keys. For example, asyncPathfindingMaxThreads becomes async-pathfinding-max-threads. Missing known keys are restored with defaults during startup; an unknown key does not become a DeerFolia feature.
+
+## Recommended edit order
+
+1. stop the server completely and wait for the world save;
+2. copy the file you will edit and add a date to the backup name;
+3. change one feature group or one entity type at a time;
+4. check YAML indentation, colons, quotes, and list syntax;
+5. start a test server and read the complete log;
+6. verify with players, an entity-heavy area, or an AFK account;
+7. copy the stable change to production only after verification.
+
+## How changes take effect
+
+The configuration is loaded during server startup. The documentation does not provide a safe DeerFolia hot-reload command. Fully restart the server after editing; do not treat Bukkit/Paper reload as a configuration migration tool. Restarting is especially important for Lithium optimizations and async pathfinding.
+
+## YAML editing notes
+
+- use spaces, never Tab;
+- write booleans as true or false, not quoted strings;
+- use a dash for list entries and [] for an empty list;
+- quote messages containing colons, hashes, braces, or color symbols;
+- do not delete an unfamiliar section to make an error disappear; restore the last known-good backup;
+- check the field documentation before changing a value whose unit may be ticks, distance, entity count, or bytes.
+
+## Continue
+
+- [DeerFolia configuration](./deer-folia): complete deer-folia.yml defaults and field-by-field guidance.
+- [Entity throttling](./entity-throttling): the full kaiiju-entity-throttling.yml format, threshold relationship, and risks.

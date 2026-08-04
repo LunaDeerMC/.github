@@ -1,0 +1,72 @@
+---
+title: DeerFoliaPlus · 故障排查
+description: 按启动、配置、客户端协议、假人、自定义配方和 Folia 线程问题定位 DeerFoliaPlus 故障。
+icon: CircleHelp
+sidebar:
+  label: 故障排查
+  order: 40
+---
+
+## 排查顺序
+
+先停止服务器并备份当前目录，再记录 DeerFoliaPlus tag、Minecraft、Java、启动参数、插件列表、客户端模组和完整日志。每次只改变一个变量；不要先删除世界、config 或假人数据。
+
+## 核心无法启动
+
+检查以下项目：
+
+1. 实际启动进程是否使用 Java 25；
+2. 启动命令是否只加载一个核心 jar；
+3. applyAllPatches 或源码构建是否完整结束；
+4. 服务器用户是否能读写核心、config 和世界目录；
+5. 日志中的第一条 ERROR，而不是最后一条连锁异常。
+
+如果出现配置解析错误，把 config/deer-folia-plus.yml 临时移到备份位置，让核心生成一份新文件，再逐组迁移旧值。不要直接把 DeerFolia 的配置文件重命名为 DeerFoliaPlus 配置。
+
+## 配置没有生效
+
+deer-folia-plus.yml 在启动加载，修改后必须完整重启。确认字段拼写使用 kebab-case，例如 resident-bot、amount-per-player 和 skip-fabric-on-via-non-native。YAML 中的 true、false、数字和列表不要写成不符合预期的字符串。
+
+custom-recipes.yml 只有在 custom-recipe.enabled 开启后才会注册。先检查日志中的 parse 错误、未知物品 ID、recipe type 和 pattern，再在对应容器中测试。
+
+## 客户端协议问题
+
+如果只有部分玩家出现配方、投影、结构框或实体数据问题：
+
+- 确认玩家使用的是 Fabric 还是 NeoForge；
+- 确认客户端模组版本与 Minecraft 26.2 匹配；
+- 确认服务器对应的 recipe-sync、syncmatica 或 servux 开关；
+- 通过 ViaVersion/ViaBackwards 连接时，先保持 skip-fabric-on-via-non-native 开启；
+- 一次关闭一个协议组并重新连接，不要同时关闭所有配置。
+
+不要把服务端开启协议误解为服务端替玩家安装客户端模组。
+
+## FakePlayer 问题
+
+假人无法创建时，检查 fake-player.enable、bukkit.command.bot、名称长度、名称冲突和 amount-per-player。非 OP 玩家的 bot.amount.N 权限会覆盖默认数量。
+
+假人重启后没有恢复时，确认 resident-bot 为 true，并检查对应世界下的 fakeplayer.dat、fakeplayerdata/ 是否可读写。数据属于世界存档，迁移时不要只备份 config。
+
+假人动作或物品栏异常时，先停止动作、检查区域位置和客户端视图，再减少假人数量；不要用 reload 代替重启。
+
+## 姿态和椅子交互
+
+确认 posture.enabled、chair-interaction 和相应权限节点。玩家坐下或躺下被锁定是设计行为；使用潜行、跳跃或 /get-up 恢复。椅子识别异常时，检查连续楼梯/台阶数量、朝向和 require-side-signs。
+
+## 自定义配方
+
+逐项确认：
+
+- 顶层是否为 recipes；
+- 每个 recipe ID 是否唯一；
+- type 是否为 shaped、shapeless、smelting、blasting、smoking、campfire_cooking 或 stonecutting；
+- ingredient、pattern、ingredients 和 result 是否符合类型；
+- item 是否带有有效命名空间；
+- enchantments、custom-id 和 nbt 是否使用支持的值；
+- 重启后日志是否显示注册数量。
+
+先用一个最小配方验证，再逐步添加自定义名称、附魔和 NBT。出现配方覆盖问题时，删除或改名测试配方，不要直接在生产世界继续实验。
+
+## Folia 兼容性
+
+DeerFoliaPlus 仍然使用区域化线程模型。插件或脚本如果把实体、世界或 Bukkit API 调用固定放在传统主线程，可能产生线程上下文错误或行为异常。先在没有可疑插件的测试目录复现，再联系插件作者或 DeerFoliaPlus issue。

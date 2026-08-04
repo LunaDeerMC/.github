@@ -1,0 +1,68 @@
+---
+import { ArrowRight, ArrowUpRight } from "lucide-astro";
+import { commonCopy, localize, type Locale, withLocale } from "../../i18n/common";
+import type { WorkRecord } from "../../lib/content/types";
+
+interface Props {
+  locale: Locale;
+  works: WorkRecord[];
+}
+
+const { locale, works } = Astro.props;
+const copy = commonCopy[locale];
+const candidates = works.filter((work) => work.featured);
+const fallback = candidates.slice(0, 3);
+
+function status(work: WorkRecord) {
+  return copy.status[work.lifecycle === "early-access" ? "earlyAccess" : work.lifecycle === "archived" ? "archived" : "active"];
+}
+
+---
+
+{candidates.length > 0 && (
+  <section class="featured-section" id="featured" style={`--featured-surface: ${"var(--surface-featured)"}`} aria-labelledby="featured-title">
+    <div class="page-grid featured-section__inner">
+      <header class="section-heading section-heading--row" data-reveal="left">
+        <div><h2 id="featured-title">{locale === "en" ? "Work built to stay useful." : "精选作品"}</h2></div>
+        <a class="text-link" href={withLocale(locale, "/works")}>{copy.actions.viewAll}<ArrowRight size={17} /></a>
+      </header>
+      <div class="featured-grid" data-featured-grid>
+        {fallback.map((work, index) => (
+          <a class="work-feature" href={withLocale(locale, `/works/${work.id}`)} data-featured-item data-work-id={work.id} data-reveal="up" style={`--reveal-delay: ${index * 90}ms`}>
+            <div class="work-feature__media">
+              <img src={work.cover.src} alt={work.cover.alt ? localize(work.cover.alt, locale) : ""} loading="lazy" />
+              <span class="work-feature__index">{String(candidates.indexOf(work) + 1).padStart(2, "0")}</span>
+              <span class="work-feature__arrow"><ArrowUpRight size={18} /></span>
+            </div>
+            <div class="work-feature__body">
+              <p class="work-feature__meta">{copy.types[work.type]} · {status(work)}</p>
+              <h3>{work.name}</h3>
+              <p>{localize(work.summary, locale)}</p>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+    <script is:inline type="application/json" data-featured-candidates set:html={JSON.stringify(candidates)}></script>
+    <script is:inline>
+      (() => {
+        const grid = document.querySelector('[data-featured-grid]');
+        const payload = document.querySelector('[data-featured-candidates]');
+        if (!grid || !payload) return;
+        let all = [];
+        try { all = JSON.parse(payload.textContent || '[]'); } catch { return; }
+        if (all.length <= 3) return;
+        const shuffled = [...all].sort(() => Math.random() - 0.5).slice(0, 3);
+        const cards = [...grid.querySelectorAll('[data-featured-item]')];
+        const map = new Map(cards.map((card) => [card.dataset.workId, card]));
+        shuffled.forEach((work, index) => {
+          const card = map.get(work.id);
+          if (!card) return;
+          card.querySelector('.work-feature__index').textContent = String(index + 1).padStart(2, '0');
+          grid.append(card);
+        });
+        cards.filter((card) => !shuffled.some((work) => work.id === card.dataset.workId)).forEach((card) => card.remove());
+      })();
+    </script>
+  </section>
+)}

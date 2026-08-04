@@ -1,0 +1,107 @@
+---
+import { commonCopy, localeLabels, stripLocale, withLocale, type Locale } from "../../i18n/common";
+import type { SearchRecord } from "../../lib/content/types";
+import type { SiteConfig } from "../../lib/site";
+import LunaIcon from "../shared/LunaIcon.astro";
+
+interface Props {
+  locale: Locale;
+  currentPath: string;
+  brandPage?: boolean;
+  site: SiteConfig;
+  searchIndex: SearchRecord[];
+}
+
+const { locale, currentPath, brandPage = false, site, searchIndex } = Astro.props;
+const copy = commonCopy[locale];
+const basePath = stripLocale(currentPath);
+const isActive = (path: string) => basePath === path || (path !== "/" && basePath.startsWith(`${path}/`));
+const alternateLocale: Locale = locale === "en" ? "zh-CN" : "en";
+const alternatePath = withLocale(alternateLocale, basePath);
+---
+
+<header class:list={["site-header", { "site-header--brand": brandPage }]} data-header data-brand={brandPage ? "true" : "false"}>
+  <nav class="site-nav page-grid" aria-label={locale === "en" ? "Primary navigation" : "主导航"}>
+    <div class="nav-group nav-group--brand">
+      <a class="brand-lockup" href={withLocale(locale, "/")} aria-label={locale === "en" ? "LunaDeerMC home" : "LunaDeerMC 首页"}>
+        <img src={site.logo} alt="" width="34" height="34" />
+        <span>LunaDeerMC</span>
+      </a>
+      <a class:list={["nav-link", "nav-link--organization", { "is-active": isActive("/support") }]} href={withLocale(locale, "/support")} aria-current={isActive("/support") ? "page" : undefined}>{copy.nav.support}</a>
+      <a class:list={["nav-link", "nav-link--organization", { "is-active": isActive("/about") }]} href={withLocale(locale, "/about")} aria-current={isActive("/about") ? "page" : undefined}>{copy.nav.about}</a>
+    </div>
+
+    <div class="nav-group nav-group--actions">
+      <a class:list={["nav-link", "nav-link--content", { "is-active": isActive("/works") }]} href={withLocale(locale, "/works")} aria-current={isActive("/works") ? "page" : undefined}>{copy.nav.works}</a>
+      <a class:list={["nav-link", "nav-link--content", { "is-active": isActive("/docs") }]} href={withLocale(locale, "/docs")} aria-current={isActive("/docs") ? "page" : undefined}>{copy.nav.docs}</a>
+      <button class="menu-button" type="button" data-menu-trigger aria-expanded="false" aria-controls="utility-menu" aria-label={copy.nav.openMenu}>
+        <LunaIcon name="Menu" size={20} />
+      </button>
+    </div>
+  </nav>
+
+  <div class="utility-menu" id="utility-menu" data-utility-menu hidden>
+    <div class="utility-menu__inner page-grid">
+      <div class="utility-menu__group utility-menu__group--search">
+        <p class="utility-menu__label">{copy.nav.tools}</p>
+        <button class="utility-menu__search" type="button" data-open-search>
+          <LunaIcon name="Search" size={18} />
+          <span>{copy.nav.search}</span>
+          <kbd>⌘ K</kbd>
+        </button>
+      </div>
+      <div class="utility-menu__group">
+        <p class="utility-menu__label">{copy.nav.content}</p>
+        <a class:list={["utility-link", { "is-current": isActive("/works") }]} href={withLocale(locale, "/works")} aria-current={isActive("/works") ? "page" : undefined}>{copy.nav.works}</a>
+        <a class:list={["utility-link", { "is-current": isActive("/docs") }]} href={withLocale(locale, "/docs")} aria-current={isActive("/docs") ? "page" : undefined}>{copy.nav.docs}</a>
+      </div>
+      <div class="utility-menu__group">
+        <p class="utility-menu__label">{copy.nav.organization}</p>
+        <a class:list={["utility-link", { "is-current": isActive("/support") }]} href={withLocale(locale, "/support")} aria-current={isActive("/support") ? "page" : undefined}>{copy.nav.support}</a>
+        <a class:list={["utility-link", { "is-current": isActive("/about") }]} href={withLocale(locale, "/about")} aria-current={isActive("/about") ? "page" : undefined}>{copy.nav.about}</a>
+      </div>
+      <div class="utility-menu__group utility-menu__group--language">
+        <p class="utility-menu__label">{copy.nav.language}</p>
+        <div class="language-switcher">
+          {(["zh-CN", "en"] as Locale[]).map((option) => {
+            const href = option === locale ? currentPath : option === alternateLocale ? alternatePath : withLocale(option, basePath);
+            return <a class:list={["language-option", { "is-current": option === locale }]} href={href} aria-current={option === locale ? "true" : undefined}>{localeLabels[option]}</a>;
+          })}
+        </div>
+      </div>
+      <div class="utility-menu__group utility-menu__group--theme">
+        <p class="utility-menu__label">{copy.nav.theme}</p>
+        <div class="theme-options" role="group" aria-label={copy.nav.theme}>
+          <button type="button" data-theme-choice="system"><LunaIcon name="Monitor" size={15} />{copy.nav.system}</button>
+          <button type="button" data-theme-choice="light"><LunaIcon name="Sun" size={15} />{copy.nav.light}</button>
+          <button type="button" data-theme-choice="dark"><LunaIcon name="MoonStar" size={15} />{copy.nav.dark}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <dialog class="search-dialog" data-search-dialog aria-label={copy.nav.search}>
+    <div class="search-dialog__scrim" data-close-search></div>
+    <div class="search-dialog__panel" role="document">
+      <div class="search-dialog__topline">
+        <label class="search-input" for={`search-input-${locale}`}>
+          <LunaIcon name="Search" size={19} />
+          <input id={`search-input-${locale}`} data-search-input type="search" placeholder={locale === "en" ? "Search works and docs…" : "搜索作品与文档……"} autocomplete="off" />
+          <kbd>ESC</kbd>
+        </label>
+        <button class="icon-button" type="button" data-close-search aria-label={locale === "en" ? "Close search" : "关闭搜索"}><LunaIcon name="X" size={20} /></button>
+      </div>
+      <div class="search-scopes" role="tablist" aria-label={locale === "en" ? "Search scope" : "搜索范围"}>
+        <button type="button" class="is-active" data-search-scope="all" role="tab">{locale === "en" ? "All content" : "全部内容"}</button>
+        <button type="button" data-search-scope="docs" role="tab">{locale === "en" ? "Docs" : "文档"}</button>
+        <button type="button" data-search-scope="works" role="tab">{locale === "en" ? "Works" : "作品"}</button>
+      </div>
+      <div class="search-results" data-search-results aria-live="polite">
+        <p class="search-empty" data-search-empty>{locale === "en" ? "Type to search the current language." : "输入关键词，搜索当前语言的内容。"}</p>
+      </div>
+      <a class="search-dialog__all" data-search-all href={withLocale(locale, "/search")}>{locale === "en" ? "View all results" : "查看全部结果"}<LunaIcon name="ArrowRight" size={16} /></a>
+    </div>
+  </dialog>
+
+  <script is:inline type="application/json" data-search-index set:html={JSON.stringify(searchIndex)}></script>
+</header>

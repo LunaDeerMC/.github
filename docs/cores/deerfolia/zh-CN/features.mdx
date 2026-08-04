@@ -1,0 +1,57 @@
+---
+title: DeerFolia · 功能与优化
+description: 解释 DeerFolia 的原版机制恢复、性能优化、AFK 网络抑制和各项可能的行为影响。
+icon: Sparkles
+sidebar:
+  label: 功能与优化
+  order: 30
+---
+
+## 功能总览
+
+| 功能 | 默认状态 | 主要目标 | 需要注意 |
+| --- | --- | --- | --- |
+| 原版机制恢复 | 开启 | 恢复刷沙等 Folia 环境中缺失或不一致的机制 | 会改变部分上游默认行为 |
+| Dynamic Activation of Brain | 开启 | 降低远处实体 AI 计算 | 刷怪塔和村民行为可能出现延迟 |
+| Async Pathfinding | 开启 | 减少路径查找对区域 tick 的阻塞 | 线程数过大可能增加 GC 压力 |
+| Kaiiju Entity Throttling | 开启 | 控制高密度实体更新 | 低 limit 会影响农场和交易所 |
+| Network Optimizations | 开启 | 减少网络包处理开销 | 代理/协议问题时需单项排查 |
+| Lithium Optimize | 开启 | 优化服务端高频热路径 | 修改后需要重启 |
+| POI Optimizations | 开启 | 降低村民 POI 与铁傀儡检查 CPU | 可能改变检查时序 |
+| AFK Network Optimization | 开启 | 降低挂机玩家的下行流量 | 恢复活动时依赖同步 |
+
+## 原版机制恢复
+
+DeerFolia 的补丁恢复了 Folia 环境下的刷沙相关原版行为，并调整了部分末地传送处理。它不是一个可以在配置文件中单独切换的开关；如果服务器必须严格遵守上游 Folia 行为，应在测试服确认差异后再迁移。
+
+## Dynamic Activation of Brain
+
+通过距离和最大激活间隔降低远处实体的 AI 计算。配置解释和刷怪场调优方式见 [DeerFolia 配置详解](./configuration/deer-folia#dynamic-activation-of-brain)。
+
+## Async Pathfinding
+
+将部分路径查找放入异步任务，并用虚拟线程池处理。配置解释、推荐线程数和异常回滚方式见 [DeerFolia 配置详解](./configuration/deer-folia#async-pathfinding)。
+
+## Kaiiju Entity Throttling
+
+以区域为单位对指定实体进行节流和逐步移除。它适合限制极端高密度区域，不适合在不了解用途时对所有实体统一设低上限。完整写法见[实体节流配置](./configuration/entity-throttling)。
+
+## 网络优化
+
+DeerFolia 在 VarInt 读写和帧编码路径上做了轻量优化。它们通常不会改变游戏功能；如果只在使用代理、压缩或协议转换插件时出现网络异常，可以在测试副本中关闭对应选项验证。
+
+## Lithium 衍生优化
+
+DeerFolia 移植了部分 Lithium 服务端热路径，并按 Paper、Moonrise 和 Folia 的线程模型做了适配。当前包含分配、AI、集合、实体、数学和世界路径优化；没有把客户端专属逻辑或依赖单一主线程的实现直接带入核心。
+
+## POI 优化
+
+POI 优化降低村民的铁傀儡检查、次级传感器扫描和村庄距离计算频率。大型村民区可以先保持默认值观察；对时间敏感的铁傀儡农场应在调整后比较产出。
+
+## AFK 网络抑制
+
+AFK 玩家仍然参与服务器世界逻辑，但核心会抑制区块、方块、实体、世界效果和 UI 等部分下行数据。恢复活动时，核心会按配置补做区块和实体同步。需要查看累计节省量时使用管理员命令 /afknetstats。
+
+## 为什么默认全部开启
+
+默认值提供一个能启动、能观察的基线，不代表它适合每台机器。出现行为差异时，不要一次关闭全部优化；按照配置文档每次只改变一个组，记录结果，再决定是否保留。

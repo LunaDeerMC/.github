@@ -1,0 +1,100 @@
+---
+title: Command index
+description: Current player and administrator commands in Dominion 4.9.1-release.
+icon: ScrollText
+link: /docs/plugins/dominion/commands
+sidebar:
+  label: Commands
+  order: 50
+---
+
+## Usage
+
+All commands below use `/dominion` as the root. The current `plugin.yml` also provides `/dom` as an alias. A player running the root command opens the current UI; the console receives help output.
+
+Start with the version's registered help and page navigation:
+
+```text
+/dominion help
+/dominion help <page>
+```
+
+## Core and claim commands
+
+| Purpose | Command |
+| --- | --- |
+| Open the current UI | `/dominion` |
+| Select a UI | `/dominion ui <chest\|dialog\|default>` |
+| Create a claim | `/dominion create <name>` |
+| Create a sub-claim | `/dominion create_sub <name> <dominion_name>` |
+| Create a claim automatically | `/dominion auto_create <name>` |
+| Create a sub-claim automatically | `/dominion auto_create_sub <name> <dominion_name>` |
+| Resize a named claim | `/dominion resize <dominion_name> <expand\|contract> <size> [direction]` |
+| Expand/contract the current claim | `/dominion expand <size> [direction]` / `/dominion contract <size> [direction]` |
+| Delete a claim | `/dominion delete <dominion_name> [force]` |
+| Inspect the claim at your location | `/dominion info` |
+| Set a teleport point / teleport | `/dominion set_tp <dominion_name>` / `/dominion tp <dominion_name>` |
+| Rename a claim | `/dominion rename <dominion_name> <newName>` |
+| Transfer ownership | `/dominion give <dominion_name> <player_name> [force]` |
+| Set a message | `/dominion set_msg <dominion_name> <enter\|leave> <message>` |
+| Set a map color | `/dominion set_map_color <dominion_name> <color>` |
+
+`direction` accepts `north`, `east`, `south`, `west`, `up`, or `down`. When omitted, the current location or facing direction is used as appropriate. Add `force` to a delete command only when the confirmation is requested.
+
+## Flags, members, and groups
+
+```text
+/dominion set_env <dominion_name> <env_flag_name> <true|false>
+/dominion set_guest <dominion_name> <guest_flag_name> <true|false>
+/dominion member_add <dominion_name> <player_name>
+/dominion member_set_pri <dominion_name> <member_name> <pri_flag_name> <true|false>
+/dominion member_remove <dominion_name> <member_name>
+```
+
+```text
+/dominion group_create <dominion_name> <group_name>
+/dominion group_delete <dominion_name> <group_name>
+/dominion group_rename <dominion_name> <group_name> <new_group_name>
+/dominion group_set_flag <dominion_name> <group_name> <pri_flag_name> <true|false>
+/dominion group_add_member <dominion_name> <group_name> <member_name>
+/dominion group_remove_member <dominion_name> <group_name> <member_name>
+```
+
+```text
+/dominion template_create <template_name>
+/dominion template_delete <template_name>
+/dominion template_rename <template_name> <new_name>
+/dominion template_set_flag <template_name> <pri_flag_name> <true|false>
+/dominion member_apply_template <dominion_name> <member_name> <template_name>
+/dominion title_use <title_id>
+```
+
+`title_use -1` disables the current group title. Choose flag names from the current `flags.yml` and command completion.
+
+## Copy and Residence migration
+
+```text
+/dominion copy_env <from> <to>
+/dominion copy_guest <from> <to>
+/dominion copy_member <from> <to>
+/dominion copy_group <from> <to>
+/dominion migrate <residence_name>
+/dominion migrate_all
+```
+
+Enable `residence-migration` in `config.yml` before using the Residence commands. `migrate_all` is an administrator command; keep backups of the Residence data and the Dominion database before a bulk migration.
+
+## Administrator commands
+
+These commands require `dominion.admin`, which defaults to OP:
+
+```text
+/dominion reload [config|cache|all]
+/dominion export [mca|db]
+/dominion import db [confirm]
+/dominion update_language [confirm]
+```
+
+`import db` is for migration or backup restoration, not for merging databases. A non-empty current database can produce errors, corruption, or data loss, so back up first and confirm the target directory. `update_language confirm` regenerates language files and may overwrite local language edits.
+
+The old `/dominion list` and `/dominion trust` commands are not in the currently verified command set. Use `/dominion` and the `member_*` commands for the current workflow.

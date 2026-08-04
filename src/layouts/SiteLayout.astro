@@ -1,0 +1,217 @@
+---
+import { type Locale, withLocale } from "../i18n/common";
+import { getSearchIndex } from "../lib/content/search";
+import type { SearchRecord } from "../lib/content/types";
+import { loadSiteConfig } from "../lib/site";
+import SiteFooter from "../components/site/SiteFooter.astro";
+import SiteHeader from "../components/site/SiteHeader.astro";
+import "../styles/global.css";
+
+interface Props {
+  title: string;
+  description: string;
+  locale: Locale;
+  currentPath: string;
+  brandPage?: boolean;
+  contentPage?: boolean;
+  searchIndex?: SearchRecord[];
+  canonicalPath?: string;
+}
+
+const {
+  title,
+  description,
+  locale,
+  currentPath,
+  brandPage = false,
+  contentPage = false,
+  searchIndex = await getSearchIndex(locale),
+  canonicalPath = currentPath,
+} = Astro.props;
+const site = loadSiteConfig();
+const canonical = new URL(withLocale(locale, canonicalPath), site.url).toString();
+const alternateZh = new URL(withLocale("zh-CN", canonicalPath), site.url).toString();
+const alternateEn = new URL(withLocale("en", canonicalPath), site.url).toString();
+---
+
+<!doctype html>
+<html lang={locale} data-locale={locale} data-theme-preference="system">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="alternate" hreflang="zh-CN" href={alternateZh} />
+    <link rel="alternate" hreflang="en" href={alternateEn} />
+    <link rel="alternate" hreflang="x-default" href={alternateZh} />
+    <link rel="icon" type="image/png" href={site.logo} />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <title>{title} — {site.name}</title>
+    <script is:inline>
+      (() => {
+        document.documentElement.classList.add('has-js');
+        const allowed = new Set(["system", "light", "dark"]);
+        const saved = localStorage.getItem("lunadeer-theme");
+        const preference = allowed.has(saved) ? saved : "system";
+        const system = window.matchMedia("(prefers-color-scheme: dark)");
+        const effective = preference === "system" ? (system.matches ? "dark" : "light") : preference;
+        document.documentElement.dataset.themePreference = preference;
+        document.documentElement.dataset.theme = effective;
+      })();
+    </script>
+  </head>
+  <body class:list={[{ "brand-page": brandPage, "content-page": contentPage }]}>
+    <a class="skip-link" href="#main-content">{locale === "en" ? "Skip to content" : "跳转到主要内容"}</a>
+    <SiteHeader locale={locale} currentPath={currentPath} brandPage={brandPage} site={site} searchIndex={searchIndex} />
+    <main id="main-content" class="site-main"><slot /></main>
+    <SiteFooter locale={locale} site={site} contentPage={contentPage} />
+    <script is:inline>
+      (() => {
+        const root = document.documentElement;
+        const header = document.querySelector('[data-header]');
+        const menuTrigger = document.querySelector('[data-menu-trigger]');
+        const menu = document.querySelector('[data-utility-menu]');
+        const searchDialog = document.querySelector('[data-search-dialog]');
+        const searchInput = document.querySelector('[data-search-input]');
+        const searchResults = document.querySelector('[data-search-results]');
+        const searchAll = document.querySelector('[data-search-all]');
+        const rawIndex = document.querySelector('[data-search-index]');
+        const searchIndex = rawIndex ? JSON.parse(rawIndex.textContent || '[]') : [];
+        let previousFocus = null;
+        let currentScope = 'all';
+        let activeResult = -1;
+
+        const locale = root.dataset.locale === 'en' ? 'en' : 'zh-CN';
+        const labels = locale === 'en'
+          ? { empty: 'No matching content.', clear: 'Clear search' }
+          : { empty: '没有找到匹配内容。', clear: '清除搜索' };
+
+        function setTheme(preference) {
+          const allowed = ['system', 'light', 'dark'];
+          if (!allowed.includes(preference)) preference = 'system';
+          localStorage.setItem('lunadeer-theme', preference);
+          const system = window.matchMedia('(prefers-color-scheme: dark)');
+          root.dataset.themePreference = preference;
+          root.dataset.theme = preference === 'system' ? (system.matches ? 'dark' : 'light') : preference;
+          document.querySelectorAll('[data-theme-choice]').forEach((button) => {
+            const selected = button.dataset.themeChoice === preference;
+            button.setAttribute('aria-pressed', String(selected));
+            button.classList.toggle('is-selected', selected);
+          });
+        }
+
+        function setMenu(open) {
+          if (!menu || !menuTrigger) return;
+          menu.hidden = !open;
+          menuTrigger.setAttribute('aria-expanded', String(open));
+          menuTrigger.setAttribute('aria-label', open ? (locale === 'en' ? 'Close utilities menu' : '关闭功能菜单') : (locale === 'en' ? 'Open utilities menu' : '打开功能菜单'));
+          header?.classList.toggle('is-menu-open', open);
+        }
+
+        function escapeHtml(value) {
+          return String(value).replace(/[&<>"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' })[char]);
+        }
+
+        function scopeMatches(item) {
+          if (currentScope === 'all') return true;
+          if (currentScope === 'works') return item.url.includes('/works/');
+          return item.url.includes('/docs/');
+        }
+
+        function renderSearch() {
+          if (!searchResults || !searchInput) return;
+          const query = searchInput.value.trim().toLowerCase();
+          const results = searchIndex.filter((item) => {
+            if (!scopeMatches(item)) return false;
+            if (!query) return false;
+            return `${item.title} ${item.summary} ${item.category || ''} ${item.documentSet || ''}`.toLowerCase().includes(query);
+          }).slice(0, 8);
+          activeResult = Math.min(activeResult, results.length - 1);
+          if (!query) {
+            searchResults.innerHTML = `<p class="search-empty">${locale === 'en' ? 'Type to search the current language.' : '输入关键词，搜索当前语言的内容。'}</p>`;
+          } else if (!results.length) {
+            searchResults.innerHTML = `<p class="search-empty">${labels.empty}</p><button class="search-clear" type="button" data-clear-search>${labels.clear}</button>`;
+          } else {
+            searchResults.innerHTML = results.map((item, index) => `<a class="search-result ${index === activeResult ? 'is-active' : ''}" data-search-result-index="${index}" href="${item.url}"><span class="search-result__type">${escapeHtml(item.type)}</span><strong>${escapeHtml(item.title)}</strong><span class="search-result__summary">${escapeHtml(item.summary || '')}</span>${item.status ? `<span class="search-result__status">${escapeHtml(item.status)}</span>` : ''}<span class="search-result__arrow">→</span></a>`).join('');
+          }
+          if (searchAll) {
+            const url = new URL(searchAll.href, window.location.origin);
+            if (query) url.searchParams.set('q', searchInput.value.trim()); else url.searchParams.delete('q');
+            searchAll.href = url.toString();
+          }
+          searchResults.querySelectorAll('[data-clear-search]').forEach((button) => button.addEventListener('click', () => { searchInput.value = ''; activeResult = -1; renderSearch(); searchInput.focus(); }));
+        }
+
+        function openSearch() {
+          setMenu(false);
+          previousFocus = document.activeElement;
+          if (searchDialog?.showModal) searchDialog.showModal(); else searchDialog?.setAttribute('open', '');
+          document.body.classList.add('search-open');
+          if (searchInput) { searchInput.value = ''; activeResult = -1; renderSearch(); setTimeout(() => searchInput.focus(), 0); }
+        }
+
+        function closeSearch() {
+          if (searchDialog?.open) searchDialog.close(); else searchDialog?.removeAttribute('open');
+          document.body.classList.remove('search-open');
+          if (previousFocus && previousFocus.focus) previousFocus.focus();
+        }
+
+        setTheme(root.dataset.themePreference || 'system');
+        document.querySelectorAll('[data-theme-choice]').forEach((button) => button.addEventListener('click', () => setTheme(button.dataset.themeChoice)));
+        const systemMedia = window.matchMedia('(prefers-color-scheme: dark)');
+        systemMedia.addEventListener?.('change', () => { if (root.dataset.themePreference === 'system') setTheme('system'); });
+        window.addEventListener('storage', (event) => { if (event.key === 'lunadeer-theme') setTheme(event.newValue || 'system'); });
+        menuTrigger?.addEventListener('click', () => setMenu(menu?.hidden));
+        document.querySelectorAll('[data-open-search]').forEach((button) => button.addEventListener('click', openSearch));
+        document.querySelectorAll('[data-close-search]').forEach((button) => button.addEventListener('click', closeSearch));
+        searchDialog?.addEventListener('close', () => document.body.classList.remove('search-open'));
+        searchInput?.addEventListener('input', () => { activeResult = -1; renderSearch(); });
+        document.querySelectorAll('[data-search-scope]').forEach((button) => button.addEventListener('click', () => { currentScope = button.dataset.searchScope || 'all'; document.querySelectorAll('[data-search-scope]').forEach((item) => item.classList.toggle('is-active', item === button)); activeResult = -1; renderSearch(); }));
+        searchResults?.addEventListener('click', (event) => { const result = event.target.closest('[data-search-result-index]'); if (result) closeSearch(); });
+        document.addEventListener('keydown', (event) => {
+          if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') { event.preventDefault(); openSearch(); return; }
+          if (event.key === 'Escape') { if (searchDialog?.open) closeSearch(); else setMenu(false); }
+          if (searchDialog?.open && (event.key === 'ArrowDown' || event.key === 'ArrowUp')) {
+            event.preventDefault();
+            const count = searchResults?.querySelectorAll('[data-search-result-index]').length || 0;
+            if (!count) return;
+            activeResult = event.key === 'ArrowDown' ? (activeResult + 1) % count : (activeResult - 1 + count) % count;
+            renderSearch();
+          }
+          if (searchDialog?.open && event.key === 'Enter' && activeResult >= 0) {
+            const target = searchResults?.querySelector(`[data-search-result-index="${activeResult}"]`);
+            if (target) window.location.href = target.href;
+          }
+        });
+        document.addEventListener('click', (event) => { if (menu && !menu.hidden && !header?.contains(event.target)) setMenu(false); });
+        const updateScroll = () => header?.classList.toggle('is-scrolled', window.scrollY > 12);
+        updateScroll();
+        window.addEventListener('scroll', updateScroll, { passive: true });
+      })();
+    </script>
+    <script is:inline>
+      (() => {
+        const revealItems = [...document.querySelectorAll('[data-reveal]')];
+        if (!revealItems.length) return;
+
+        const showAll = () => revealItems.forEach((item) => item.classList.add('is-visible'));
+        const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (reducedMotion || !('IntersectionObserver' in window)) {
+          showAll();
+          return;
+        }
+
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            if (!entry.isIntersecting) return;
+            entry.target.classList.add('is-visible');
+            observer.unobserve(entry.target);
+          });
+        }, { rootMargin: '0px 0px -10% 0px', threshold: 0.08 });
+
+        revealItems.forEach((item) => observer.observe(item));
+      })();
+    </script>
+  </body>
+</html>

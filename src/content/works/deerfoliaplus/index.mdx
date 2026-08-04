@@ -1,0 +1,119 @@
+---
+github: https://github.com/LunaDeerMC/DeerFoliaPlus
+links:
+  - type: source
+    url: https://github.com/LunaDeerMC/DeerFoliaPlus
+  - type: issues
+    url: https://github.com/LunaDeerMC/DeerFoliaPlus/issues
+  - type: support
+    url: /support#community
+  - type: other
+    label:
+      zh-CN: DeerFolia 基础核心
+      en: DeerFolia base core
+    url: https://github.com/LunaDeerMC/DeerFolia
+  - type: other
+    label:
+      zh-CN: Leaves 上游
+      en: Leaves upstream
+    url: https://github.com/LeavesMC/Leaves
+acquisition:
+  - id: open-source
+    name:
+      zh-CN: 开源免费构建
+      en: Open-source build
+    access: free
+    description:
+      zh-CN: 从 GitHub Releases 或仓库构建产物获取与 Minecraft 版本匹配的服务器核心，并先阅读安装、客户端协议和配置说明。
+      en: Get a Minecraft-matched server core from GitHub Releases or build artifacts, then read the installation, client-protocol, and configuration notes first.
+    benefits:
+      - zh-CN: 免费使用
+        en: Free to use
+      - zh-CN: 继承 DeerFolia 的区域化多线程基础
+        en: DeerFolia regionized multithreading base
+      - zh-CN: 假人、协议互通、自定义配方和姿态系统
+        en: Fake players, protocol bridges, custom recipes, and posture actions
+      - zh-CN: 配置文件由核心生成并带有说明
+        en: Generated configuration with inline explanations
+    channels:
+      - name: GitHub Releases
+        url: https://github.com/LunaDeerMC/DeerFoliaPlus/releases
+        actionLabel:
+          zh-CN: 前往下载
+          en: Download
+        note:
+          zh-CN: 发行文件名会随 Git tag 变化；下载后请核对 Minecraft 版本。
+          en: Release filenames follow the Git tag; verify the Minecraft version after downloading.
+---
+
+import Localized from "../../../components/shared/Localized.astro";
+
+<Localized locale="zh-CN">
+
+## 作品介绍
+
+DeerFoliaPlus 是 LunaDeerMC 维护的功能增强型 Minecraft 服务器核心。它基于 DeerFolia 的 Folia 区域化多线程基础继续开发，新增内容主要是服务器功能和客户端协议互通，而不是另一组性能优化。当前资料以仓库 26.2.0-eb43c5e tag、Minecraft 26.2 和 Java 25 构建配置为基准。
+
+DeerFoliaPlus 适合需要假人、Litematica 协作、JEI 配方同步、自定义配方、姿态动作或管理员快捷命令的服务器。它仍然是完整服务端核心，不是插件；替换前要确认插件、脚本、面板和备份系统支持 Folia 的区域线程模型。
+
+### 当前能力
+
+- FakePlayer：创建、保存、加载和控制服务器假人，并支持动作、配置和物品栏界面。
+- 基岩版风格要塞生成：用随机无限分布替代 Java 版有限的环状要塞布局。
+- Syncmatica 与 Servux：为 Litematica、MiniHUD 等客户端提供投影共享、结构边界框和实体数据协议。
+- Recipe Sync：向 Fabric 和 NeoForge 客户端同步配方，方便 JEI 等模组显示服务器配方。
+- Custom Recipe System：从 config/custom-recipes.yml 加载合成、熔炉、烟熏炉、高炉、营火和切石机配方。
+- Posture System：提供坐下、躺下、爬行、起身和楼梯/台阶椅子交互。
+- 实用快捷命令：提供时间、天气、飞行、无敌、帽子、复制物品、背包查看、自杀和快捷工作方块界面。
+
+### 使用前需要知道
+
+DeerFoliaPlus 的额外功能可以按配置开关，但不能把它当成 Paper 插件安装。先完整备份世界、配置、插件数据和数据库，再在复制目录中替换核心。涉及 Syncmatica、Servux 或配方同步时，还要分别确认玩家使用的客户端模组版本。
+
+首次部署请从[安装与首次启动](/docs/cores/deerfoliaplus/installation)开始；然后阅读[配置文件总览](/docs/cores/deerfoliaplus/configuration)和[DeerFoliaPlus 配置详解](/docs/cores/deerfoliaplus/configuration/deer-folia-plus)。需要开放玩家能力时，再查看[命令与权限](/docs/cores/deerfoliaplus/commands)。
+
+### 文档入口
+
+- [安装与首次启动](/docs/cores/deerfoliaplus/installation)：Java、下载、迁移、首次启动、升级和源码构建。
+- [配置文件总览](/docs/cores/deerfoliaplus/configuration)：核心配置、自定义配方和运行数据的职责边界。
+- [DeerFoliaPlus 配置详解](/docs/cores/deerfoliaplus/configuration/deer-folia-plus)：逐项说明默认值、开关和风险。
+- [功能与客户端协议](/docs/cores/deerfoliaplus/features)：假人、要塞、Syncmatica、Servux、配方同步和姿态系统。
+- [命令与权限](/docs/cores/deerfoliaplus/commands)：玩家和管理员命令、参数与权限节点。
+- [故障排查](/docs/cores/deerfoliaplus/troubleshooting)：启动、配置、客户端协议、假人、配方和线程问题。
+
+</Localized>
+
+<Localized locale="en">
+
+## Introduction
+
+DeerFoliaPlus is a feature-focused Minecraft server core maintained by LunaDeerMC. It is built on DeerFolia's Folia regionized multithreading base and adds server functionality and client-protocol bridges rather than another set of performance optimizations. This page uses the repository's 26.2.0-eb43c5e tag, Minecraft 26.2, and Java 25 build configuration as its reference.
+
+DeerFoliaPlus is for servers that need fake players, Litematica collaboration, JEI recipe sync, custom recipes, posture actions, or administrator utility commands. It is still a complete server core, not a plugin. Check plugins, scripts, panels, and backup systems for Folia region-thread compatibility before switching.
+
+### Current capabilities
+
+- FakePlayer: create, save, load, and control server-side fake players with actions, configuration, and inventory interfaces.
+- Bedrock-style stronghold generation: replace Java's finite ring layout with a random unlimited distribution.
+- Syncmatica and Servux: expose schematic sharing, structure overlays, and entity-data protocols for clients such as Litematica and MiniHUD.
+- Recipe Sync: send recipes to Fabric and NeoForge clients so mods such as JEI can show server recipes.
+- Custom Recipe System: load crafting, furnace, smoker, blast-furnace, campfire, and stonecutter recipes from config/custom-recipes.yml.
+- Posture System: add sitting, lying, crawling, standing up, and stair/slab chair interaction.
+- Utility commands: add time, weather, flight, invulnerability, hat, item-copy, inventory-inspection, suicide, and quick-workbench commands.
+
+### Read this before using it
+
+The extra features are configurable, but DeerFoliaPlus cannot be installed like a Paper plugin. Make a complete backup of worlds, configuration, plugin data, and databases, then replace the core in a copied server directory. For Syncmatica, Servux, or recipe sync, also verify the client mod versions used by players.
+
+Start with [Installation and first start](/docs/cores/deerfoliaplus/installation), then read [Configuration overview](/docs/cores/deerfoliaplus/configuration) and [DeerFoliaPlus configuration](/docs/cores/deerfoliaplus/configuration/deer-folia-plus). Use [Commands and permissions](/docs/cores/deerfoliaplus/commands) before exposing player-facing utilities.
+
+### Documentation entry points
+
+- [Installation and first start](/docs/cores/deerfoliaplus/installation): Java, downloads, migration, first start, upgrades, and source builds.
+- [Configuration overview](/docs/cores/deerfoliaplus/configuration): core configuration, custom recipes, and runtime data boundaries.
+- [DeerFoliaPlus configuration](/docs/cores/deerfoliaplus/configuration/deer-folia-plus): defaults, switches, and trade-offs field by field.
+- [Features and client protocols](/docs/cores/deerfoliaplus/features): fake players, strongholds, Syncmatica, Servux, recipe sync, and posture.
+- [Commands and permissions](/docs/cores/deerfoliaplus/commands): player and administrator commands, arguments, and permission nodes.
+- [Troubleshooting](/docs/cores/deerfoliaplus/troubleshooting): startup, configuration, client protocols, fake players, recipes, and threading.
+
+</Localized>

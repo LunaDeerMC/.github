@@ -1,0 +1,11 @@
+---
+import DocsDirectory from "../../../components/docs/DocsDirectory.astro";
+import { getDocumentSets } from "../../../lib/content/documents";
+import SiteLayout from "../../../layouts/SiteLayout.astro";
+
+const locale = "en" as const;
+const sets = await getDocumentSets(locale);
+---
+<SiteLayout title="Documentation" description="Find LunaDeerMC installation, configuration, and usage docs." locale={locale} currentPath="/en/docs" contentPage>
+  <DocsDirectory locale={locale} sets={sets} />
+</SiteLayout>

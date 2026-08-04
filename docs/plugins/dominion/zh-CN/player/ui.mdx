@@ -1,0 +1,87 @@
+---
+title: 玩家文档 · ChestUI 与 Dialog
+description: 对照当前 Minecraft 26.2 实机界面，了解两种 UI 的入口、页面和输入方式。
+icon: LayoutGrid
+link: /docs/plugins/dominion/player/ui
+sidebar:
+  label: 玩家 · 两种 UI
+  order: 13
+---
+
+## 选择界面
+
+```text
+/dominion ui chest
+/dominion ui dialog
+/dominion ui default
+```
+
+选择会保存为玩家自己的 UI 偏好。`default` 会恢复服务端默认值。服务端默认值由：
+
+```yaml
+ui:
+  default: CHEST
+```
+
+控制，允许值是 `CHEST` 和 `DIALOG`。
+
+## Dialog：原生对话框式界面
+
+Dialog 使用 Minecraft 版本提供的原生对话框能力，页面更紧凑，适合直接阅读领地信息、表单和按钮。当前站点使用 Dominion `4.9.1-release` 在 Minecraft `26.2` 中现场采集了以下页面：
+
+![Dominion Dialog 主菜单](/assets/works/dominion/dominion-26-2-v2-dialog-main.png)
+
+*Dialog 主菜单：我的领地、创建领地、权限模板、权限组称号和切换 ChestUI。*
+
+![Dominion Dialog 我的领地](/assets/works/dominion/dominion-26-2-v2-dialog-my-dominions.png)
+
+*我的领地：搜索并选择一个自己可以管理的领地。*
+
+![Dominion Dialog 领地概览](/assets/works/dominion/dominion-26-2-v2-dialog-dashboard.png)
+
+*领地概览：查看所有者、世界、尺寸，并进入区域、权限、成员、外观、复制和所有权页面。*
+
+![Dominion Dialog 区域与传送](/assets/works/dominion/dominion-26-2-v2-dialog-area.png)
+
+*区域与传送：设置传送点、传送、调整边界、创建子领地和查看子领地。*
+
+![Dominion Dialog 权限设置](/assets/works/dominion/dominion-26-2-v2-dialog-permissions.png)
+
+*权限设置：把环境规则与访客权限分开管理。*
+
+Dialog 页面中的输入框（领地名称、消息、地图颜色、扩缩容数值等）会打开客户端表单。提交前请核对目标名称；取消输入不会修改原数据。
+
+## ChestUI：容器菜单式界面
+
+ChestUI 使用 Minecraft 物品栏网格表示菜单，适合没有 Dialog 支持的版本，也适合喜欢用物品图标操作的玩家：
+
+![Dominion ChestUI 主菜单](/assets/works/dominion/dominion-26-2-v2-chest-main.png)
+
+*ChestUI 主菜单：用图标进入我的领地、创建、模板、称号和其他功能。*
+
+![Dominion ChestUI 我的领地](/assets/works/dominion/dominion-26-2-v2-chest-my-dominions.png)
+
+*ChestUI 我的领地：选择要管理的领地。*
+
+![Dominion ChestUI 领地概览](/assets/works/dominion/dominion-26-2-v2-chest-dashboard.png)
+
+*ChestUI 领地概览：进入权限、成员、区域、外观、复制和所有权页面。*
+
+![Dominion ChestUI 区域设置](/assets/works/dominion/dominion-26-2-v2-chest-area.png)
+
+*ChestUI 区域设置：管理传送点、扩缩容和子领地。*
+
+![Dominion ChestUI 外观设置](/assets/works/dominion/dominion-26-2-v2-chest-appearance.png)
+
+*ChestUI 外观设置：修改名称、进入/离开消息和地图颜色。*
+
+ChestUI 里的文本输入通常会关闭物品栏并要求玩家在聊天栏输入；输入完成后再由插件刷新菜单。输入期间不要同时执行其他管理命令，以免把聊天内容误当作配置值。
+
+## Dialog 不可用时怎么办
+
+- 先确认服务端启动日志是否出现 `Loaded Dominion Dialog NMS backend for Minecraft 26.2.`；
+- 确认客户端版本属于当前发行构建支持的范围；
+- 执行 `/dominion ui default`，让插件选择可用的默认后端；
+- 如果仍然无法打开，使用 `/dominion ui chest`，再把问题和完整启动日志交给管理员。
+
+Dialog 是版本相关的后端能力，不能通过单纯修改 `ui.default` 强行让不支持的 Minecraft 版本使用它。

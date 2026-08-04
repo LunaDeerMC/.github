@@ -18,4 +18,4 @@
 
 现有图片、颜色值、速度参数、作品区排版和代码实现均不可作为正式设计依据。保留此目录的唯一目的，是证明交互概念已经被正确理解，并为后续讨论提供反例。
 
-正式首页结论以 `docs/design/homepage-visual-direction.md` 和 `docs/design/motion-system.md` 为准。
+正式首页结论以 `design/homepage-visual-direction.md` 和 `design/motion-system.md` 为准。

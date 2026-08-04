@@ -1,0 +1,91 @@
+---
+title: DeerFolia · Troubleshooting
+description: Diagnose DeerFolia startup, configuration, plugin compatibility, entity throttling, farms, and AFK resynchronization.
+icon: CircleHelp
+sidebar:
+  label: Troubleshooting
+  order: 40
+---
+
+## Troubleshooting order
+
+First identify the layer:
+
+1. Java or the startup command;
+2. core version and patch application;
+3. DeerFolia configuration;
+4. Folia plugin compatibility;
+5. one high-density region or one feature.
+
+Change one variable at a time. A complete startup log, configuration backup, and reproduction sequence are more useful than one isolated error line.
+
+## The core does not start
+
+Check in this order:
+
+- java -version reports Java 25;
+- the command references the DeerFolia jar, not Paper, Purpur, or an older Folia jar;
+- the jar matches the Minecraft version;
+- eula.txt is accepted as required;
+- the server user can read and write the directory;
+- the log is not stopping on YAML, dependency, or patch errors before DeerFolia configuration is generated.
+
+Do not put the core in plugins/, and do not pass two server-core jars in one command.
+
+## Configuration errors
+
+Stop the server, copy the current file, and restore the last known-good backup. Check:
+
+- Tab indentation;
+- spaces after colons;
+- quotes around messages containing colons, hashes, or braces;
+- list and empty-list syntax;
+- numbers accidentally written as quoted text.
+
+Reapply one change at a time. Both deer-folia.yml and kaiiju-entity-throttling.yml require a full restart before you can verify a fix.
+
+## A plugin does not load
+
+Folia can reject plugins that are not explicitly marked as Folia-supported, and a plugin that loads can still fail if it accesses data outside its current region. Read the author's compatibility statement and the startup log; working on Paper is not proof that it is safe on DeerFolia.
+
+Reproduce with an empty plugin directory or only the core plugins. Add plugins one at a time after the problem disappears. Include plugin versions, the DeerFolia tag, Minecraft version, and the full stack trace in a report.
+
+## A farm or villager area is slower
+
+Do not change every optimization at once:
+
+1. check whether the target region is above an entity-throttling limit;
+2. temporarily disable kaiiju-entity-throttling and compare;
+3. inspect Dynamic Activation start-distance, activation-distance-mod, and maximum interval;
+4. inspect POI intervals in villager areas;
+5. restore one feature at a time while recording output, CPU, and logs.
+
+Do not use removal as a permanent way to clean up normal production entities. Trading halls, iron farms, and item sorters need a limit and removal value with enough headroom.
+
+## Pathfinding or entity movement looks wrong
+
+Disable async-pathfinding in a test server first. If the symptom disappears, start with a smaller async-pathfinding-max-threads and increase it gradually. Do not hide path failures by only adding threads; also check whether a plugin reads entities or chunks across regions.
+
+## An AFK player is out of sync after resuming
+
+Confirm that:
+
+- afk-network-optimization.enabled is true;
+- resync-on-resume is true;
+- necessary categories were not mistakenly added to suppression-whitelist-categories;
+- max-suppressed-bytes-before-category-resync was not set so low that it causes constant refreshes;
+- the problem is not limited to one proxy, compression, or protocol-plugin combination.
+
+Have the player move once and watch whether chunks and entities recover. An administrator can use /afknetstats to see whether statistics are still accumulating.
+
+## What to include in a useful report
+
+Include at least:
+
+- DeerFolia tag, Minecraft version, and Java version;
+- startup command and complete startup log;
+- relevant configuration with passwords, tokens, and private data removed;
+- affected plugins and their versions;
+- reproduction steps, frequency, and expected behavior;
+- whether the issue occurs only on Folia/DeerFolia;
+- recent configuration changes and the result of a rollback test.

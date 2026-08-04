@@ -1,0 +1,17 @@
+---
+import { ArrowUpRight } from "lucide-astro";
+import { commonCopy, localize, type Locale, withLocale } from "../../i18n/common";
+import type { WorkRecord } from "../../lib/content/types";
+import LunaIcon from "../shared/LunaIcon.astro";
+
+interface Props { work: WorkRecord; locale: Locale; }
+const { work, locale } = Astro.props;
+const copy = commonCopy[locale];
+const status = copy.status[work.lifecycle === "early-access" ? "earlyAccess" : work.lifecycle === "archived" ? "archived" : "active"];
+const access = copy.status[work.accessModel];
+---
+
+<a class:list={["work-card", { "work-card--archived": work.lifecycle === "archived" }]} href={withLocale(locale, `/works/${work.id}`)} data-work-card data-type={work.type} data-access={work.accessModel} data-lifecycle={work.lifecycle}>
+  <div class="work-card__media"><img src={work.cover.src} alt={work.cover.alt ? localize(work.cover.alt, locale) : ""} loading="lazy" /><span class="work-card__icon">{work.iconSrc ? <img class="work-icon-image" src={work.iconSrc} alt="" aria-hidden="true" /> : <LunaIcon name={work.icon} size={24} strokeWidth={1.6} />}</span><span class="work-card__arrow"><ArrowUpRight size={19} /></span></div>
+  <div class="work-card__copy"><p class="work-card__meta">{copy.types[work.type]} · {access}</p><h2>{work.name}</h2><p>{localize(work.summary, locale)}</p><span class="work-card__status">{status}</span></div>
+</a>

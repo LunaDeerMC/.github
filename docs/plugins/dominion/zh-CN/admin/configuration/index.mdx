@@ -1,0 +1,65 @@
+---
+title: 管理员文档 · 配置文件总览
+description: 了解 Dominion 四类配置文件的职责、修改顺序、重载方式和备份边界。
+icon: Settings
+sidebar:
+  label: 管理员文档 · 配置文件总览
+  order: 23
+---
+
+## 先理解配置层次
+
+Dominion 的配置不是一个“大开关文件”，而是四层规则共同决定最终行为：
+
+1. `config.yml` 决定数据库、语言、UI、自动创建、全局消息、边界显示、集成和运维开关；
+2. `flags.yml` 决定哪些环境/权限 flag 可用、默认值和 UI 中显示的物品；
+3. `limitations/*.yml` 决定不同玩家组能创建多少领地、能建多大、是否收费以及传送/高度边界；
+4. `world-wide/*.yml` 决定未认领区域的世界级环境和交互规则。
+
+领地、成员、组、模板和玩家偏好则保存在数据库中。它们不是 YAML 配置，不能用改配置文件的方式替代命令或 UI 操作。
+
+## 配置文件地图
+
+| 路径 | 生效对象 | 典型修改场景 |
+| --- | --- | --- |
+| `plugins/Dominion/config.yml` | 插件全局行为 | 切换 UI、数据库、语言、消息和边界显示 |
+| `plugins/Dominion/flags.yml` | 可用 flag 与默认值 | 关闭不希望玩家配置的能力，调整默认保护策略 |
+| `plugins/Dominion/languages/*.yml` | 文本、菜单与 flag 描述 | 翻译或定制提示 |
+| `plugins/Dominion/limitations/*.yml` | 玩家/权限组额度 | VIP、普通玩家、管理组的不同限制 |
+| `plugins/Dominion/world-wide/*.yml` | 每个世界的未认领区域 | 主城、资源世界或大厅的默认规则 |
+| 数据库文件/外部数据库 | 运行时数据 | 备份、迁移、导入导出；不要手工改表 |
+
+## 推荐修改流程
+
+1. 停止服务器或先在测试服复制数据目录；生产服不建议在高峰期直接编辑。
+2. 备份将要修改的文件，并记录修改前后的版本与时间。
+3. 每次只改一组相关配置，保留 YAML 缩进和键名；尤其不要修改插件自动管理的 `version` 或 schema 字段。
+4. 启动服务器，或执行对应的 `/dominion reload config`；查看控制台是否有 YAML 解析错误。
+5. 用普通账号验证一条允许路径和一条拒绝路径，再确认 UI 中的 flag 名称与描述没有失配。
+
+## 当前实机配置截图
+
+下面的截图取自测试服务器 `plugins/Dominion/config.yml`，展示的是 Dominion `4.9.1-release` 在 Paper Minecraft `26.2` 环境中的实际配置内容。截图用于帮助定位键名和层级；生产服仍应以自己的生成文件为准。
+
+![Dominion 4.9.1-release 在 Minecraft 26.2 测试服中的 config.yml 内容](/assets/works/dominion/dominion-26-2-v2-config.png)
+
+## 逐文件参考
+
+- [config.yml 参考](./config-yml)：数据库、多服、语言、UI、自动创建、消息、边界显示和集成开关。
+- [flags.yml 参考](./flags)：当前环境 flag、权限 flag、默认值与生效顺序。
+- [limitations 参考](./limitations)：数量、尺寸、经济、传送、垂直范围和权限组匹配。
+- [world-wide 参考](./world-wide)：未认领区域的世界级规则与每世界文件。
+
+## 重载与何时重启
+
+修改 `config.yml`、`flags.yml`、`limitations` 或 `world-wide` 后，可先使用：
+
+```text
+/dominion reload config
+```
+
+若只需要清理运行时缓存，可以使用 `/dominion reload cache`；`/dominion reload all` 会同时处理配置和缓存。涉及插件 JAR、NMS 后端、Java、服务端核心、数据库连接方式或多服拓扑的变化，应安排停服重启，而不是依赖重载。
+
+## YAML 出错时的处理
+
+如果启动或重载提示某一行解析失败，先恢复到最近一次可用备份，再逐行比较缩进、冒号、引号和列表格式。不要在错误状态下反复重载，也不要为了“让它启动”删除整个配置文件；恢复后再把修改拆成小步重新应用。

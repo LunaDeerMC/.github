@@ -1,0 +1,14 @@
+---
+import WorksDirectory from "../../../components/works/WorksDirectory.astro";
+import { getWorks } from "../../../lib/content/works";
+import SiteLayout from "../../../layouts/SiteLayout.astro";
+
+const locale = "en" as const;
+const works = await getWorks();
+const category = Astro.url.searchParams.get("category") ?? "all";
+const access = Astro.url.searchParams.get("access") ?? "";
+const lifecycle = Astro.url.searchParams.get("lifecycle") ?? "";
+---
+<SiteLayout title="Works" description="Browse LunaDeerMC plugins, server cores, and developer tools." locale={locale} currentPath="/en/works" contentPage>
+  <WorksDirectory locale={locale} works={works} initialCategory={category} initialAccess={access} initialLifecycle={lifecycle} />
+</SiteLayout>

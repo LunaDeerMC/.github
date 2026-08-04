@@ -1,0 +1,11 @@
+---
+import AboutPage from "../../components/site/AboutPage.astro";
+import { loadSiteConfig } from "../../lib/site";
+import SiteLayout from "../../layouts/SiteLayout.astro";
+
+const locale = "en" as const;
+const site = loadSiteConfig();
+---
+<SiteLayout title="About LunaDeerMC" description="Learn what LunaDeerMC builds, how the team works, and how to use its brand resources." locale={locale} currentPath="/en/about" brandPage>
+  <AboutPage locale={locale} site={site} />
+</SiteLayout>

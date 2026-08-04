@@ -1,0 +1,117 @@
+---
+github: https://github.com/LunaDeerMC/DeerFolia
+links:
+  - type: source
+    url: https://github.com/LunaDeerMC/DeerFolia
+  - type: issues
+    url: https://github.com/LunaDeerMC/DeerFolia/issues
+  - type: support
+    url: /support#community
+  - type: other
+    label:
+      zh-CN: Folia 上游
+      en: Folia upstream
+    url: https://github.com/PaperMC/Folia
+  - type: other
+    label:
+      zh-CN: PaperMC Folia 说明
+      en: PaperMC Folia overview
+    url: https://papermc.io/software/folia
+acquisition:
+  - id: open-source
+    name:
+      zh-CN: 开源免费构建
+      en: Open-source build
+    access: free
+    description:
+      zh-CN: 从 GitHub Releases 获取适合当前 Minecraft 版本的服务器核心，并先阅读安装与兼容性说明。
+      en: Get the server core for your Minecraft version from GitHub Releases and read the installation and compatibility notes first.
+    benefits:
+      - zh-CN: 免费使用
+        en: Free to use
+      - zh-CN: 基于 Folia 的区域化多线程架构
+        en: Folia-based regionized multithreading
+      - zh-CN: 原版机制恢复与多组性能优化
+        en: Restored vanilla mechanics and multiple optimization groups
+      - zh-CN: 配置文件由核心自动生成并带有说明
+        en: Configuration files are generated with inline explanations
+    channels:
+      - name: GitHub Releases
+        url: https://github.com/LunaDeerMC/DeerFolia/releases
+        actionLabel:
+          zh-CN: 前往下载
+          en: Download
+        note:
+          zh-CN: 发行文件名会随 Git tag 变化；下载后请核对 Minecraft 版本。
+          en: Release filenames follow the Git tag; verify the Minecraft version after downloading.
+---
+
+import Localized from "../../../components/shared/Localized.astro";
+
+<Localized locale="zh-CN">
+
+## 作品介绍
+
+DeerFolia 是 LunaDeerMC 维护的 Minecraft 服务器核心，基于 Folia 的区域化多线程架构继续开发。它不是插件，而是需要直接替换服务器启动核心的完整服务端发行版。当前网页内容以仓库 26.2.0-bbeb1d1 tag、Minecraft 26.2 和 Java 25 的源码与构建配置为资料基准。
+
+DeerFolia 的方向是保持对 Folia 与 Paper 上游修改的较小范围调整，同时补回部分原版机制，并把一组高开销场景的优化做成可由服主控制的配置。它更适合玩家分布在多个区域、需要同时处理多个独立活动区域的生存服、空岛服和大型社区服；对于只有少量玩家集中在同一地点的小型服务器，Folia 架构本身未必能带来收益。
+
+### 当前能力
+
+- 恢复刷沙相关的原版行为，并修正区域化线程环境下的相关末地传送处理。
+- 提供 Dynamic Activation of Brain，降低远处实体 AI 的无效计算。
+- 提供异步路径查找，并使用虚拟线程处理路径任务。
+- 提供 Kaiiju 实体节流，按区域控制过量实体的更新频率，并可在超过移除阈值后逐步清理实体。
+- 提供 VarInt 读写、帧编码、POI、Lithium 衍生热路径和 AFK 网络抑制等优化。
+- 所有 DeerFolia 自有配置集中在 config/deer-folia.yml；实体节流另使用 config/kaiiju-entity-throttling.yml。
+
+### 使用前需要知道
+
+DeerFolia 继承 Folia 的核心约束：没有传统 Bukkit/Paper 意义上的单一主线程，插件必须明确支持 Folia 才适合直接使用。更换核心前应先确认服务器插件、脚本和管理面板是否支持 Folia，并完整备份世界、配置与数据库。
+
+首次部署请从[安装与首次启动](/docs/cores/deerfolia/installation)开始；已经能启动核心后，再阅读[配置文件总览](/docs/cores/deerfolia/configuration)和[DeerFolia 配置详解](/docs/cores/deerfolia/configuration/deer-folia)。所有性能参数都应在备份和小范围验证后调整。
+
+### 文档入口
+
+- [安装与首次启动](/docs/cores/deerfolia/installation)：Java、下载、目录、启动、升级和构建方式。
+- [配置文件总览](/docs/cores/deerfolia/configuration)：两个配置文件的职责、修改顺序和重启边界。
+- [DeerFolia 配置详解](/docs/cores/deerfolia/configuration/deer-folia)：逐项解释 deer-folia.yml 的默认值、影响与调优建议。
+- [实体节流配置](/docs/cores/deerfolia/configuration/entity-throttling)：解释 kaiiju-entity-throttling.yml 的实体限制和移除规则。
+- [功能与优化](/docs/cores/deerfolia/features)：了解各项优化的作用、默认开启状态和可能的游戏行为影响。
+- [故障排查](/docs/cores/deerfolia/troubleshooting)：启动失败、插件不兼容、刷怪场异常、配置错误和 AFK 同步问题。
+
+</Localized>
+
+<Localized locale="en">
+
+## Introduction
+
+DeerFolia is a Minecraft server core maintained by LunaDeerMC and developed on top of Folia's regionized multithreading architecture. It is not a plugin: it replaces the server core used to start the server. This page is based on the repository's 26.2.0-bbeb1d1 tag, Minecraft 26.2, and its Java 25 build configuration.
+
+DeerFolia keeps changes to Folia and Paper upstream focused, restores selected vanilla behavior, and exposes several expensive workloads as administrator-controlled configuration. It is a better fit for survival, skyblock, and community servers whose players naturally spread across multiple active regions. A small server with everyone concentrated in one area may not benefit from the Folia architecture itself.
+
+### Current capabilities
+
+- Restores sand-duplication-related vanilla behavior and adjusts relevant End teleport handling for the regionized environment.
+- Adds Dynamic Activation of Brain to reduce unnecessary AI work for distant entities.
+- Adds asynchronous pathfinding backed by virtual threads.
+- Adds Kaiiju entity throttling, which controls update frequency for excessive entities per region and can gradually remove entities above a removal threshold.
+- Adds VarInt and frame-encoding optimizations, POI optimizations, Lithium-derived hot-path work, and AFK network suppression.
+- Keeps DeerFolia-specific settings in config/deer-folia.yml; entity throttling uses config/kaiiju-entity-throttling.yml.
+
+### Read this before using it
+
+DeerFolia inherits Folia's core constraints. There is no traditional single Bukkit/Paper main thread, and plugins should be explicitly Folia-compatible before being used. Check every plugin, script, and management panel before switching cores, and make a complete backup of worlds, configuration, and databases.
+
+Start with [Installation and first start](/docs/cores/deerfolia/installation), then read [Configuration overview](/docs/cores/deerfolia/configuration) and [DeerFolia configuration](/docs/cores/deerfolia/configuration/deer-folia). Tune performance settings only after a backup and a small-scope test.
+
+### Documentation entry points
+
+- [Installation and first start](/docs/cores/deerfolia/installation): Java, downloads, directories, startup, upgrades, and building.
+- [Configuration overview](/docs/cores/deerfolia/configuration): file responsibilities, edit order, and restart boundaries.
+- [DeerFolia configuration](/docs/cores/deerfolia/configuration/deer-folia): every default in deer-folia.yml, its effect, and tuning guidance.
+- [Entity throttling](/docs/cores/deerfolia/configuration/entity-throttling): limits and removal rules in kaiiju-entity-throttling.yml.
+- [Features and optimizations](/docs/cores/deerfolia/features): what each optimization does, its default state, and possible gameplay effects.
+- [Troubleshooting](/docs/cores/deerfolia/troubleshooting): startup failures, plugin compatibility, farms, YAML errors, and AFK resynchronization.
+
+</Localized>

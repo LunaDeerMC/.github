@@ -1,0 +1,25 @@
+---
+title: DeerFoliaPlus
+description: Consumer-facing DeerFoliaPlus documentation for installation, features, configuration, commands, and client protocols.
+icon: Server
+link: /docs/cores/deerfoliaplus
+documentSet:
+  order: 40
+  status: active
+---
+
+## Scope
+
+This set is for server owners, administrators, and players using client mods with DeerFoliaPlus. The reference build is DeerFoliaPlus 26.2.0-eb43c5e on Minecraft 26.2 with Java 25.
+
+DeerFoliaPlus is a complete server core, not a jar for plugins/. The docs first cover installation and a safe test directory, then explain config/deer-folia-plus.yml, config/custom-recipes.yml, client protocols, and permission nodes.
+
+## Recommended order
+
+1. [Installation and first start](./installation): verify Java, download the core, test it in a copied directory, and migrate safely.
+2. [Configuration overview](./configuration): identify which feature reads each file and what must be backed up.
+3. [DeerFoliaPlus configuration](./configuration/deer-folia-plus): read each switch and value against the source defaults.
+4. [Features and client protocols](./features): decide whether fake players, Syncmatica, Servux, recipe sync, and posture fit the server.
+5. [Commands and permissions](./commands): choose which utilities are available to players and which remain administrator-only.
+
+Test upgrades and new features in a copy first. The generated configuration and full startup log take priority over older documentation.

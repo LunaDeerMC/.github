@@ -1,0 +1,22 @@
+---
+import { render } from "astro:content";
+import DefaultWorkPage from "../../../components/works/DefaultWorkPage.astro";
+import { getWorkPage, getWorks } from "../../../lib/content/works";
+import type { WorkRecord } from "../../../lib/content/types";
+import SiteLayout from "../../../layouts/SiteLayout.astro";
+
+export async function getStaticPaths() {
+  const works = await getWorks();
+  return works.map((work) => ({ params: { work: work.id }, props: { work } }));
+}
+
+const locale = "zh-CN" as const;
+const { work } = Astro.props as { work: WorkRecord };
+const page = await getWorkPage(work.id);
+const customPages = import.meta.glob("../../../content/works/*/index.astro", { eager: true, import: "default" });
+const CustomPage = customPages[`../../../content/works/${work.id}/index.astro`] as any;
+const rendered = page ? await render(page.entry) : undefined;
+---
+<SiteLayout title={work.name} description={work.summary[locale]} locale={locale} currentPath={`/works/${work.id}`} contentPage>
+  {CustomPage ? <CustomPage locale={locale} work={work} /> : page && rendered ? <DefaultWorkPage locale={locale} work={work} page={page} Content={rendered.Content} /> : <div class="page-grid empty-state"><p>Work page unavailable.</p></div>}
+</SiteLayout>

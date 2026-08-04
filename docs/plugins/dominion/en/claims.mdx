@@ -1,0 +1,85 @@
+---
+title: Claim workflow
+description: Create, inspect, and maintain claims with Dominion 4.9.1-release.
+icon: Compass
+link: /docs/plugins/dominion/claims
+sidebar:
+  label: Claims
+  order: 30
+---
+
+## Choose a UI first
+
+Players can run `/dominion` to open the current interface. Dominion 4.9.1-release provides both Chest and Dialog UIs:
+
+```text
+/dominion ui chest
+/dominion ui dialog
+/dominion ui default
+```
+
+`default` returns to the `ui.default` value in `plugins/Dominion/config.yml`. The current 26.2 verification used the Dialog UI; on another Minecraft version, follow the plugin startup log and the UI actually available on that server.
+
+## Create the first claim
+
+### Select two points
+
+The default selection tool is `ARROW`. In the same world:
+
+1. Left-click the first block with the selection tool;
+2. right-click the second block;
+3. review the displayed border and run `/dominion create <name>`.
+
+```text
+/dominion create home
+```
+
+Minimum and maximum sizes, and whether the full vertical range is included, come from the current files under `limitations/` and `world-wide/`. When `autoIncludeVertical` is enabled, point selection expands the claim through the world's vertical range.
+
+### Create around your position
+
+`/dominion auto_create <name>` creates a claim around the player's current position using `auto-create-radius`:
+
+```text
+/dominion auto_create spawn_area
+```
+
+The default radius is `10`; set `auto-create-radius` to `-1` to disable automatic creation. Check spawn protection, minimum claim distance, and the active limitation file before creating a claim.
+
+## Inspect and maintain a claim
+
+Run `/dominion info` inside a claim to see its name, owner, size, and height range:
+
+```text
+/dominion info
+```
+
+![Dominion Dialog UI in Minecraft 26.2](/assets/works/dominion/dominion-26-2-v2-dialog-main.png)
+
+This screenshot was freshly captured from Dominion `4.9.1-release` on a Paper `26.2` test server. Detailed claim information is also available from the Chest UI claim dashboard; the work gallery shows more current interface screens.
+
+Common maintenance commands:
+
+| Purpose | Command |
+| --- | --- |
+| Create a sub-claim | `/dominion create_sub <name> <dominion_name>` |
+| Create a sub-claim automatically | `/dominion auto_create_sub <name> <dominion_name>` |
+| Resize a named claim | `/dominion resize <dominion_name> <expand\|contract> <size> [north\|east\|south\|west\|up\|down]` |
+| Expand the claim at your location | `/dominion expand <size> [direction]` |
+| Contract the claim at your location | `/dominion contract <size> [direction]` |
+| Delete a claim | `/dominion delete <dominion_name> [force]` |
+| Set a teleport point | `/dominion set_tp <dominion_name>` |
+| Teleport to a claim | `/dominion tp <dominion_name>` |
+| Rename a claim | `/dominion rename <dominion_name> <newName>` |
+| Set an enter/leave message | `/dominion set_msg <dominion_name> <enter\|leave> <message>` |
+| Set a map color | `/dominion set_map_color <dominion_name> <color>` |
+
+Before resizing, check the limitation files, ownership, and nearby conflicts. Add `force` only when the delete command asks for the confirmation.
+
+## A safe first-run sequence
+
+1. Install the plugin and confirm `Plugin Enabled!` in the server log;
+2. select two points or use automatic creation;
+3. run `/dominion info` to verify the size and height;
+4. configure guests, members, and groups in [permissions and members](./permissions);
+5. tune messages, limitations, economy rules, and multi-server storage afterward.

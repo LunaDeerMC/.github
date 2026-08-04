@@ -1,0 +1,94 @@
+---
+title: Permissions and members
+description: Understand Dominion's plugin permissions, guests, members, groups, and templates.
+icon: Shield
+link: /docs/plugins/dominion/permissions
+sidebar:
+  label: Permissions
+  order: 40
+---
+
+## Two permission layers
+
+Dominion separates “who may run a plugin command” from “what a player may do inside a claim”:
+
+| Node | Default | Purpose |
+| --- | --- | --- |
+| `dominion.default` | All players | Regular Dominion commands; each operation is still limited by ownership, member flags, and limitation files |
+| `dominion.admin` | OP | Administrator commands such as reload, import/export, and bulk migration |
+
+The current `plugin.yml` does not define separate `dominion.create` or `dominion.manage` nodes. Do not copy those nodes from older docs into a permissions plugin; check the current `plugin.yml` and `/dominion help` instead.
+
+## Flags and managed objects
+
+The current `plugins/Dominion/flags.yml` is organized into two groups:
+
+- `environment` for environmental behavior inside a claim;
+- `privilege` for player interaction and management permissions.
+
+Use the current generated `flags.yml` and command completion for the complete flag names. A release may adjust defaults or available flags, so an old full list should not be pasted into a new configuration.
+
+Dominion can manage:
+
+- the owner, who manages the claim itself;
+- guests, through claim-level default privilege flags;
+- members, with per-player overrides;
+- groups, which apply one set of flags to multiple members;
+- privilege templates, which store a set of flags for later application.
+
+## Members and groups
+
+A minimal member setup looks like this:
+
+```text
+/dominion member_add home Alice
+/dominion member_set_pri home Alice <pri_flag_name> true
+```
+
+For a group:
+
+```text
+/dominion group_create home builders
+/dominion group_add_member home builders Alice
+/dominion group_set_flag home builders <pri_flag_name> true
+```
+
+Remove a member or group member with:
+
+```text
+/dominion member_remove home Alice
+/dominion group_remove_member home builders Alice
+```
+
+Choose the flag for `member_set_pri` and `group_set_flag` from the current server's completion list. Group membership participates in the member's claim permissions; verify the final result together with guest and world-wide rules.
+
+## Templates and reuse
+
+Templates belong to the player who creates them:
+
+```text
+/dominion template_create builder
+/dominion template_set_flag builder <pri_flag_name> true
+/dominion member_apply_template home Alice builder
+/dominion template_rename builder builder_v2
+/dominion template_delete builder_v2
+```
+
+To reuse settings between claims, copy environment flags, guest flags, members, or groups:
+
+```text
+/dominion copy_env source target
+/dominion copy_guest source target
+/dominion copy_member source target
+/dominion copy_group source target
+```
+
+Confirm the target claim before copying because existing permissions can be changed. Players can also run `/dominion title_use <title_id>` to use a group title; pass `-1` to disable the current title.
+
+## Permission troubleshooting
+
+1. Confirm `dominion.default`; confirm `dominion.admin` for administrator operations;
+2. test inside the target claim or outside it, depending on whether you are checking member or guest behavior;
+3. verify membership, group assignment, and flag names/values against the current `flags.yml`;
+4. check whether `limitations/` or `world-wide/` rejects the operation;
+5. refresh the permissions plugin cache and inspect the Dominion log after changes.

@@ -1,0 +1,108 @@
+---
+import { ArrowLeft, ArrowRight, PanelLeft, PanelRight } from "lucide-astro";
+import { commonCopy, type Locale, withLocale } from "../../i18n/common";
+import type { DocumentPageRecord, DocumentTreeNode } from "../../lib/content/types";
+import LunaIcon from "../shared/LunaIcon.astro";
+import DocsTreeNode from "./DocsTreeNode.astro";
+
+interface Props {
+  locale: Locale;
+  page: DocumentPageRecord;
+  pages: DocumentPageRecord[];
+  Content: any;
+  headings: Array<{ depth: number; slug: string; text: string }>;
+}
+
+const { locale, page, pages, Content, headings } = Astro.props;
+const copy = commonCopy[locale];
+const visibleHeadings = headings.filter((heading) => heading.depth >= 2 && heading.depth <= 3);
+const index = pages.findIndex((item) => item.url === page.url);
+const previous = index > 0 ? pages[index - 1] : undefined;
+const next = index >= 0 && index < pages.length - 1 ? pages[index + 1] : undefined;
+const docSetUrl = withLocale(locale, `/docs/${page.category}/${page.set}`);
+const workUrl = ["plugins", "cores", "tools"].includes(page.category) ? withLocale(locale, `/works/${page.set}`) : "";
+const rootPage = pages.find((item) => item.isRoot);
+const currentUrl = withLocale(locale, page.url);
+const treeRoot: DocumentTreeNode = { path: "", label: "", children: [], order: -1, containsCurrent: false };
+const folderLabelOverrides: Record<string, string> = locale === "en"
+  ? { player: "Player docs", admin: "Admin docs", configuration: "Configuration" }
+  : { player: "玩家文档", admin: "管理员文档", configuration: "配置文件" };
+
+function pageLabel(item: DocumentPageRecord) {
+  return (item.label ?? item.title).replace(/^(玩家文档|管理员文档|玩家|管理员)\s*[·•]\s*/, "");
+}
+
+function folderLabel(segment: string, path: string) {
+  if (folderLabelOverrides[segment]) return folderLabelOverrides[segment];
+  const overview = pages.find((item) => item.path === path);
+  const fromOverview = overview ? pageLabel(overview).replace(/\s*(总览|Overview)$/i, "").trim() : "";
+  if (fromOverview) return fromOverview;
+  return locale === "en"
+    ? segment.replaceAll("-", " ").replace(/\b\w/g, (letter) => letter.toUpperCase())
+    : segment.replaceAll("-", " ");
+}
+
+for (const item of pages.filter((candidate) => !candidate.isRoot)) {
+  const segments = item.path.split("/").filter(Boolean);
+  let parent = treeRoot;
+  segments.forEach((segment, segmentIndex) => {
+    const path = segments.slice(0, segmentIndex + 1).join("/");
+    let child = parent.children.find((candidate) => candidate.path === path);
+    if (!child) {
+      child = { path, label: folderLabel(segment, path), children: [], order: item.order ?? 1000, containsCurrent: false };
+      parent.children.push(child);
+    }
+    child.order = Math.min(child.order, item.order ?? 1000);
+    if (segmentIndex === segments.length - 1) child.page = item;
+    parent = child;
+  });
+}
+
+function finalizeTree(node: DocumentTreeNode) {
+  node.children.sort((a, b) => a.order - b.order || a.label.localeCompare(b.label, locale === "en" ? "en" : "zh-CN"));
+  node.children.forEach(finalizeTree);
+  node.containsCurrent = node.page?.url === page.url || node.children.some((child) => child.containsCurrent);
+  return node;
+}
+
+finalizeTree(treeRoot);
+---
+
+<div class="docs-reader" data-docs-reader>
+  <div class="docs-mobile-toolbar"><button type="button" data-open-sidebar><PanelLeft size={17} /><span>{locale === "en" ? "Docs" : "文档目录"}</span></button><strong>{page.title}</strong><button type="button" data-open-toc><PanelRight size={17} /><span>{locale === "en" ? "On this page" : "本页目录"}</span></button></div>
+  <aside class="docs-sidebar" data-docs-sidebar>
+    <div class="docs-sidebar__identity"><LunaIcon name="BookOpen" size={22} /><div><strong>{page.set}</strong><small>{locale === "en" ? "Document set" : "文档集"}</small></div></div>
+    {workUrl && <a class="docs-back-work" href={workUrl}><ArrowLeft size={15} />{locale === "en" ? "Back to work" : "返回作品介绍"}</a>}
+    <nav class="docs-tree" aria-label={locale === "en" ? "Document set navigation" : "文档集导航"}>
+      {rootPage && <a class:list={["docs-tree__link", "docs-tree__root", { "is-current": rootPage.url === page.url }]} href={withLocale(locale, rootPage.url)} aria-current={rootPage.url === page.url ? "page" : undefined}>
+        <LunaIcon name={rootPage.icon ?? "FileText"} class="docs-tree__file-icon" size={14} strokeWidth={1.8} />
+        <span>{rootPage.title}</span>
+      </a>}
+      {treeRoot.children.map((node) => <DocsTreeNode locale={locale} currentUrl={currentUrl} node={node} />)}
+    </nav>
+  </aside>
+  <article class:list={["docs-article", { "docs-article--wide": page.layout === "wide" }]} data-pagefind-body>
+    <div class="docs-breadcrumb"><a href={withLocale(locale, "/docs")}>{locale === "en" ? "Docs" : "文档"}</a><span>/</span><a href={docSetUrl}>{page.set}</a><span>/</span><span>{page.title}</span></div>
+    <header class="docs-article__header"><div class="docs-article__title-row">{page.icon && <LunaIcon name={page.icon} size={24} />}<h1>{page.title}</h1></div>{page.description && <p>{page.description}</p>}{page.documentSet?.status === "archived" && <span class="archive-note">{copy.status.archived}</span>}</header>
+    <div class="markdown-body"><Content /></div>
+    <nav class="docs-pager" aria-label={locale === "en" ? "Document pagination" : "文档翻页"}>{previous ? <a href={withLocale(locale, previous.url)}><span><small>{copy.actions.previous}</small><strong>{previous.title}</strong></span><ArrowLeft size={17} /></a> : <span></span>}{next ? <a href={withLocale(locale, next.url)}><span><small>{copy.actions.next}</small><strong>{next.title}</strong></span><ArrowRight size={17} /></a> : <span></span>}</nav>
+  </article>
+  <aside class="docs-toc" data-docs-toc>{visibleHeadings.length > 0 && <><p class="eyebrow">{locale === "en" ? "On this page" : "本页目录"}</p><nav>{visibleHeadings.map((heading) => <a class:list={[{ "docs-toc__sub": heading.depth === 3 }]} href={`#${heading.slug}`}>{heading.text}</a>)}</nav></>}</aside>
+  <div class="docs-drawer-backdrop" data-close-doc-drawers></div>
+</div>
+
+<script is:inline>
+  (() => {
+    const root = document.querySelector('[data-docs-reader]');
+    if (!root) return;
+    const sidebar = root.querySelector('[data-docs-sidebar]');
+    const toc = root.querySelector('[data-docs-toc]');
+    const close = () => { root.classList.remove('is-sidebar-open', 'is-toc-open'); document.body.classList.remove('doc-drawer-open'); };
+    root.querySelector('[data-open-sidebar]')?.addEventListener('click', () => { root.classList.add('is-sidebar-open'); document.body.classList.add('doc-drawer-open'); });
+    root.querySelector('[data-open-toc]')?.addEventListener('click', () => { root.classList.add('is-toc-open'); document.body.classList.add('doc-drawer-open'); });
+    root.querySelector('[data-close-doc-drawers]')?.addEventListener('click', close);
+    sidebar?.querySelectorAll('a').forEach((link) => link.addEventListener('click', close));
+    toc?.querySelectorAll('a').forEach((link) => link.addEventListener('click', close));
+    document.addEventListener('keydown', (event) => { if (event.key === 'Escape') close(); });
+  })();
+</script>

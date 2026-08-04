@@ -1,0 +1,92 @@
+---
+import { Filter, SlidersHorizontal } from "lucide-astro";
+import { commonCopy, type Locale, withLocale } from "../../i18n/common";
+import type { WorkRecord } from "../../lib/content/types";
+import WorkCard from "./WorkCard.astro";
+
+interface Props { locale: Locale; works: WorkRecord[]; initialCategory: string; initialAccess: string; initialLifecycle: string; }
+const { locale, works, initialCategory, initialAccess, initialLifecycle } = Astro.props;
+const copy = commonCopy[locale];
+const categories = [
+  ["all", locale === "en" ? "All works" : "全部"],
+  ["plugin", copy.types.plugin],
+  ["core", copy.types.core],
+  ["tool", copy.types.tool],
+  ["component", copy.types.component],
+] as const;
+---
+
+<div class="works-page page-grid" data-works-directory>
+  <header class="page-intro page-intro--works"><h1>{locale === "en" ? "Works" : "作品"}</h1><p>{locale === "en" ? "Plugins, server cores, and developer tools made for a Minecraft community that values clarity and long-term use." : "插件、服务端核心与开发工具，为重视清晰边界与长期使用的 Minecraft 社区而做。"}</p></header>
+
+  <div class="works-toolbar">
+    <nav class="category-tabs" aria-label={locale === "en" ? "Work category" : "作品分类"}>
+      {categories.map(([value, label]) => <a class:list={[{ "is-active": initialCategory === value }]} href={`${withLocale(locale, "/works")}${value === "all" ? "" : `?category=${value}`}`} data-category-link={value}>{label}</a>)}
+    </nav>
+    <details class="filter-panel" open={Boolean(initialAccess || initialLifecycle)}>
+      <summary><Filter size={16} />{locale === "en" ? "Filter" : "筛选"}<span class="filter-panel__indicator" data-filter-indicator>{initialAccess || initialLifecycle ? "•" : ""}</span></summary>
+      <div class="filter-panel__body">
+        <label>{locale === "en" ? "Access" : "获取方式"}<select data-filter-access><option value="">{locale === "en" ? "All access" : "全部"}</option><option value="free" selected={initialAccess === "free"}>{copy.status.free}</option><option value="paid" selected={initialAccess === "paid"}>{copy.status.paid}</option><option value="freemium" selected={initialAccess === "freemium"}>{copy.status.freemium}</option></select></label>
+        <label>{locale === "en" ? "Lifecycle" : "维护状态"}<select data-filter-lifecycle><option value="">{locale === "en" ? "All statuses" : "全部"}</option><option value="active" selected={initialLifecycle === "active"}>{copy.status.active}</option><option value="early-access" selected={initialLifecycle === "early-access"}>{copy.status.earlyAccess}</option><option value="archived" selected={initialLifecycle === "archived"}>{copy.status.archived}</option></select></label>
+        <a href={withLocale(locale, "/works")} data-clear-filters>{locale === "en" ? "Reset" : "清除筛选"}</a>
+      </div>
+    </details>
+  </div>
+
+  <div class="works-results" data-works-results>
+    <p class="works-result-count" data-result-count>{works.length} {locale === "en" ? "works" : "件作品"}</p>
+    <div class="works-grid" data-work-grid>
+      {works.map((work) => <WorkCard work={work} locale={locale} />)}
+    </div>
+    <div class="empty-state" data-filter-empty hidden><SlidersHorizontal size={25} /><p>{locale === "en" ? "No works match those filters." : "没有符合当前筛选条件的作品。"}</p><a class="text-link" href={withLocale(locale, "/works")}>{copy.actions.clear}</a></div>
+  </div>
+</div>
+
+<script is:inline>
+  (() => {
+    const directory = document.querySelector('[data-works-directory]');
+    if (!directory) return;
+    const access = directory.querySelector('[data-filter-access]');
+    const lifecycle = directory.querySelector('[data-filter-lifecycle]');
+    const links = directory.querySelectorAll('[data-category-link]');
+    const cards = [...directory.querySelectorAll('[data-work-card]')];
+    const resultCount = directory.querySelector('[data-result-count]');
+    const empty = directory.querySelector('[data-filter-empty]');
+    const indicator = directory.querySelector('[data-filter-indicator]');
+    const base = new URL(directory.querySelector('.category-tabs a')?.href || window.location.href, window.location.origin);
+    const locale = document.documentElement.lang === 'en' ? 'en' : 'zh-CN';
+    function applyFilters() {
+      const params = new URL(window.location.href).searchParams;
+      const selectedCategory = params.get('category') || 'all';
+      const selectedAccess = params.get('access') || '';
+      const selectedLifecycle = params.get('lifecycle') || '';
+      if (access) access.value = selectedAccess;
+      if (lifecycle) lifecycle.value = selectedLifecycle;
+      links.forEach((link) => link.classList.toggle('is-active', link.dataset.categoryLink === selectedCategory));
+      let visible = 0;
+      cards.forEach((card) => {
+        const matches = (selectedCategory === 'all' || card.dataset.type === selectedCategory) && (!selectedAccess || card.dataset.access === selectedAccess) && (!selectedLifecycle || card.dataset.lifecycle === selectedLifecycle);
+        card.hidden = !matches;
+        if (matches) visible += 1;
+      });
+      if (resultCount) resultCount.textContent = `${visible} ${locale === 'en' ? 'works' : '件作品'}`;
+      if (empty) empty.hidden = visible > 0;
+      if (indicator) indicator.textContent = selectedAccess || selectedLifecycle ? '•' : '';
+    }
+    function update() {
+      const url = new URL(window.location.href);
+      const selectedCategory = url.searchParams.get('category') || 'all';
+      const selectedAccess = access?.value || '';
+      const selectedLifecycle = lifecycle?.value || '';
+      if (selectedAccess) url.searchParams.set('access', selectedAccess); else url.searchParams.delete('access');
+      if (selectedLifecycle) url.searchParams.set('lifecycle', selectedLifecycle); else url.searchParams.delete('lifecycle');
+      if (selectedCategory === 'all') url.searchParams.delete('category');
+      window.location.href = url.toString();
+    }
+    applyFilters();
+    access?.addEventListener('change', update);
+    lifecycle?.addEventListener('change', update);
+    directory.querySelector('[data-clear-filters]')?.addEventListener('click', (event) => { event.preventDefault(); window.location.href = base.origin + base.pathname; });
+    links.forEach((link) => link.addEventListener('click', () => { if (access?.value) link.href += `${link.href.includes('?') ? '&' : '?'}access=${encodeURIComponent(access.value)}`; if (lifecycle?.value) link.href += `${link.href.includes('?') ? '&' : '?'}lifecycle=${encodeURIComponent(lifecycle.value)}`; }));
+  })();
+</script>

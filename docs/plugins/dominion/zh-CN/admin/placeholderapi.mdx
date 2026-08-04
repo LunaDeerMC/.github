@@ -1,0 +1,179 @@
+---
+title: 管理员文档 · PlaceholderAPI
+description: 详细说明 Dominion PlaceholderAPI 扩展的安装、占位符、参数形式、显示示例与排错方法。
+icon: Code2
+sidebar:
+  label: 管理员文档 · PlaceholderAPI
+  order: 31
+---
+
+## 这项集成做什么
+
+PlaceholderAPI 可以把 Dominion 当前领地、成员、权限组、选点和传送点信息提供给记分板、TAB、聊天、菜单或其他支持 PlaceholderAPI 的插件。
+
+Dominion 自己注册的扩展标识符是 `dominion`。安装 PlaceholderAPI 后，不需要再从 PlaceholderAPI 云端下载一个同名扩展；Dominion 在自身插件加载时注册这组占位符。使用前提是 PlaceholderAPI 和 Dominion 都在同一个服务端中正常加载。
+
+## 安装和确认
+
+1. 将与目标 Minecraft/服务端版本兼容的 PlaceholderAPI 放入 `plugins/`；
+2. 将 Dominion 放入同一个服务端，启动并确认控制台显示两个插件都已启用；
+3. 在游戏内用 PlaceholderAPI 的解析命令验证一个最简单的占位符：
+
+```text
+/papi parse me %dominion_current_dominion%
+```
+
+如果玩家站在 `showcase` 领地内，结果应为该领地名称；站在未认领区域时，返回空值是正常结果。不同 PlaceholderAPI 版本的诊断命令可能略有差异，解析命令以当前安装版本的帮助为准。
+
+## 占位符的三种上下文
+
+### 当前所在领地
+
+不带领地名称的形式会读取执行解析的玩家当前位置：
+
+```text
+%dominion_current_dominion%
+%dominion_is_member%
+%dominion_members%
+%dominion_member_count%
+%dominion_group%
+%dominion_groups%
+%dominion_group_count%
+```
+
+这类占位符适合显示“我现在站在哪里”“我是不是当前领地成员”等信息。玩家不在领地内时，名称、成员、组等信息会为空；`is_member` 在有效领地内会返回字符串 `true` 或 `false`。
+
+### 指定领地
+
+在参数后加 `<dominion_name>`，可以查询指定领地：
+
+```text
+%dominion_is_member_<dominion_name>%
+%dominion_members_<dominion_name>%
+%dominion_member_count_<dominion_name>%
+%dominion_group_<dominion_name>%
+%dominion_groups_<dominion_name>%
+```
+
+例如，测试领地名为 `showcase` 时：
+
+```text
+%dominion_member_count_showcase%
+%dominion_members_showcase%
+```
+
+指定领地不存在时，相关占位符通常表现为空。命名领地查询是数据读取，不会替你完成权限判断；不要把包含成员列表或管理信息的结果无条件展示给所有玩家。
+
+### 玩家当前选点
+
+玩家使用选点工具后，可以读取两个选点的完整坐标或单个字段：
+
+```text
+%dominion_selected_point_1%
+%dominion_selected_point_2%
+%dominion_selected_point_1_world%
+%dominion_selected_point_1_x%
+%dominion_selected_point_1_y%
+%dominion_selected_point_1_z%
+%dominion_selected_point_2_world%
+%dominion_selected_point_2_x%
+%dominion_selected_point_2_y%
+%dominion_selected_point_2_z%
+```
+
+完整形式返回 `世界名,x,y,z`。玩家还没有选择对应点时返回空值；选点是当前玩家的运行时状态，不应当当成数据库中的永久领地边界。
+
+## 完整占位符参考
+
+### 组称号与当前位置
+
+| 占位符 | 返回内容 |
+| --- | --- |
+| `%dominion_group_title%` | 玩家当前使用的组称号；未选择称号时为空 |
+| `%dominion_current_dominion%` | 玩家当前位置的领地名称；不在领地内时为空 |
+
+### 成员与权限组
+
+| 占位符 | 返回内容 |
+| --- | --- |
+| `%dominion_is_member%` | 玩家是否为当前位置领地成员 |
+| `%dominion_is_member_<dominion_name>%` | 玩家是否为指定领地成员 |
+| `%dominion_members%` | 当前领地成员名称，以逗号分隔 |
+| `%dominion_members_<dominion_name>%` | 指定领地成员名称，以逗号分隔 |
+| `%dominion_member_count%` | 当前领地成员数量 |
+| `%dominion_member_count_<dominion_name>%` | 指定领地成员数量 |
+| `%dominion_group%` | 玩家在当前领地所属的权限组名称 |
+| `%dominion_group_<dominion_name>%` | 玩家在指定领地所属的权限组名称 |
+| `%dominion_groups%` | 当前领地权限组名称，以逗号分隔 |
+| `%dominion_groups_<dominion_name>%` | 指定领地权限组名称，以逗号分隔 |
+| `%dominion_group_count%` | 当前领地权限组数量 |
+
+组名称和称号使用 Dominion 的 Bukkit 颜色格式；具体显示插件是否保留颜色，要看该插件对 PlaceholderAPI 结果的处理。
+
+### 传送点
+
+```text
+%dominion_tp_loc_x_<dominion_name>%
+%dominion_tp_loc_y_<dominion_name>%
+%dominion_tp_loc_z_<dominion_name>%
+%dominion_tp_loc_Y_<dominion_name>%
+%dominion_tp_loc_P_<dominion_name>%
+```
+
+小写 `x`、`y`、`z` 返回传送点方块坐标；大写 `Y` 返回 yaw，大写 `P` 返回 pitch。`Y`/`P` 是当前实现中的大小写敏感参数，不能写成小写。领地没有传送点或不存在时，结果为空。
+
+### 当前生效 flag
+
+```text
+%dominion_pri_flag_<flag>%
+%dominion_env_flag_<flag>%
+```
+
+把 `<flag>` 换成当前 `flags.yml` 中的名称，例如：
+
+```text
+%dominion_pri_flag_container%
+%dominion_pri_flag_place%
+%dominion_env_flag_monster_spawn%
+%dominion_env_flag_show_border%
+```
+
+`pri_flag` 返回当前玩家在当前位置的权限 flag 结果；`env_flag` 返回当前位置的环境 flag 结果。两者返回字符串 `true` 或 `false`；flag 名称不存在时为空。它们不是简单读取 YAML 的 `default`，而是按照当前位置、访客/成员/组成员身份和管理员绕过等规则得到的当前判断。
+
+## 实际使用示例
+
+### 记分板或 TAB
+
+```text
+当前领地: %dominion_current_dominion%
+领地成员: %dominion_member_count%
+当前权限组: %dominion_group%
+```
+
+### 菜单中的领地状态
+
+```text
+名称: %dominion_current_dominion%
+可开箱: %dominion_pri_flag_container%
+怪物生成: %dominion_env_flag_monster_spawn%
+```
+
+显示插件通常只支持自己的 YAML 格式；上面的内容是占位符字符串，不是所有插件都可以直接粘贴的完整配置。先确认目标插件支持 PlaceholderAPI，再按照它的格式放入文本、条件或变量节点。
+
+## 排错清单
+
+### 占位符原样显示
+
+检查 PlaceholderAPI 是否加载、目标插件是否真的调用了 PlaceholderAPI、占位符两侧的 `%` 是否完整，以及参数是否写成 `dominion`。如果只有 Dominion 未解析，确认 Dominion 启动日志没有软依赖或扩展注册错误。
+
+### 结果为空
+
+先判断这是不是预期上下文：玩家可能不在领地内、尚未完成选点、领地没有传送点、指定名称不存在，或指定 flag 已被删除。对当前领地类占位符，使用普通玩家站在测试领地内重新解析。
+
+### 结果不是最新
+
+确认领地设置已经保存，目标显示插件没有缓存旧文本。启用了[跨服务器功能](./multi-server)时，远程领地和成员缓存按后台同步周期更新，跨服修改后允许短暂延迟，再检查共享数据库与服务端日志。
+
+### 成员/权限显示与游戏行为不一致
+
+`is_member` 只判断是否存在成员记录；权限 flag 的结果还会受到访客、成员、权限组、子领地和管理员绕过影响。需要判断“能否打开箱子”等实际行为时，使用对应的 `pri_flag`，并用普通账号复测。

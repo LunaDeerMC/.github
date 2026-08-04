@@ -1,0 +1,124 @@
+---
+title: 玩家文档 · 成员与权限
+description: 了解访客、成员、权限组和权限模板的区别，并按最小权限原则开放领地。
+icon: Users
+link: /docs/plugins/dominion/player/permissions
+sidebar:
+  label: 玩家 · 成员与权限
+  order: 12
+---
+
+## 先理解权限生效顺序
+
+对一个领地内的玩家，普通交互权限的判断可以按下面的顺序理解：
+
+1. `dominion.admin` 管理员绕过（如果管理员配置允许绕过）；
+2. 领地内是否存在该玩家的成员记录；
+3. 成员是否属于权限组：属于权限组时，使用权限组的 flag；否则使用成员自己的 flag；
+4. 没有成员记录时，使用领地的访客 flag；
+5. 未认领区域则可能使用 `world-wide/<world>.yml` 的世界范围规则。
+
+环境 flag 不区分具体玩家，直接由领地或世界范围规则控制。`flags.yml` 的 `enable` 为 `false` 时，该 flag 不参与拦截，不能只通过 UI 的开关状态判断它是否生效。
+
+## 四种管理方式
+
+### 访客
+
+访客是没有成员记录的玩家。领地主人可以直接调整领地的访客权限，例如允许访客打开门但不允许破坏方块。访客规则适合公共领地，但不要为了“方便测试”长期打开 `break`、`container` 或 `place`。
+
+### 成员
+
+把玩家加入领地后，可以为这个玩家单独设置 flag：
+
+```text
+/dominion member_add <dominion_name> <player_name>
+/dominion member_set_pri <dominion_name> <member_name> <pri_flag_name> <true|false>
+/dominion member_remove <dominion_name> <member_name>
+```
+
+例如：
+
+```text
+/dominion member_add home Alex
+/dominion member_set_pri home Alex container true
+/dominion member_set_pri home Alex place true
+/dominion member_remove home Alex
+```
+
+新增成员会从当时的访客权限复制一份初始值。之后的访客设置变化，不会自动重置这名成员已经保存的 flag。
+
+### 权限组
+
+权限组适合多人服务器。先建组，再把成员加入组，最后在组上设置权限：
+
+```text
+/dominion group_create <dominion_name> <group_name>
+/dominion group_add_member <dominion_name> <group_name> <member_name>
+/dominion group_set_flag <dominion_name> <group_name> <pri_flag_name> <true|false>
+```
+
+维护组：
+
+```text
+/dominion group_remove_member <dominion_name> <group_name> <member_name>
+/dominion group_rename <dominion_name> <group_name> <new_group_name>
+/dominion group_delete <dominion_name> <group_name>
+```
+
+一个成员加入组后，组 flag 就是该成员的实际权限来源；成员页上原本单独保存的 flag 不再作为主要判断依据。若要给同一个人例外权限，可以把他移出组后直接维护成员 flag，或者建立一个更适合的组。
+
+### 权限模板
+
+模板保存一套可复用的成员权限，适合“建筑组”“仓库组”“访客组”等重复配置：
+
+```text
+/dominion template_create <template_name>
+/dominion template_set_flag <template_name> <pri_flag_name> <true|false>
+/dominion member_apply_template <dominion_name> <member_name> <template_name>
+```
+
+修改和删除模板：
+
+```text
+/dominion template_rename <template_name> <new_name>
+/dominion template_delete <template_name>
+```
+
+应用模板是把模板中的可用 privilege flag 写入成员，并不是建立实时继承关系；之后修改模板不会自动追溯已经应用过的成员。需要持续批量维护时，优先使用权限组。
+
+## 权限 flag 怎么选
+
+常见建造组可以从这些 flag 开始：
+
+| 需求 | 常见 flag |
+| --- | --- |
+| 建造与拆除 | `place`, `break` |
+| 放置/破坏液体或实体 | `place_liquid`, `break_liquid`, `place_entity`, `break_entity` |
+| 容器与自动化 | `container`, `hopper`, `craft`, `anvil`, `enchant`, `brew` |
+| 门、按钮、红石 | `door`, `button`, `lever`, `pressure`, `red_stone_powder`, `repeater`, `comparer` |
+| 农场 | `harvest`, `sowing`, `fertilizer`, `plant_tree`, `feed`, `shear`, `leash` |
+| 交通与移动 | `vehicle_spawn`, `vehicle_destroy`, `riding`, `teleport`, `fly` |
+| 战斗 | `pvp`, `monster_killing`, `animal_killing`, `villager_killing`, `shoot`, `trident` |
+
+flag 的最终可用名称取决于管理员在 `flags.yml` 中是否启用它；命令补全只会列出当前启用的 flag。不要把环境 flag（例如 `creeper_explode`）填到 `member_set_pri` 中。
+
+## 给朋友开放仓库的推荐步骤
+
+1. 先执行 `member_add`，不要直接把访客的 `container` 打开给所有人；
+2. 建一个 `storage` 组，设置 `container`、`hopper`、`craft` 等必要权限；
+3. 把可信玩家加入 `storage` 组；
+4. 用另一名普通测试账号实际尝试打开箱子、破坏方块和使用按钮；
+5. 不需要时移除成员或撤回组权限。
+
+如果玩家“明明是成员却不能操作”，先检查他是否已经被加入一个权限组：加入组后应检查组 flag，而不是继续修改成员 flag。
+
+## 组称号
+
+开启并配置组称号后，玩家可以查看自己可用的称号，并使用：
+
+```text
+/dominion title_use <title_id>
+/dominion title_use -1
+```
+
+`-1` 用于取消当前称号。称号展示依赖管理员的 `group-title` 设置和语言文件，不会改变实际权限。

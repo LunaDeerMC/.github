@@ -21,6 +21,6 @@ http://127.0.0.1:4173/prototypes/footer-transition-poc/
 ## 复用资产
 
 - 场景：`../homepage-theme-lab/public/assets/scenes/`
-- Logo：`../../docs/design/assets/lunadeermc-brand-logo.png`
+- Logo：`../../design/assets/lunadeermc-brand-logo.png`
 
 场景只作为低对比度地平线过渡，页脚文案和 Logo 位于稳定页脚表面。

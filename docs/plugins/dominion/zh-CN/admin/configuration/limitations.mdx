@@ -1,0 +1,98 @@
+---
+title: 管理员文档 · limitations 参考
+description: 配置玩家领地数量、尺寸、经济、传送、子领地和世界范围限制。
+icon: List
+sidebar:
+  label: 管理员文档 · limitations 参考
+  order: 26
+---
+
+## 文件和匹配方式
+
+`plugins/Dominion/limitations/` 中的每个 YAML 文件代表一套限制。`default.yml` 必须存在，是没有匹配到其他限制的玩家的兜底配置。文件名会参与权限匹配：例如 `vip.yml` 可以通过 `group.vip` 或 `dominion.limitation.vip` 赋予玩家。
+
+```text
+plugins/Dominion/limitations/
+├── default.yml
+├── vip.yml
+└── builder.yml
+```
+
+如果玩家同时拥有多套限制，插件使用 `priority` 数值更高的那一套；没有匹配到任何自定义文件时使用 `default`。自定义文件不应只复制几行，建议从当前版本生成的 `default.yml` 开始复制，再按需求修改并保留 `version: 2`。
+
+## 当前默认值
+
+```yaml
+version: 2
+priority: 0
+economy:
+  enable: false
+  price-per-block: 10.0
+  square-only: false
+  refund-rate: 0.85
+  free-for-subs: false
+teleportation:
+  enable: true
+  cooldown: 10
+  delay: 5
+amount-all-over-the-world: 10
+do-not-count-subs: false
+world-limitations:
+  default:
+    amount: 5
+    max-sub-dominion-depth: 3
+    no-higher-than: 320
+    no-lower-than: -64
+    size-max-x: 128
+    size-max-y: 64
+    size-max-z: 128
+    size-min-x: 4
+    size-min-y: 4
+    size-min-z: 4
+    auto-include-vertical: false
+```
+
+## 顶层限制
+
+| 键 | 作用 |
+| --- | --- |
+| `priority` | 多个限制同时匹配时的优先级，数值越高越先使用 |
+| `amount-all-over-the-world` | 玩家跨所有世界可拥有的领地总数；`-1` 表示不限制，但仍可能受到其他规则影响 |
+| `do-not-count-subs` | 为 `true` 时，子领地不计入领地数量限制 |
+| `economy.enable` | 是否启用经济收费；需要 Vault 与可用经济插件 |
+| `economy.price-per-block` | 每个方块的创建价格；插件会对负数进行校正 |
+| `economy.square-only` | 只按水平面积计算，不把高度计入费用 |
+| `economy.refund-rate` | 收缩或删除领地时的退款比例，范围会被限制在 `0–1` |
+| `economy.free-for-subs` | 是否允许子领地免费创建 |
+| `teleportation.enable` | 是否允许使用领地传送 |
+| `teleportation.cooldown` | 传送冷却秒数，`0` 表示无冷却 |
+| `teleportation.delay` | 传送前等待秒数，`0` 表示无延迟 |
+
+## 每世界限制
+
+`world-limitations` 下可以写世界名，例如 `dominion-demo`、`resource`。没有列出的世界使用 `default`：
+
+| 键 | 作用 |
+| --- | --- |
+| `amount` | 该世界可创建的领地数；`-1` 表示该世界不单独限制，但仍受总数限制 |
+| `max-sub-dominion-depth` | 子领地嵌套深度；`0` 禁止子领地，`-1` 不限制 |
+| `no-higher-than` / `no-lower-than` | 领地上下边界，插件要求上限大于下限 |
+| `size-max-x/y/z` | X、Y、Z 三个方向的最大尺寸；`-1` 表示该方向不限制 |
+| `size-min-x/y/z` | X、Y、Z 三个方向的最小尺寸，必须大于 0 |
+| `auto-include-vertical` | 创建选区时是否自动把 Y 范围扩到该世界限制的上下边界 |
+
+X 是东西方向，Z 是南北方向，Y 是高度。玩家选点的边界、最大尺寸和收费计算受匹配到的玩家限制与当前世界设置共同影响；修改后应在目标世界重新选点验证。
+
+## 设计限制策略的例子
+
+### 普通玩家与 VIP
+
+可以保留 `default.yml` 给普通玩家，再创建 `vip.yml`：提高 `priority`、领地数量和最大尺寸，并通过权限插件授予 `group.vip`。不要直接给 VIP `dominion.admin`，否则他获得的是管理员绕过，而不只是更大的额度。
+
+### 资源世界
+
+在 `world-limitations.resource` 中把 `amount` 调低、把 `size-max-*` 调小，或把 `max-sub-dominion-depth` 设为 `0`。这只影响创建/调整限制，不等于未认领区域规则；后者需要看 [`world-wide`](./world-wide)。
+
+## 修改后的检查
+
+执行 `/dominion reload config` 后检查控制台是否成功加载每个限制文件。然后分别用没有自定义权限的账号、拥有 `group.vip` 的账号、拥有两个组的账号测试创建数量与边界，确认最高 `priority` 的文件确实生效。不要删除 `default`，也不要把 `version` 改成插件版本号。

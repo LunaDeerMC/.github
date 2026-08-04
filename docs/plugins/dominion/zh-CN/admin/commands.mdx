@@ -1,0 +1,108 @@
+---
+title: 管理员文档 · 命令参考
+description: 查阅 Dominion 的重载、备份、导入导出、迁移与日常管理员命令。
+icon: Terminal
+sidebar:
+  label: 管理员文档 · 命令参考
+  order: 28
+---
+
+## 使用前提
+
+以下命令以 `/dominion` 为根命令，也可以使用插件注册的 `dom` 别名。管理命令通常需要 `dominion.admin`；领地主人或拥有领地 `admin` flag 的成员，仍然只能在自己有权限的领地范围内管理，不能替代全局管理员权限。
+
+## 配置与缓存
+
+```text
+/dominion reload config
+/dominion reload cache
+/dominion reload all
+```
+
+- `config` 重新加载全局配置、flag、限制和 world-wide 规则。
+- `cache` 重新加载领地、成员和组缓存；不建议频繁执行。
+- `all` 依次执行配置与缓存重载，适合一次修改多个运行时配置后的维护窗口。
+
+如果 YAML 解析失败，先恢复文件再重载。`reload` 不能加载新插件 JAR，也不能替代修改 Java、服务端核心、数据库连接方式或多服拓扑后的重启。
+
+## 导出与导入
+
+```text
+/dominion export db
+/dominion export mca
+/dominion import db
+/dominion import db confirm
+```
+
+### `export db`
+
+调用插件的数据库备份功能，适合在升级、迁移或进行高风险配置前生成备份。备份位置和文件名由当前发行版的数据库备份管理器决定，请以控制台输出为准。
+
+### `export mca`
+
+根据当前领地覆盖的区域，导出每个世界需要关注的 MCA 文件列表到 `plugins/Dominion/exported-mca-list/`。它是区域清单，不是完整的世界备份；需要恢复世界时仍应使用服务端或面向世界的备份方案。
+
+### `import db confirm`
+
+导入数据库只用于迁移或恢复备份，不用于合并两个数据库。当前数据库非空时可能出现错误、数据覆盖或损坏风险。插件要求显式添加 `confirm`，这是防误操作保护；执行前必须停服或安排维护窗口，并确认备份可以恢复。只输入 `/dominion import db` 不会执行导入。
+
+## 语言文件
+
+```text
+/dominion update_language
+/dominion update_language confirm
+```
+
+不带 `confirm` 时插件只提示风险；带 `confirm` 会从插件内部语言资源重新生成当前语言文件，并可能覆盖你对现有语言文件的修改。执行前备份 `plugins/Dominion/languages/`，如果只想翻译少量文本，先保存自己的差异。
+
+## Residence 迁移
+
+```text
+/dominion migrate <residence_name>
+/dominion migrate_all
+```
+
+先在 `config.yml` 开启 `residence-migration: true`，再在测试服迁移单个 Residence，确认边界、世界、所有者和 flag 映射；确认无误后再按需要执行 `migrate_all`。迁移后关闭开关，保留原 Residence 数据与 Dominion 数据的独立备份，不要把迁移命令当作实时双向同步。
+
+## 代管、查找和普通管理
+
+管理员在处理玩家请求时常用：
+
+```text
+/dominion info
+/dominion tp <dominion_name>
+/dominion give <dominion_name> <player_name> [force]
+/dominion delete <dominion_name> [force]
+/dominion rename <dominion_name> <new_name>
+/dominion set_env <dominion_name> <env_flag_name> <true|false>
+/dominion set_guest <dominion_name> <guest_flag_name> <true|false>
+```
+
+`give` 与带 `force` 的删除/转移属于高风险操作，应先确认名称、目标玩家和数据库备份。`set_env` 修改环境规则，`set_guest` 修改访客权限；如果目标领地存在子领地，应同时检查子领地是否有自己的覆盖设置。
+
+## 批量复制与组织管理
+
+```text
+/dominion copy_env <source> <target>
+/dominion copy_guest <source> <target>
+/dominion copy_member <source> <target>
+/dominion copy_group <source> <target>
+/dominion group_create <dominion_name> <group_name>
+/dominion group_delete <dominion_name> <group_name>
+/dominion group_rename <dominion_name> <old_name> <new_name>
+/dominion group_set_flag <dominion_name> <group_name> <flag> <true|false>
+/dominion group_add_member <dominion_name> <group_name> <player>
+/dominion group_remove_member <dominion_name> <group_name> <player>
+```
+
+复制命令适合在同一服务器内建立相似领地策略，但应先确认源领地和目标领地顺序；权限组的 flag 会覆盖组成员个人设置。批量修改后至少用一名访客、一名普通成员和一名组成员分别验证。
+
+## 管理命令的安全检查清单
+
+执行删除、导入、全量迁移或语言覆盖前，确认：
+
+1. 已有可读取的备份，且备份不在同一块易损磁盘上；
+2. 命令中的领地名、玩家名和文件路径已复核；
+3. 已通知玩家维护窗口；
+4. 已准备回滚步骤；
+5. 执行后保留控制台输出和结果数量。

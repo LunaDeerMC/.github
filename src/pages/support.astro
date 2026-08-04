@@ -1,0 +1,11 @@
+---
+import SupportPage from "../components/site/SupportPage.astro";
+import { loadSiteConfig } from "../lib/site";
+import SiteLayout from "../layouts/SiteLayout.astro";
+
+const locale = "zh-CN" as const;
+const site = loadSiteConfig();
+---
+<SiteLayout title="支持" description="找到 LunaDeerMC 的社区、作品获取方式、赞助渠道与相关政策入口。" locale={locale} currentPath="/support" brandPage>
+  <SupportPage locale={locale} site={site} />
+</SiteLayout>

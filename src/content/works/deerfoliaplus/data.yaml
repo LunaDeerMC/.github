@@ -1,0 +1,23 @@
+name: DeerFoliaPlus
+summary:
+  zh-CN: 基于 DeerFolia 的功能增强型 Minecraft 服务器核心，加入假人、协议互通、自定义配方、姿态和实用命令。
+  en: A feature-focused Minecraft server core based on DeerFolia, adding fake players, protocol bridges, custom recipes, posture actions, and utility commands.
+type: core
+accessModel: free
+lifecycle: active
+featured: true
+publishedAt: "2025-05-22"
+icon: Server
+iconSrc: /assets/works/deerfoliaplus/deerfoliaplus-logo.png
+cover:
+  src: /assets/works/deerfoliaplus/deerfoliaplus-cover.png
+  alt:
+    zh-CN: DeerFoliaPlus 品牌封面：带加号 Logo、DEERFOLIA 彩色字标和右上角 Plus 字标
+    en: "DeerFoliaPlus brand cover with the plus logo, colorful DEERFOLIA wordmark, and Plus suffix"
+compatibility:
+  minecraft:
+    - "26.2"
+  platforms:
+    - DeerFoliaPlus
+docs:
+  root: cores/deerfoliaplus

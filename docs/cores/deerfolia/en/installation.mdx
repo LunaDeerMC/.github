@@ -1,0 +1,101 @@
+---
+title: DeerFolia · Installation and first start
+description: Download DeerFolia, prepare Java 25, start the server, verify generated files, and upgrade safely.
+icon: Download
+sidebar:
+  label: Installation and first start
+  order: 10
+---
+
+## Prepare the host
+
+The current DeerFolia build baseline uses Java 25. Check the Java major version on the same machine that will run the server:
+
+~~~sh
+java -version
+~~~
+
+The reported major version should be 25. A panel, Docker container, or systemd service may use a different Java installation from your interactive shell. Print java -version from the actual startup script if you are unsure.
+
+Also confirm that:
+
+- the disk can hold worlds, backups, and logs;
+- the server user can read and write the working directory;
+- firewall, port forwarding, and the panel command are ready;
+- the important plugins explicitly support Folia or DeerFolia.
+
+## Download a release
+
+Download a release matching your Minecraft version from [GitHub Releases](https://github.com/LunaDeerMC/DeerFolia/releases). The current documentation baseline is tag 26.2.0-bbeb1d1; for another release, follow its title and filename instead of renaming an older jar.
+
+Put the jar in its own server directory, for example:
+
+~~~text
+deerfolia-server/
+├── DeerFolia-26.2.0-bbeb1d1.jar
+└── start.sh
+~~~
+
+DeerFolia is a complete server core. Do not put it in plugins/, and do not keep a Paper, Purpur, or second Folia startup jar in the same command.
+
+## First start
+
+Run the server from its directory. The memory values below are examples; size them for player count, view distance, world count, and host memory:
+
+~~~sh
+java -Xms4G -Xmx8G -jar DeerFolia-26.2.0-bbeb1d1.jar --nogui
+~~~
+
+The first start normally creates eula.txt and stops. Read and accept the [Minecraft EULA](https://www.minecraft.net/eula), change eula=false to eula=true, and run the command again.
+
+Avoid copying an unexplained set of startup flags. Start with the smallest command, verify the core, and add GC, debug, or panel flags one at a time so failures remain diagnosable.
+
+## Verify the first completed start
+
+After the server completes startup, check that:
+
+1. the log has no Java, patch-application, or configuration parsing error;
+2. config/deer-folia.yml exists;
+3. config/kaiiju-entity-throttling.yml also exists when kaiiju-entity-throttling is enabled;
+4. you can join, move, load chunks, teleport, and disconnect once;
+5. important plugins are not rejected and do not continuously report thread-context errors;
+6. you test an entity-heavy machine and an AFK player before changing defaults.
+
+If a configuration file was not created, do not start by creating an empty file yourself. Check whether startup stopped before file generation and fix that earlier error first.
+
+## Migrate from another core
+
+When moving from Paper, Purpur, or Folia:
+
+1. stop the old server and wait for the world save to finish;
+2. copy the full server directory and keep the old jar for rollback;
+3. replace the core referenced by the startup command in the copy;
+4. keep only plugins that are known to support Folia for the first start;
+5. test login, chunks, teleportation, redstone, villagers, farms, and backup jobs;
+6. point the panel or systemd service to the new directory only after the copy is healthy.
+
+Plugin configuration can often be reused, but plugin scheduling, thread-safety, and database access cannot be assumed to be Folia-safe. If a plugin fails, reproduce the problem in a test directory without that plugin.
+
+## Upgrade DeerFolia
+
+Back up worlds, configuration, plugin data, and the current jar before upgrading. Stop the server cleanly, replace the jar, start it, and watch the complete log. DeerFolia's configuration manager adds missing known keys, but it is not a migration tool; compare the configuration before and after every upgrade.
+
+When a release changes behavior:
+
+- test the new jar in a copy first;
+- change one optimization group at a time;
+- record TPS, CPU, memory, and error logs before and after;
+- restore the entire configuration file when a change causes a problem instead of deleting keys whose role is unclear.
+
+## Build from source
+
+Build from source when you need to verify patches, participate in development, or there is no suitable release:
+
+~~~sh
+git clone https://github.com/LunaDeerMC/DeerFolia.git
+cd DeerFolia
+./gradlew applyAllPatches
+./gradlew createPaperclipJar
+~~~
+
+The core is written to DeerFolia-server/build/libs/. The build requires Java 25 and applies patches against the Folia upstream commit pinned by the repository. Regular server owners should prefer GitHub Releases; source builds are for operators who need to verify or develop the core.

@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="1500" viewBox="0 0 1400 1500">
+  <rect width="1400" height="1500" fill="#111827"/>
+  <rect x="0" y="0" width="1400" height="82" fill="#1f2937"/>
+  <circle cx="35" cy="41" r="10" fill="#ef6a62"/>
+  <circle cx="67" cy="41" r="10" fill="#e5b454"/>
+  <circle cx="99" cy="41" r="10" fill="#66c174"/>
+  <text x="140" y="51" fill="#f3f4f6" font-family="Menlo, SFMono-Regular, monospace" font-size="22">plugins/Dominion/config.yml</text>
+  <text x="1100" y="51" fill="#9ca3af" font-family="Menlo, SFMono-Regular, monospace" font-size="18">4.9.1-release · 26.2</text>
+  <rect x="0" y="82" width="78" height="1418" fill="#172033"/>
+  <rect x="78" y="82" width="1322" height="1418" fill="#0f172a"/>
+  <g font-family="Menlo, SFMono-Regular, monospace" font-size="18" xml:space="preserve">
+    <g fill="#64748b" text-anchor="end">
+      <text x="62" y="122">1</text><text x="62" y="150">2</text><text x="62" y="178">3</text><text x="62" y="206">4</text><text x="62" y="234">5</text><text x="62" y="262">6</text><text x="62" y="290">7</text><text x="62" y="318">8</text><text x="62" y="346">9</text><text x="62" y="374">10</text><text x="62" y="402">11</text><text x="62" y="430">12</text><text x="62" y="458">13</text><text x="62" y="486">14</text><text x="62" y="514">15</text><text x="62" y="542">16</text><text x="62" y="570">17</text><text x="62" y="598">18</text><text x="62" y="626">19</text><text x="62" y="654">20</text><text x="62" y="682">21</text><text x="62" y="710">22</text><text x="62" y="738">23</text><text x="62" y="766">24</text><text x="62" y="794">25</text><text x="62" y="822">26</text><text x="62" y="850">27</text><text x="62" y="878">28</text><text x="62" y="906">29</text><text x="62" y="934">30</text><text x="62" y="962">31</text><text x="62" y="990">32</text><text x="62" y="1018">33</text><text x="62" y="1046">34</text><text x="62" y="1074">35</text><text x="62" y="1102">36</text><text x="62" y="1130">37</text><text x="62" y="1158">38</text><text x="62" y="1186">39</text><text x="62" y="1214">40</text><text x="62" y="1242">41</text><text x="62" y="1270">42</text><text x="62" y="1298">43</text><text x="62" y="1326">44</text><text x="62" y="1354">45</text><text x="62" y="1382">46</text><text x="62" y="1410">47</text>
+    </g>
+    <g fill="#e5e7eb">
+      <text x="112" y="122" fill="#fbbf24">version: 4</text>
+      <text x="112" y="150" fill="#93c5fd">database:</text>
+      <text x="136" y="178">type: sqlite</text><text x="136" y="206">host: localhost</text><text x="136" y="234">port: '3306'</text><text x="136" y="262">database: dominion</text><text x="136" y="290">username: dominion</text><text x="136" y="318">password: dominion</text><text x="136" y="346">connection-pool-size: 10</text>
+      <text x="112" y="374" fill="#93c5fd">multi-server:</text>
+      <text x="136" y="402">enable: false</text><text x="136" y="430">server-name: server</text><text x="136" y="458">server-id: 1</text>
+      <text x="112" y="486">language: zh_cn</text>
+      <text x="112" y="514" fill="#93c5fd">ui:</text><text x="136" y="542">default: CHEST</text>
+      <text x="112" y="570">auto-create-radius: 10</text><text x="112" y="598">auto-clean-after-days: 180</text><text x="112" y="626">server-spawn-protection-radius: 10</text><text x="112" y="654">minimum-dominion-distance: 0</text><text x="112" y="682">select-tool: ARROW</text><text x="112" y="710">info-tool: STRING</text>
+      <text x="112" y="738" fill="#93c5fd">plugin-message:</text><text x="136" y="766">default-enter-message: '&amp;3{OWNER}: Welcome to {DOM}!'</text><text x="136" y="794">default-leave-message: '&amp;3{OWNER}: Leaving {DOM}...'</text><text x="136" y="822">no-permission-display-place: ACTION_BAR</text><text x="136" y="850">enter-leave-display-place: ACTION_BAR</text>
+      <text x="112" y="878" fill="#93c5fd">border-display:</text><text x="136" y="906">border-block-material: WHITE_STAINED_GLASS</text><text x="136" y="934">crossing-particle-type: END_ROD</text><text x="136" y="962">boundary-particles-per-edge-block: 4.0</text>
+      <text x="112" y="990">residence-migration: false</text><text x="112" y="1018">admin-bypass: true</text>
+      <text x="112" y="1046" fill="#93c5fd">group-title:</text><text x="136" y="1074">enable: false</text><text x="136" y="1102">prefix: '['</text><text x="136" y="1130">suffix: ']'</text>
+      <text x="112" y="1158" fill="#93c5fd">external-links:</text><text x="136" y="1186">command-help: ''</text><text x="136" y="1214">documentation: https://dominion.lunadeer.cn/notes/doc/player/</text>
+      <text x="112" y="1242">fly-permission-nodes:</text><text x="136" y="1270">- essentials.fly</text><text x="136" y="1298">- cmi.command.fly</text><text x="136" y="1326">- domfly.use</text>
+      <text x="112" y="1354">check-update: true</text><text x="112" y="1382">debug: false</text><text x="112" y="1410">timer: false</text>
+    </g>
+  </g>
+</svg>

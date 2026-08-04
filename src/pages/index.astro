@@ -1,0 +1,20 @@
+---
+import DocsSupport from "../components/home/DocsSupport.astro";
+import FeaturedWorks from "../components/home/FeaturedWorks.astro";
+import HomeClose from "../components/home/HomeClose.astro";
+import HomeHero from "../components/home/HomeHero.astro";
+import { getWorks } from "../lib/content/works";
+import { loadSiteConfig } from "../lib/site";
+import SiteLayout from "../layouts/SiteLayout.astro";
+
+const locale = "zh-CN" as const;
+const site = loadSiteConfig();
+const works = await getWorks();
+---
+
+<SiteLayout title="LunaDeerMC" description="为 Minecraft 社区构建可靠易用的插件、服务端核心与开发工具。" locale={locale} currentPath="/" brandPage>
+  <HomeHero locale={locale} site={site} />
+  <FeaturedWorks locale={locale} works={works} />
+  <DocsSupport locale={locale} />
+  <HomeClose locale={locale} site={site} />
+</SiteLayout>

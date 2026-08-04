@@ -1,0 +1,11 @@
+---
+import DocsDirectory from "../../components/docs/DocsDirectory.astro";
+import { getDocumentSets } from "../../lib/content/documents";
+import SiteLayout from "../../layouts/SiteLayout.astro";
+
+const locale = "zh-CN" as const;
+const sets = await getDocumentSets(locale);
+---
+<SiteLayout title="文档" description="查找 LunaDeerMC 作品的安装、配置与使用说明。" locale={locale} currentPath="/docs" contentPage>
+  <DocsDirectory locale={locale} sets={sets} />
+</SiteLayout>

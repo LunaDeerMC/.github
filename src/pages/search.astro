@@ -1,0 +1,12 @@
+---
+import SearchPage from "../components/site/SearchPage.astro";
+import { getSearchIndex } from "../lib/content/search";
+import SiteLayout from "../layouts/SiteLayout.astro";
+
+const locale = "zh-CN" as const;
+const query = Astro.url.searchParams.get("q") ?? "";
+const records = await getSearchIndex(locale);
+---
+<SiteLayout title="搜索" description="搜索 LunaDeerMC 的作品、文档与支持内容。" locale={locale} currentPath="/search" contentPage>
+  <SearchPage locale={locale} records={records} query={query} />
+</SiteLayout>

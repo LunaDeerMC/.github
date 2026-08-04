@@ -1,0 +1,9 @@
+{
+  "name": "LunaDeerMC",
+  "short_name": "LunaDeerMC",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1b100f",
+  "theme_color": "#1b100f",
+  "icons": [{ "src": "/assets/lunadeermc-brand-logo.png", "sizes": "400x400", "type": "image/png" }]
+}

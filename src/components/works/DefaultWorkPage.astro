@@ -1,0 +1,70 @@
+---
+import { ArrowRight, ArrowUpRight, Check, ExternalLink } from "lucide-astro";
+import { commonCopy, localize, type Locale, withLocale } from "../../i18n/common";
+import type { WorkPageRecord, WorkRecord } from "../../lib/content/types";
+import LunaIcon from "../shared/LunaIcon.astro";
+
+interface Props {
+  locale: Locale;
+  work: WorkRecord;
+  page: WorkPageRecord;
+  Content: any;
+}
+
+const { locale, work, page, Content } = Astro.props;
+const copy = commonCopy[locale];
+const lifecycle = copy.status[work.lifecycle === "early-access" ? "earlyAccess" : work.lifecycle === "archived" ? "archived" : "active"];
+const access = copy.status[work.accessModel];
+const docsUrl = work.docs ? withLocale(locale, `/docs/${work.docs.root}`) : "";
+const linkLabels = { source: locale === "en" ? "Source" : "源码", issues: locale === "en" ? "Issues" : "问题反馈", support: locale === "en" ? "Support" : "支持", community: locale === "en" ? "Community" : "社区", other: "" };
+---
+
+<div class="work-page page-grid" data-work-page>
+  <header class="work-page__header">
+    <div class="work-page__identity"><div class="work-page__icon">{work.iconSrc ? <img class="work-icon-image" src={work.iconSrc} alt="" aria-hidden="true" /> : <LunaIcon name={work.icon} size={31} strokeWidth={1.5} />}</div><div><p class="eyebrow">{copy.types[work.type]}</p><h1>{work.name}</h1><p class="work-page__summary">{localize(work.summary, locale)}</p><div class="work-page__badges"><span>{lifecycle}</span><span>{access}</span></div></div></div>
+    {docsUrl && <a class="button button--primary" href={docsUrl}>{copy.actions.viewDocs}<ArrowRight size={17} /></a>}
+  </header>
+
+  <div class="work-tabs" role="tablist" aria-label={locale === "en" ? "Work sections" : "作品区块"}>
+    <button class="is-active" role="tab" aria-selected="true" data-work-tab="intro">{locale === "en" ? "Introduction" : "介绍"}</button>
+    {page.gallery.length > 0 && <button role="tab" aria-selected="false" data-work-tab="gallery">{locale === "en" ? "Gallery" : "图库"}</button>}
+    {page.github && <button role="tab" aria-selected="false" data-work-tab="releases">{locale === "en" ? "Versions & updates" : "版本与更新"}</button>}
+    {page.acquisition.length > 0 && <button role="tab" aria-selected="false" data-work-tab="acquisition">{locale === "en" ? "Get the work" : "获取方式"}</button>}
+  </div>
+
+  <div class="work-page__layout">
+    <div class="work-page__main">
+      <section class="work-panel is-active" data-work-panel="intro" role="tabpanel"><div class="markdown-body"><Content /></div></section>
+      {page.gallery.length > 0 && <section class="work-panel" data-work-panel="gallery" role="tabpanel" hidden><div class="gallery-grid">{page.gallery.map((item) => <figure><img src={item.src} alt={localize(item.alt, locale)} loading="lazy" /><figcaption>{item.title && <strong>{localize(item.title, locale)}</strong>}{item.description && <span>{localize(item.description, locale)}</span>}</figcaption></figure>)}</div></section>}
+      {page.github && <section class="work-panel" data-work-panel="releases" role="tabpanel" hidden data-releases data-github={page.github}><div class="releases-loading">{locale === "en" ? "Loading public releases…" : "正在加载公开版本……"}</div><noscript><a class="text-link" href={`${page.github}/releases`}>{locale === "en" ? "Open GitHub releases" : "打开 GitHub Releases"}<ExternalLink size={15} /></a></noscript></section>}
+      {page.acquisition.length > 0 && <section class="work-panel" data-work-panel="acquisition" role="tabpanel" hidden><div class="acquisition-list">{page.acquisition.map((option) => <article class:list={["acquisition-option", { "is-recommended": option.recommended }]}><div class="acquisition-option__top"><div><p class="eyebrow">{option.access === "paid" ? copy.status.paid : copy.status.free}</p><h2>{localize(option.name, locale)}</h2></div>{option.priceText && <strong class="acquisition-option__price">{localize(option.priceText, locale)}</strong>}</div><p>{localize(option.description, locale)}</p>{option.benefits && <ul>{option.benefits.map((benefit) => <li><Check size={15} />{localize(benefit, locale)}</li>)}</ul>}<div class="acquisition-option__channels">{option.channels.map((channel) => { const href = channel.url.startsWith("/") ? withLocale(locale, channel.url) : channel.url; return <a class="button button--outline" href={href} target={href.startsWith("http") ? "_blank" : undefined} rel={href.startsWith("http") ? "noreferrer" : undefined}>{channel.actionLabel ? localize(channel.actionLabel, locale) : option.access === "paid" ? (locale === "en" ? "Get access" : "获取授权") : (locale === "en" ? "Download" : "前往下载")}<ArrowUpRight size={15} /></a>; })}</div></article>)}</div></section>}
+    </div>
+    <aside class="work-page__aside">
+      <section class="compatibility-section"><p class="eyebrow">{locale === "en" ? "Compatibility" : "兼容性"}</p>
+        {work.compatibility?.minecraft && <div class="compatibility-group"><strong class="compatibility-group__label">{locale === "en" ? "Supported versions" : "适配版本"}</strong><div class="compatibility-group__values">{work.compatibility.minecraft.map((item) => <span>{item}</span>)}</div></div>}
+        {work.compatibility?.platforms && <div class="compatibility-group"><strong class="compatibility-group__label">{locale === "en" ? "Platforms" : "平台"}</strong><div class="compatibility-group__values">{work.compatibility.platforms.map((item) => <span>{item}</span>)}</div></div>}
+      </section>
+      {page.links.length > 0 && <section><p class="eyebrow">{locale === "en" ? "Related links" : "相关链接"}</p>{page.links.map((link) => { const href = link.url.startsWith("/") ? withLocale(locale, link.url) : link.url; return <a class="aside-link" href={href} target={href.startsWith("http") ? "_blank" : undefined} rel={href.startsWith("http") ? "noreferrer" : undefined}><LunaIcon name={link.icon ?? (link.type === "source" ? "Code2" : link.type === "issues" ? "CircleAlert" : link.type === "support" ? "Heart" : "ExternalLink")} size={16} /><span>{link.type === "other" && link.label ? localize(link.label, locale) : linkLabels[link.type]}</span><ArrowUpRight size={14} /></a>; })}</section>}
+      <section><p class="eyebrow">{locale === "en" ? "Work information" : "作品信息"}</p><div class="info-line"><span>{locale === "en" ? "Published" : "发布"}</span><strong>{work.publishedAt}</strong></div>{page.license && <div class="info-line"><span>{locale === "en" ? "License" : "授权"}</span><strong>{page.license.name}</strong></div>}{work.lifecycle === "archived" && work.archive?.replacement && <a class="aside-link" href={withLocale(locale, `/works/${work.archive.replacement}`)}><span>{locale === "en" ? "See the replacement" : "查看替代作品"}</span><ArrowRight size={14} /></a>}</section>
+    </aside>
+  </div>
+</div>
+
+<script is:inline>
+  (() => {
+    const root = document.querySelector('[data-work-page]');
+    if (!root) return;
+    const buttons = [...root.querySelectorAll('[data-work-tab]')];
+    const panels = [...root.querySelectorAll('[data-work-panel]')];
+    buttons.forEach((button) => button.addEventListener('click', () => { const tab = button.dataset.workTab; buttons.forEach((item) => { const active = item === button; item.classList.toggle('is-active', active); item.setAttribute('aria-selected', String(active)); }); panels.forEach((panel) => { const active = panel.dataset.workPanel === tab; panel.hidden = !active; panel.classList.toggle('is-active', active); }); }));
+    const release = root.querySelector('[data-releases]');
+    if (release) {
+      const github = release.dataset.github.replace('https://github.com/', '').replace(/\/$/, '').replace(/\.git$/, '');
+      const locale = document.documentElement.lang === 'en' ? 'en' : 'zh-CN';
+      const cacheKey = `lunadeer-release:${github}`;
+      const cached = sessionStorage.getItem(cacheKey);
+      const render = (releases) => { if (!releases.length) { release.innerHTML = `<a class="text-link" href="https://github.com/${github}/releases" target="_blank" rel="noreferrer">${locale === 'en' ? 'Open GitHub releases' : '打开 GitHub Releases'} ↗</a>`; return; } release.innerHTML = `<div class="release-list">${releases.slice(0, 6).map((item) => `<a class="release-row" href="${item.html_url}" target="_blank" rel="noreferrer"><span><strong>${item.name || item.tag_name}</strong><small>${item.tag_name} · ${item.published_at?.slice(0, 10) || ''}</small></span><span>↗</span></a>`).join('')}</div>`; };
+      if (cached) { try { render(JSON.parse(cached)); } catch {} } else { fetch(`https://api.github.com/repos/${github}/releases?per_page=6`, { headers: { Accept: 'application/vnd.github+json' } }).then((response) => response.ok ? response.json() : []).then((data) => { const releases = Array.isArray(data) ? data.filter((item) => !item.draft) : []; sessionStorage.setItem(cacheKey, JSON.stringify(releases)); render(releases); }).catch(() => render([])); }
+    }
+  })();
+</script>

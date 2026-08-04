@@ -1,0 +1,21 @@
+---
+import { render } from "astro:content";
+import DocsReader from "../../components/docs/DocsReader.astro";
+import { getDocumentPage, getDocumentPages, getDocumentSetPages } from "../../lib/content/documents";
+import SiteLayout from "../../layouts/SiteLayout.astro";
+
+export async function getStaticPaths() {
+  const pages = await getDocumentPages("zh-CN");
+  return pages.filter((page) => !page.draft).map((page) => ({ params: { slug: page.url.replace(/^\/docs\//, "") } }));
+}
+
+const locale = "zh-CN" as const;
+const path = `/docs/${Astro.params.slug ?? ""}`;
+const page = await getDocumentPage(locale, path);
+if (!page) return Astro.redirect("/404");
+const pages = await getDocumentSetPages(locale, page.category, page.set);
+const rendered = await render(page.entry);
+---
+<SiteLayout title={page.title} description={page.description ?? page.title} locale={locale} currentPath={page.url} contentPage>
+  <DocsReader locale={locale} page={page} pages={pages} Content={rendered.Content} headings={rendered.headings} />
+</SiteLayout>

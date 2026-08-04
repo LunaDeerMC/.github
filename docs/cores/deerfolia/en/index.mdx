@@ -1,0 +1,52 @@
+---
+title: DeerFolia
+description: Consumer-facing DeerFolia documentation for installation, configuration, upgrades, and troubleshooting.
+icon: Server
+link: /docs/cores/deerfolia
+documentSet:
+  order: 30
+  status: active
+---
+
+## Who this documentation is for
+
+These docs are for server owners, operators, and consumers who need to download, deploy, and maintain DeerFolia. They explain whether the core is a good fit and how to start it safely before discussing performance tuning. You do not need to understand Java source code or Paperweight patch development.
+
+DeerFolia is a server core, not a plugin. Use it as the server jar in your startup command. Do not put it in the plugins directory, and do not load DeerFolia configuration inside a Paper or Purpur process.
+
+## Recommended reading order
+
+| What you want to do | Start here |
+| --- | --- |
+| Install or switch cores for the first time | [Installation and first start](./installation) |
+| Understand where configuration lives and when it applies | [Configuration overview](./configuration) |
+| Change every DeerFolia default | [DeerFolia configuration](./configuration/deer-folia) |
+| Limit entities such as zombified piglins and villagers | [Entity throttling](./configuration/entity-throttling) |
+| Understand every optimization and its trade-offs | [Features and optimizations](./features) |
+| Fix startup, plugin, farm, or synchronization problems | [Troubleshooting](./troubleshooting) |
+
+## Version baseline
+
+- DeerFolia: repository tag 26.2.0-bbeb1d1.
+- Minecraft: 26.2.
+- Java: 25.
+- Upstream: PaperMC Folia, with the exact commit pinned by foliaRef in the repository's gradle.properties.
+
+The release and source may move forward. If the downloaded tag, startup log, or generated configuration differs from this documentation, prefer the files produced by the build you are actually running and report the difference in [DeerFolia Issues](https://github.com/LunaDeerMC/DeerFolia/issues).
+
+## Safety boundaries before you start
+
+Back up at least the following before switching server cores:
+
+- every world directory;
+- server.properties, eula.txt, and configuration directories;
+- plugin data, databases, and scheduled jobs;
+- the current server jar and startup scripts.
+
+Use a copy of the production server for the first start. Verify plugin loading, player login, teleportation, chunk loading, and common machines before moving the core to production.
+
+## Decide whether the architecture fits
+
+Folia benefits from running naturally separated player regions in parallel. If players stay in one small area, a Folia-derived core may not be faster, and many traditional Paper plugins will not work without explicit Folia support. Check each plugin's compatibility statement before migrating.
+
+DeerFolia's own optimizations can also change update cadence in high-density entity areas, villager POI checks, pathfinding, and network synchronization for AFK players. Defaults are a starting point for observation, not a universal tuning prescription.

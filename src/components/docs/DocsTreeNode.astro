@@ -1,0 +1,41 @@
+---
+import { ChevronRight, Folder } from "lucide-astro";
+import { type Locale, withLocale } from "../../i18n/common";
+import type { DocumentTreeNode } from "../../lib/content/types";
+import LunaIcon from "../shared/LunaIcon.astro";
+
+interface Props {
+  locale: Locale;
+  node: DocumentTreeNode;
+  currentUrl: string;
+}
+
+const { locale, node, currentUrl } = Astro.props;
+const page = node.page;
+const isCurrent = page ? withLocale(locale, page.url) === currentUrl : false;
+const href = page ? withLocale(locale, page.url) : undefined;
+const pageLabel = page ? (page.label ?? page.title).replace(/^(玩家文档|管理员文档|玩家|管理员)\s*[·•]\s*/, "") : "";
+const isTopLevelFolder = node.path.split("/").length === 1;
+---
+
+{node.children.length > 0 ? (
+  <details class:list={["docs-tree__folder", { "has-current": node.containsCurrent }]} open={node.containsCurrent || isTopLevelFolder}>
+    <summary>
+      <ChevronRight class="docs-tree__chevron" size={14} strokeWidth={1.8} />
+      <Folder class="docs-tree__folder-icon" size={15} strokeWidth={1.8} />
+      <span>{node.label}</span>
+    </summary>
+    <div class="docs-tree__children">
+      {page && href && <a class:list={["docs-tree__link", { "is-current": isCurrent }]} href={href} aria-current={isCurrent ? "page" : undefined}>
+        <LunaIcon name={page.icon ?? "FileText"} class="docs-tree__file-icon" size={14} strokeWidth={1.8} />
+        <span>{pageLabel}</span>
+      </a>}
+      {node.children.map((child) => <Astro.self locale={locale} currentUrl={currentUrl} node={child} />)}
+    </div>
+  </details>
+) : page && href ? (
+  <a class:list={["docs-tree__link", { "is-current": isCurrent }]} href={href} aria-current={isCurrent ? "page" : undefined}>
+    <LunaIcon name={page.icon ?? "FileText"} class="docs-tree__file-icon" size={14} strokeWidth={1.8} />
+    <span>{node.label}</span>
+  </a>
+) : null}

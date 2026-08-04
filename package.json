@@ -1,0 +1,42 @@
+{
+  "name": "lunadeermc-site",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@11.9.0",
+  "scripts": {
+    "dev": "astro dev",
+    "check": "astro check",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "build": "astro check && astro build && pnpm run build:search && pnpm run validate:build",
+    "build:search": "pagefind --site dist",
+    "validate:build": "node scripts/validate-build.mjs",
+    "preview": "astro preview",
+    "test:e2e": "playwright test",
+    "test:all": "pnpm run check && pnpm run test && pnpm run build"
+  },
+  "dependencies": {
+    "@astrojs/mdx": "4.3.3",
+    "@astrojs/react": "4.3.0",
+    "@astrojs/sitemap": "3.6.0",
+    "astro": "5.18.2",
+    "js-yaml": "4.1.0",
+    "lucide-astro": "0.468.0",
+    "pagefind": "1.4.0",
+    "react": "19.1.0",
+    "react-dom": "19.1.0"
+  },
+  "devDependencies": {
+    "@astrojs/check": "0.9.6",
+    "@axe-core/playwright": "4.10.2",
+    "@playwright/test": "1.51.1",
+    "@types/js-yaml": "4.0.9",
+    "@types/react": "19.1.2",
+    "@types/react-dom": "19.1.2",
+    "@fontsource-variable/mona-sans": "5.2.5",
+    "@fontsource/jetbrains-mono": "5.2.5",
+    "typescript": "5.9.3",
+    "vitest": "3.2.4"
+  }
+}

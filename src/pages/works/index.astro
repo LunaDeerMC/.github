@@ -1,0 +1,14 @@
+---
+import WorksDirectory from "../../components/works/WorksDirectory.astro";
+import { getWorks } from "../../lib/content/works";
+import SiteLayout from "../../layouts/SiteLayout.astro";
+
+const locale = "zh-CN" as const;
+const works = await getWorks();
+const category = Astro.url.searchParams.get("category") ?? "all";
+const access = Astro.url.searchParams.get("access") ?? "";
+const lifecycle = Astro.url.searchParams.get("lifecycle") ?? "";
+---
+<SiteLayout title="作品" description="浏览 LunaDeerMC 的插件、服务端核心与开发工具。" locale={locale} currentPath="/works" contentPage>
+  <WorksDirectory locale={locale} works={works} initialCategory={category} initialAccess={access} initialLifecycle={lifecycle} />
+</SiteLayout>

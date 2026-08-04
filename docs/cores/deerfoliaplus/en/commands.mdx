@@ -1,0 +1,116 @@
+---
+title: DeerFoliaPlus · Commands and permissions
+description: List DeerFoliaPlus fake-player, posture, utility, and administrator commands with their permission nodes.
+icon: Terminal
+sidebar:
+  label: Commands and permissions
+  order: 35
+---
+
+## Permission model
+
+Commands use Bukkit permissions. Posture permissions default to TRUE; quick-workbench permissions default to OP; confirm the effective defaults of other utility commands with your permission plugin and startup log. A command appearing in completion does not make it safe for every player.
+
+Test with a non-admin account before exposing a command. Grant individual nodes rather than the broad deerfoliaplus.command parent.
+
+## Posture commands
+
+These commands require posture.enabled:
+
+| Command | Permission | Effect |
+| --- | --- | --- |
+| /sit | deerfoliaplus.command.sit | Sit in place. |
+| /lay | deerfoliaplus.command.lay | Lie down and lock position. |
+| /crawl | deerfoliaplus.command.crawl | Enter crawling while retaining movement. |
+| /get-up | deerfoliaplus.command.get-up | Stand up from a posture. |
+
+Empty-hand right-click chair interaction also requires chair-interaction. With require-side-signs enabled, the chair-row sign condition must also pass.
+
+## Time, weather, and player state
+
+| Command | Permission | Effect |
+| --- | --- | --- |
+| /day | deerfoliaplus.command.day | Set time to day, 1000 ticks. |
+| /noon | deerfoliaplus.command.noon | Set time to noon, 6000 ticks. |
+| /night | deerfoliaplus.command.night | Set time to night, 13000 ticks. |
+| /rain | deerfoliaplus.command.rain | Start rain. |
+| /storm | deerfoliaplus.command.storm | Start a thunderstorm. |
+| /sun | deerfoliaplus.command.sun | Clear rain and thunder. |
+| /fly [player] | deerfoliaplus.command.fly | Toggle flight for yourself or a target player. |
+| /god [player] | deerfoliaplus.command.god | Toggle invulnerability for yourself or a target player. |
+
+Time, weather, target-player state, and item-copy commands can affect a survival server's economy or gameplay. Keep them with trusted administrators by default.
+
+## Items and inspection
+
+| Command | Permission | Effect |
+| --- | --- | --- |
+| /hat | deerfoliaplus.command.hat | Swap the main-hand item with the helmet slot. |
+| /more [amount] | deerfoliaplus.command.more | Set the main-hand item count; without amount, use the maximum stack size. |
+| /inspect player | deerfoliaplus.command.inspect | Inspect and operate the target player's inventory and equipment. |
+| /suicide | deerfoliaplus.command.suicide | Kill yourself. |
+
+inspect is an administrative capability and should be isolated from ordinary players. more can create unintended item quantities, so keep it with a management group.
+
+## Quick workbench commands
+
+These commands default to OP permissions under deerfoliaplus.command:
+
+| Command | Permission | Effect |
+| --- | --- | --- |
+| /enderchest | deerfoliaplus.command.enderchest | Open your ender chest. |
+| /workbench | deerfoliaplus.command.workbench | Open a 3x3 crafting interface. |
+| /craftingtable | deerfoliaplus.command.craftingtable | Alias-style crafting interface. |
+| /stonecutter | deerfoliaplus.command.stonecutter | Open a stonecutter interface. |
+| /loom | deerfoliaplus.command.loom | Open a loom interface. |
+| /grindstone | deerfoliaplus.command.grindstone | Open a grindstone interface. |
+| /anvil | deerfoliaplus.command.anvil | Open an anvil interface. |
+| /cartographytable | deerfoliaplus.command.cartographytable | Open a cartography-table interface. |
+| /smithingtable | deerfoliaplus.command.smithingtable | Open a smithing-table interface. |
+
+These interfaces can open without a nearby block, so permission design must account for the server economy.
+
+## FakePlayer commands
+
+When FakePlayer is enabled, the root command also requires bukkit.command.bot. A normal player's count is controlled by amount-per-player or a bot.amount.N permission; OPs bypass the count limit. A creator normally controls only their own fake players.
+
+~~~text
+/bot create name
+/bot create name skin_name
+/bot remove name
+/bot remove name cancel
+/bot remove name hours minutes seconds
+/bot list
+/bot list world
+/bot tp name player
+/bot tp name x y z
+/bot tp name x y z dimension
+/bot tphere name
+/bot inventory name
+/bot equipment name
+/bot backpack name
+/bot save name
+/bot load name
+~~~
+
+Action and dynamic-config subcommands have additional nodes:
+
+| Capability | Permission |
+| --- | --- |
+| /bot action | bukkit.command.bot.action |
+| /bot config | bukkit.command.bot.config |
+| /bot save | bukkit.command.bot.save |
+| /bot load | bukkit.command.bot.load |
+
+Use completion for action names and arguments:
+
+~~~text
+/bot action name list
+/bot action name stop all
+/bot action name stop index
+/bot action name action_name arguments
+/bot config name config_name
+/bot config name config_name value
+~~~
+
+Fake-player data includes world position, inventory, and custom state. Confirm whether data must be retained before using remove or save.

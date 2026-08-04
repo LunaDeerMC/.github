@@ -1,0 +1,12 @@
+---
+import SearchPage from "../../components/site/SearchPage.astro";
+import { getSearchIndex } from "../../lib/content/search";
+import SiteLayout from "../../layouts/SiteLayout.astro";
+
+const locale = "en" as const;
+const query = Astro.url.searchParams.get("q") ?? "";
+const records = await getSearchIndex(locale);
+---
+<SiteLayout title="Search" description="Search LunaDeerMC work, docs, and support content." locale={locale} currentPath="/en/search" contentPage>
+  <SearchPage locale={locale} records={records} query={query} />
+</SiteLayout>

@@ -1,0 +1,100 @@
+---
+title: 玩家文档 · 命令参考
+description: 当前 Dominion 4.9.1-release 面向玩家的命令、参数和使用示例。
+icon: Terminal
+link: /docs/plugins/dominion/player/commands
+sidebar:
+  label: 玩家 · 命令参考
+  order: 14
+---
+
+## 语法说明
+
+- `<name>` 表示必填参数；`[direction]` 表示可选参数。
+- 命令可以使用完整根命令 `/dominion`，也可以使用插件注册的短别名 `/dom`。
+- 带 `force` 的命令用于确认危险操作，不代表跳过所有限制；管理员、经济和父子领地检查仍可能生效。
+- 领地、成员、权限组和模板参数会提供补全；补全内容由当前玩家可管理的对象决定。
+
+## 打开 UI 与查询
+
+| 命令 | 作用 |
+| --- | --- |
+| `/dominion` | 打开当前玩家选择的 UI；在不支持玩家 UI 的发送者上会显示帮助 |
+| `/dominion ui chest` | 选择 ChestUI 并打开 |
+| `/dominion ui dialog` | 选择 Dialog 并打开；不可用时回退到 ChestUI |
+| `/dominion ui default` | 恢复服务端默认 UI |
+| `/dominion info` | 查看当前位置的领地、所有者、尺寸和高度 |
+
+## 创建和维护领地
+
+```text
+/dominion create <name>
+/dominion auto_create <name>
+/dominion create_sub <name> <dominion_name>
+/dominion auto_create_sub <name> <dominion_name>
+/dominion resize <dominion_name> <expand|contract> <size> [north|east|south|west|up|down]
+/dominion expand <size> [direction]
+/dominion contract <size> [direction]
+```
+
+自动创建使用管理员的 `auto-create-radius`。`resize` 的方向名是完整的 `north`、`east`、`south`、`west`、`up`、`down`，不是旧文档中可能出现的单字母写法。
+
+```text
+/dominion set_tp <dominion_name>
+/dominion tp <dominion_name>
+/dominion rename <dominion_name> <newName>
+/dominion set_map_color <dominion_name> <color>
+/dominion set_msg <dominion_name> <enter|leave> <message>
+```
+
+## 成员、组和模板
+
+```text
+/dominion member_add <dominion_name> <player_name>
+/dominion member_set_pri <dominion_name> <member_name> <pri_flag_name> <true|false>
+/dominion member_remove <dominion_name> <member_name>
+
+/dominion group_create <dominion_name> <group_name>
+/dominion group_rename <dominion_name> <group_name> <new_group_name>
+/dominion group_set_flag <dominion_name> <group_name> <pri_flag_name> <true|false>
+/dominion group_add_member <dominion_name> <group_name> <member_name>
+/dominion group_remove_member <dominion_name> <group_name> <member_name>
+/dominion group_delete <dominion_name> <group_name>
+
+/dominion template_create <template_name>
+/dominion template_rename <template_name> <new_name>
+/dominion template_set_flag <template_name> <pri_flag_name> <true|false>
+/dominion member_apply_template <dominion_name> <member_name> <template_name>
+/dominion template_delete <template_name>
+/dominion title_use <title_id>
+```
+
+## 领地 flag
+
+```text
+/dominion set_env <dominion_name> <env_flag_name> <true|false>
+/dominion set_guest <dominion_name> <guest_flag_name> <true|false>
+```
+
+`set_env` 修改领地环境规则；`set_guest` 修改访客权限。当前命令补全只会显示 `flags.yml` 中 `enable: true` 的 flag。成员和组权限使用前一节中的 `member_set_pri`、`group_set_flag`。
+
+## 复制与所有权
+
+```text
+/dominion copy_env <from> <to>
+/dominion copy_guest <from> <to>
+/dominion copy_member <from> <to>
+/dominion copy_group <from> <to>
+/dominion give <dominion_name> <player_name> [force]
+/dominion delete <dominion_name> [force]
+```
+
+复制命令针对已有领地的环境、访客、成员或组数据，不会复制边界本身。执行前确认源和目标没有写反；所有权转移与删除执行前应先备份。
+
+## 常见命令错误的排查顺序
+
+1. 先检查命令拼写和参数顺序；
+2. 检查自己是否在目标领地内，或是否拥有该领地的管理权限；
+3. 检查 flag 是否在 `flags.yml` 启用；
+4. 检查 `limitations/` 是否限制了数量、尺寸、子领地或传送；
+5. 仍有问题时，记录完整错误消息、服务端版本、插件版本和触发命令，不要只截取最后一行。

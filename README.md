@@ -12,14 +12,14 @@ LunaDeerMC 官网是一个使用 Astro 构建的纯静态品牌官网、作品�
 
 ## 事实源
 
-- [官网设计说明](./docs/website-design-spec.md)
-- [视觉设计索引](./docs/design/README.md)
-- [技术架构](./docs/technical-architecture.md)
-- [完整开发计划与阶段验收](./docs/development-plan.md)
+- [官网设计说明](./design/website-design-spec.md)
+- [视觉设计索引](./design/README.md)
+- [技术架构](./design/technical-architecture/README.md)
+- [完整开发计划与阶段验收](./design/development-plan.md)
 
 ## 品牌资产
 
-官方 Logo 必须直接使用 [`docs/design/assets/lunadeermc-brand-logo.png`](./docs/design/assets/lunadeermc-brand-logo.png) 原始 RGBA 文件。不得重绘、改色、反相、描边或生成主题变体。
+官方 Logo 必须直接使用 [`design/assets/lunadeermc-brand-logo.png`](./design/assets/lunadeermc-brand-logo.png) 原始 RGBA 文件。不得重绘、改色、反相、描边或生成主题变体。
 
 ## 原型
 

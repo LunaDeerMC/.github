@@ -1,0 +1,11 @@
+---
+import AboutPage from "../components/site/AboutPage.astro";
+import { loadSiteConfig } from "../lib/site";
+import SiteLayout from "../layouts/SiteLayout.astro";
+
+const locale = "zh-CN" as const;
+const site = loadSiteConfig();
+---
+<SiteLayout title="关于 LunaDeerMC" description="了解 LunaDeerMC 正在做什么、如何协作，以及如何使用品牌资源。" locale={locale} currentPath="/about" brandPage>
+  <AboutPage locale={locale} site={site} />
+</SiteLayout>

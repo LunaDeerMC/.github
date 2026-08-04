@@ -1,0 +1,23 @@
+name: DeerFolia
+summary:
+  zh-CN: 基于 Folia 的 Minecraft 服务器核心，在区域化多线程基础上提供原版机制恢复与可配置性能优化。
+  en: A Folia-based Minecraft server core with restored vanilla mechanics and configurable performance optimizations for regionized multithreading.
+type: core
+accessModel: free
+lifecycle: active
+featured: true
+publishedAt: "2025-05-22"
+icon: Server
+iconSrc: /assets/works/deerfolia/deerfolia-logo.png
+cover:
+  src: /assets/works/deerfolia/deerfolia-cover.png
+  alt:
+    zh-CN: DeerFolia 品牌封面：深色背景上的 DeerFolia Logo 与字标
+    en: "DeerFolia brand cover: the DeerFolia logo and wordmark on a dark background"
+compatibility:
+  minecraft:
+    - "26.2"
+  platforms:
+    - DeerFolia
+docs:
+  root: cores/deerfolia

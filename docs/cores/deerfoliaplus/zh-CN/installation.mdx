@@ -1,0 +1,88 @@
+---
+title: DeerFoliaPlus · 安装与首次启动
+description: 准备 Java 25、下载 DeerFoliaPlus、完成首次启动、迁移、升级和源码构建。
+icon: Download
+sidebar:
+  label: 安装与首次启动
+  order: 10
+---
+
+## 安装前准备
+
+DeerFoliaPlus 当前构建使用 Java 25。先在实际运行服务器的机器上确认主版本：
+
+~~~sh
+java -version
+~~~
+
+面板、Docker 容器和 systemd 服务可能使用另一套 Java；要在实际启动命令或容器内再次检查。服务器目录还需要具备读写权限、备份空间、开放端口和可回滚的旧核心。
+
+同时确认：
+
+- 主要插件、脚本和管理面板明确支持 Folia 或 DeerFolia；
+- 需要 Syncmatica、Servux 或 Recipe Sync 的玩家知道要安装匹配的客户端模组；
+- 生产目录已有世界、配置、插件数据和数据库备份；
+- 你准备在独立复制目录中完成第一次启动。
+
+## 下载核心
+
+从 [DeerFoliaPlus GitHub Releases](https://github.com/LunaDeerMC/DeerFoliaPlus/releases) 获取与 Minecraft 版本匹配的发行文件。当前资料基准为 26.2.0-eb43c5e；下载其他版本时，以 release 标题、Git tag 和文件名为准。
+
+DeerFoliaPlus 是启动核心，不要把 jar 放入 plugins/，也不要同时让启动脚本加载 Folia、Paper、Purpur 或 DeerFolia 的另一个核心 jar：
+
+~~~text
+deerfoliaplus-test/
+├── DeerFoliaPlus-26.2.x.jar
+└── start.sh
+~~~
+
+## 首次启动
+
+在测试目录先使用最小启动参数：
+
+~~~sh
+java -Xms4G -Xmx8G -jar DeerFoliaPlus-26.2.x.jar --nogui
+~~~
+
+首次启动通常会生成 eula.txt 并停止。阅读并接受 [Minecraft EULA](https://www.minecraft.net/eula) 后，将 eula.txt 中的 eula=false 改为 eula=true，再重新启动。
+
+启动完成后，重点确认：
+
+1. 日志没有 Java、补丁应用或配置解析错误；
+2. config/deer-folia-plus.yml 已生成；
+3. 启用自定义配方后，config/custom-recipes.yml 能被创建并读取；
+4. 玩家能够登录、移动、加载区块、传送和退出；
+5. 主要插件没有持续输出 Folia 线程上下文错误；
+6. 只有在确认客户端模组版本后，才开启 Syncmatica、Servux 或配方同步；
+7. 先用测试玩家验证假人、姿态和快捷命令，再考虑生产开放。
+
+## 从 DeerFolia 或其他核心迁移
+
+迁移前先复制完整服务器目录并保留旧核心。推荐顺序如下：
+
+1. 停止旧服务器并等待世界保存完成；
+2. 复制世界、config、plugins、数据库和启动脚本；
+3. 只在复制目录替换启动脚本引用的 DeerFoliaPlus jar；
+4. 第一次启动只保留已经确认支持 Folia 的插件；
+5. 验证登录、区块、传送、红石、村民、刷怪、备份和客户端连接；
+6. 再逐项启用额外功能，不要一次打开所有协议和管理命令；
+7. 稳定后再让面板或 systemd 指向新目录。
+
+DeerFoliaPlus 的额外设置在 config/deer-folia-plus.yml 中，与 DeerFolia 的 config/deer-folia.yml 不是同一个文件。不要把两份配置相互覆盖。
+
+## 升级
+
+升级前备份世界、config/deer-folia-plus.yml、config/custom-recipes.yml、插件数据、假人数据和 Syncmatica 文件。停服后替换核心，启动后阅读完整日志。配置管理器会补回缺少的已知字段，但不会替你理解自定义配方、权限或客户端协议的行为变化。
+
+## 从源码构建
+
+项目 README 给出的构建顺序是：
+
+~~~sh
+git clone https://github.com/LunaDeerMC/DeerFoliaPlus.git
+cd DeerFoliaPlus
+./gradlew applyAllPatches
+./gradlew createPaperclipJar
+~~~
+
+完成后，服务器核心位于 DeerFoliaPlus-server/build/libs/。构建使用 Java 25。普通服主优先使用发行文件；源码构建适合需要验证补丁或参与开发的情况。

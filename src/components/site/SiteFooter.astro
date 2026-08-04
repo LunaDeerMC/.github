@@ -1,0 +1,43 @@
+---
+import { commonCopy, type Locale, withLocale } from "../../i18n/common";
+import type { SiteConfig } from "../../lib/site";
+import LunaIcon from "../shared/LunaIcon.astro";
+
+interface Props {
+  locale: Locale;
+  site: SiteConfig;
+  contentPage?: boolean;
+}
+
+const { locale, site, contentPage = false } = Astro.props;
+const copy = commonCopy[locale];
+const year = new Date().getFullYear();
+---
+
+<footer class:list={["site-footer", { "site-footer--content": contentPage }]}>
+  <div class="horizon-veil" style={`--veil-image-light: url(${site.scenes.light.foreground}); --veil-image-dark: url(${site.scenes.dark.foreground})`} aria-hidden="true"></div>
+  <div class="site-footer__body page-grid">
+    <div class="footer-brand">
+      <a class="footer-logo" href={withLocale(locale, "/")}>
+        <img src={site.logo} alt="" width="52" height="52" />
+        <span>LunaDeerMC</span>
+      </a>
+      <p>{site.slogan}</p>
+    </div>
+    <nav class="footer-links" aria-label={locale === "en" ? "Footer navigation" : "页脚导航"}>
+      <a href={withLocale(locale, "/works")}>{copy.nav.works}</a>
+      <a href={withLocale(locale, "/docs")}>{copy.nav.docs}</a>
+      <a href={withLocale(locale, "/support")}>{copy.nav.support}</a>
+      <a href={withLocale(locale, "/about")}>{copy.nav.about}</a>
+      <a href={site.github} target="_blank" rel="noreferrer">GitHub <LunaIcon name="ExternalLink" size={14} /></a>
+    </nav>
+    <div class="footer-legal">
+      <span>© {year} LunaDeerMC</span>
+      <nav aria-label={locale === "en" ? "Legal navigation" : "法律导航"}>
+        <a href={withLocale(locale, "/docs/general/legal/privacy")}>{copy.footer.privacy}</a>
+        <a href={withLocale(locale, "/docs/general/legal/terms")}>{copy.footer.terms}</a>
+        <a href={withLocale(locale, "/support#legal")}>{copy.footer.legal}</a>
+      </nav>
+    </div>
+  </div>
+</footer>

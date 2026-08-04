@@ -1,0 +1,53 @@
+---
+title: DeerFolia · 配置文件总览
+description: 了解 DeerFolia 两个配置文件的职责、生成位置、修改顺序和重启边界。
+icon: Settings
+sidebar:
+  label: 配置文件总览
+  order: 20
+---
+
+## 配置文件地图
+
+DeerFolia 自有配置位于服务器根目录的 config/：
+
+| 文件 | 作用 | 是否由 DeerFolia 读取 |
+| --- | --- | --- |
+| deer-folia.yml | Dynamic Activation、异步寻路、网络、Lithium、POI 和 AFK 网络等核心优化 | 每次服务器启动时读取 |
+| kaiiju-entity-throttling.yml | 按实体类型和区域设置更新上限与移除阈值 | deer-folia.yml 开启实体节流后读取 |
+
+Folia/Paper 自己的 global、world-defaults、spigot、bukkit 等配置仍由上游核心负责。本文只解释 DeerFolia 自有文件，不把上游配置复制成另一套文档。
+
+## 配置文件如何生成
+
+DeerFolia 第一次完成配置加载时会创建 deer-folia.yml。如果 kaiiju-entity-throttling 为 true，Kaiiju 实体限制器会同时创建 kaiiju-entity-throttling.yml，并写入默认的 ZombifiedPiglin 和 Axolotl 条目。
+
+配置管理器使用 Java 字段名转换成 kebab-case 键名。例如 asyncPathfindingMaxThreads 会生成 async-pathfinding-max-threads。缺少已知键时，启动时会补回默认值；未知键不会自动变成 DeerFolia 功能。
+
+## 推荐修改顺序
+
+1. 完整停止服务器，等待世界保存完成；
+2. 复制 config/ 下需要修改的文件并加上日期；
+3. 只修改一个功能组或一个实体类型；
+4. 检查 YAML 缩进、冒号、引号和列表格式；
+5. 启动测试服务器，阅读完整日志；
+6. 通过实际玩家、实体密集区域或挂机账号验证；
+7. 确认稳定后再复制到生产服务器。
+
+## 生效方式
+
+当前配置由服务器启动阶段加载，文档没有提供 DeerFolia 配置的安全热重载命令。修改后应完整重启服务器，不要把 Bukkit/Paper 的 reload 当作核心配置迁移工具。特别是 Lithium 优化和异步路径查找，重启是确认配置真正生效的必要步骤。
+
+## YAML 修改注意事项
+
+- YAML 使用空格，不要使用 Tab；
+- 布尔值写 true 或 false，不要写成带引号的字符串；
+- 列表使用短横线，空白列表写成 []；
+- 消息中的冒号、井号、花括号和颜色符号应放在双引号中；
+- 不要删除未知配置段来“修复”启动错误，先恢复最近一次备份；
+- 配置文件中的数值是 tick、区块距离、实体数量或字节数时，先看对应字段说明，不要只凭名称猜单位。
+
+## 继续阅读
+
+- [DeerFolia 配置详解](./deer-folia)：完整的 deer-folia.yml 默认值和逐项解释。
+- [实体节流配置](./entity-throttling)：完整的 kaiiju-entity-throttling.yml 写法、阈值关系和风险。

@@ -6,6 +6,11 @@
 **/.astro/
 **/.cache/
 **/.vite/
+**/.pnpm-store/
+*.tsbuildinfo
+
+# Local scratch files and generated previews
+/tmp/
 
 # Test output
 **/coverage/

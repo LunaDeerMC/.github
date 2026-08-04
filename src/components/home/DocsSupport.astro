@@ -1,0 +1,25 @@
+---
+import { ArrowRight, BookOpen, HeartHandshake } from "lucide-astro";
+import { type Locale, withLocale } from "../../i18n/common";
+
+interface Props { locale: Locale; }
+const { locale } = Astro.props;
+---
+
+<section class="home-guidance page-grid" aria-labelledby="guidance-title">
+  <div class="home-guidance__heading" data-reveal="left">
+    <h2 id="guidance-title">{locale === "en" ? "Detailed documentation and an active community." : "详细的文档与活跃的社区"}</h2>
+  </div>
+  <div class="home-guidance__columns">
+    <a class="guidance-link" href={withLocale(locale, "/docs")} data-reveal="right" style="--reveal-delay: 80ms">
+      <BookOpen class="guidance-link__icon" size={27} strokeWidth={1.55} />
+      <span class="guidance-link__copy"><strong>{locale === "en" ? "Documentation" : "文档"}</strong><small>{locale === "en" ? "From installation to a deeper understanding." : "从安装、配置，到真正理解作品的边界。"}</small></span>
+      <ArrowRight size={18} />
+    </a>
+    <a class="guidance-link" href={withLocale(locale, "/support")} data-reveal="right" style="--reveal-delay: 170ms">
+      <HeartHandshake class="guidance-link__icon" size={27} strokeWidth={1.55} />
+      <span class="guidance-link__copy"><strong>{locale === "en" ? "Support" : "支持"}</strong><small>{locale === "en" ? "Find the right community, acquisition, and policy path." : "找到社区、获取、赞助与政策的正确入口。"}</small></span>
+      <ArrowRight size={18} />
+    </a>
+  </div>
+</section>

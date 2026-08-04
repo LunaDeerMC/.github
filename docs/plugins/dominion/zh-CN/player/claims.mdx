@@ -1,0 +1,155 @@
+---
+title: 玩家文档 · 领地工作流
+description: 选择区域、创建领地、维护边界、设置传送点和处理子领地。
+icon: Compass
+link: /docs/plugins/dominion/player/claims
+sidebar:
+  label: 玩家 · 领地工作流
+  order: 11
+---
+
+## 选点工具与坐标
+
+默认选点工具是 `ARROW`，管理员也可以在 `config.yml` 的 `select-tool` 中换成其他有效物品。拿着选点工具操作方块时：
+
+1. 左键方块，记录第一个角点；
+2. 右键另一个方块，记录第二个角点；
+3. 两个点必须在同一个世界；
+4. 观察插件给出的边界提示，确认 X、Y、Z 范围没有反过来或超出限制；
+5. 再执行创建命令。
+
+选区是一个三维长方体，不是只覆盖地面的一块二维矩形。两个点的 X、Y、Z 会分别取最小值和最大值，最终范围可以用 `/dominion info` 的尺寸与高度输出复核。
+
+## 创建领地
+
+### 手动创建
+
+```text
+/dominion create <name>
+```
+
+例如：
+
+```text
+/dominion create home
+```
+
+插件会按当前选择创建根领地。创建失败时，通常是以下原因之一：选点未完成、两个点不在同一世界、尺寸小于限制、与其他领地相交、离出生点太近、未满足最小间距或经济条件不足。
+
+### 自动创建
+
+```text
+/dominion auto_create <name>
+```
+
+该命令以玩家当前位置为中心，使用服务端 `auto-create-radius` 生成选区。它适合快速保护出生点附近的房子，但不适合精细贴合不规则建筑；需要精确边界时使用手动选点。
+
+### 创建子领地
+
+子领地必须位于父领地内部，适合把公共区域、仓库、农场或租借区域单独分权：
+
+```text
+/dominion create_sub <name> <parent>
+/dominion auto_create_sub <name> <parent>
+```
+
+例如：
+
+```text
+/dominion create_sub storage home
+```
+
+子领地的创建数量、最大嵌套深度、尺寸上下限和是否允许管理员绕过限制，由对应 `limitations/*.yml` 控制。删除父领地时，要特别注意其子领地也可能被一并处理。
+
+## 查看和维护
+
+### 查看当前位置
+
+```text
+/dominion info
+```
+
+输出包括当前领地名称、所有者、长宽高和高度范围。它不改变配置，适合在权限测试前确认玩家实际站在哪个领地中。
+
+### 扩大或缩小
+
+指定领地操作：
+
+```text
+/dominion resize <name> <expand|contract> <size> [north|east|south|west|up|down]
+```
+
+在当前位置操作当前所在领地：
+
+```text
+/dominion expand <size> [direction]
+/dominion contract <size> [direction]
+```
+
+省略方向时，插件会根据玩家朝向推断方向；为了避免误扩到道路或邻居领地，生产服建议明确写出 `north`、`east`、`south`、`west`、`up` 或 `down`。扩缩容仍受最大尺寸、最小尺寸、子领地和重叠检查约束。
+
+### 传送点与传送
+
+站在希望到达的位置执行：
+
+```text
+/dominion set_tp <name>
+```
+
+之后：
+
+```text
+/dominion tp <name>
+```
+
+管理员可以为传送配置冷却和延迟。传送开始后移动、受到限制或不满足目标条件都可能取消传送。
+
+### 名称、消息和地图颜色
+
+```text
+/dominion rename <name> <newName>
+/dominion set_msg <name> enter <message>
+/dominion set_msg <name> leave <message>
+/dominion set_map_color <name> <color>
+```
+
+地图颜色使用颜色值，例如 `#FF5733`。进入/离开消息支持当前语言文件所支持的文本格式；默认消息中的 `{OWNER}` 和 `{DOM}` 会被替换为所有者与领地名称。
+
+### 转让与删除
+
+转让根领地：
+
+```text
+/dominion give <name> <player_name>
+/dominion give <name> <player_name> force
+```
+
+第一次执行可能只会给出确认提示；只有确认后再带 `force` 才会执行。当前实现不允许把子领地直接转让为独立所有权，应该先处理父子结构。
+
+删除领地：
+
+```text
+/dominion delete <name>
+/dominion delete <name> force
+```
+
+删除无法撤销，并且可能涉及子领地；执行前先用 `/dominion info`、UI 的所有权页面和管理员备份确认目标。
+
+## 典型工作流示例
+
+```text
+# 1. 选择两个角点后创建根领地
+/dominion create home
+
+# 2. 在 home 内建立一个只给朋友使用的仓库子领地
+/dominion create_sub storage home
+
+# 3. 设置 home 的传送点与欢迎语
+/dominion set_tp home
+/dominion set_msg home enter &a欢迎来到 {DOM}！
+
+# 4. 查看当前边界
+/dominion info
+```
+
+如果其中任何一步报限制错误，不要先反复换名字；优先查看[管理员限制文件](../admin/configuration/limitations)中对应的尺寸、数量、间距和经济规则。

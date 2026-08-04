@@ -1,0 +1,54 @@
+---
+title: 管理员文档 · 权限节点与权限模型
+description: 解释 Dominion 的 Bukkit 权限、管理员绕过、限制文件权限和领地内 flag。
+icon: KeyRound
+sidebar:
+  label: 管理员文档 · 权限节点与权限模型
+  order: 29
+---
+
+## 插件注册的 Bukkit 权限
+
+Dominion 在 `plugin.yml` 中注册两个主要权限节点：
+
+| 节点 | 默认值 | 用途 |
+| --- | --- | --- |
+| `dominion.default` | `true` | 普通玩家使用插件基础功能的默认权限 |
+| `dominion.admin` | `op` | 使用全局管理员命令，以及在 `admin-bypass: true` 时绕过部分限制 |
+
+`dominion.admin` 默认给 OP，但生产环境建议通过权限插件明确授予可信运维组，避免把 OP 当成唯一的权限管理方案。
+
+## 三层权限不要混淆
+
+### 全局 Bukkit 权限
+
+`dominion.admin` 是服务端权限节点，决定能否使用重载、导入导出、迁移等管理员命令。它不代表玩家在每一块领地中都拥有某个具体 flag 的正常成员设置。
+
+### 领地成员 flag
+
+`admin`、`resize`、`member` 等领地内权限由领地主人或有管理权限的成员分配，控制的是当前领地/子领地中的操作。`admin` flag 允许成员管理普通成员和分组，但不等于全局 `dominion.admin`。
+
+### limitations 文件权限
+
+每个 `limitations/<name>.yml` 都会注册两种匹配节点：
+
+```text
+group.<name>
+dominion.limitation.<name>
+```
+
+例如 `vip.yml` 对应 `group.vip` 和 `dominion.limitation.vip`。玩家同时匹配多个文件时，使用 `priority` 数值更高的限制。它只决定领地数量、尺寸、经济和传送限制，不会自动授予 `dominion.admin`。
+
+## 生效顺序
+
+在一个已认领区域内，插件先处理管理员绕过；普通玩家再按“权限组成员 → 普通成员 → 访客”选择对应 flag。子领地有自己的边界和设置，不能因为玩家是父领地成员就假设他能在子领地中执行所有动作。
+
+成员加入时会复制当时的访客权限作为起点；之后修改访客权限不会自动重置旧成员。成员加入组后，组 flag 成为主要生效来源，因此需要在组页面修改，而不是只改单独成员页面。
+
+## 与权限插件配合的建议
+
+- 给普通玩家保留 `dominion.default`，只给运维组授予 `dominion.admin`。
+- 给 VIP/Builder 授予 `group.vip` 或 `dominion.limitation.vip`，不要为提高额度而授予管理员权限。
+- 修改权限后让玩家重新登录或重载权限插件，排除权限缓存造成的假象。
+- 用 `/lp user <player> permission check dominion.admin` 等权限插件自己的查询命令确认节点，具体命令以所用权限插件为准。
+- 用普通账号验证拒绝路径；OP、控制台和拥有管理员节点的账号不适合验证限制。

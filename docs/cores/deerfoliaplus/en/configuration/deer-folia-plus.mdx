@@ -1,0 +1,135 @@
+---
+title: DeerFoliaPlus · Configuration
+description: Field-by-field guidance for the current source defaults, switches, and risks in deer-folia-plus.yml.
+icon: SlidersHorizontal
+sidebar:
+  label: DeerFoliaPlus configuration
+  order: 21
+---
+
+## Current default file
+
+The structure below follows the current source configuration classes. The generated file also contains comments; use the file produced by the exact build you run when fields differ. Some FakePlayer names and defaults in the README are older, so this page follows the source.
+
+~~~yaml
+fake-player:
+  enable: false
+  always-send-data: true
+  spawn-phantom: true
+  skip-sleep-check: true
+  invulnerable: true
+  prefix: "BOT_"
+  suffix: ""
+  resident-bot: true
+  cache-skin: true
+  regen-amount: 0.0
+  amount-per-player: 2
+
+bedrock-stronghold-generation:
+  enabled: false
+  spacing: 48
+  separation: 12
+
+posture:
+  enabled: false
+  chair-interaction: true
+  require-side-signs: false
+  max-chair-chain-length: 8
+
+syncmatica:
+  enable: false
+  use-quota: false
+  quota-limit: 40000000
+
+servux:
+  structure-protocol: false
+  entity-protocol: false
+
+recipe-sync:
+  neoforge: true
+  fabric: true
+  skip-fabric-on-via-non-native: true
+
+custom-recipe:
+  enabled: false
+~~~
+
+## FakePlayer
+
+FakePlayer is disabled by default. When enabled, players can use /bot to create and control server-side fake players. Data lives in the world save's fakeplayer.dat and fakeplayerdata/, not in config/.
+
+| Key | Default | Meaning |
+| --- | ---: | --- |
+| enable | false | FakePlayer master switch. /bot is unavailable when false. |
+| always-send-data | true | Keep sending fake-player data even when the creator is offline. |
+| spawn-phantom | true | Let the fake player participate in phantom spawning checks. |
+| skip-sleep-check | true | Do not let the fake player block the night-skip sleep check. |
+| invulnerable | true | Make the fake player immune to damage. |
+| prefix | BOT_ | Prefix for fake-player names; Minecraft's total name limit still applies. |
+| suffix | empty | Suffix for fake-player names. |
+| resident-bot | true | Save fake players on shutdown and try to restore them at startup. |
+| cache-skin | true | Cache fake-player skin data. |
+| regen-amount | 0.0 | Health regenerated per second; 0 means no automatic regeneration. |
+| amount-per-player | 2 | Default fake-player limit per non-OP player. A bot.amount.N permission can override it, where N is a number. |
+
+Names must contain 4–16 ASCII letters, digits, or underscores and must not collide with an online player or another fake player. A normal player can control bots they created; OPs bypass the amount and ownership checks.
+
+## Bedrock-style strongholds
+
+| Key | Default | Meaning |
+| --- | ---: | --- |
+| enabled | false | Enable random unlimited stronghold distribution. |
+| spacing | 48 | Average spacing in chunks. |
+| separation | 12 | Minimum spacing in chunks; must be less than spacing. |
+
+This changes world-generation rules. Do not switch it in a long-running production world and expect old chunks to regenerate; test it in a new world or copied server first.
+
+## Posture system
+
+| Key | Default | Meaning |
+| --- | ---: | --- |
+| enabled | false | Enable /sit, /lay, /crawl, /get-up, and chair interaction. |
+| chair-interaction | true | Allow empty-hand right-click on stairs or bottom slabs to sit. |
+| require-side-signs | false | Require ordinary or wall signs at both ends of a chair row. |
+| max-chair-chain-length | 8 | Maximum contiguous stairs or slabs treated as one chair row. |
+
+Sitting and lying lock the player in place; crawling still allows movement. Sneaking, jumping, or /get-up can end some posture states.
+
+## Syncmatica
+
+| Key | Default | Meaning |
+| --- | ---: | --- |
+| enable | false | Enable the server-side Syncmatica protocol. |
+| use-quota | false | Enable an upload quota. |
+| quota-limit | 40000000 | Quota limit in bytes. |
+
+Schematic files are written to server-root syncmatica/litematica/ and upload temp files to syncmatica/temp/. Confirm that players use compatible Syncmatica/Litematica client components, and include this directory in backups and disk monitoring.
+
+## Servux
+
+structure-protocol enables structure-boundary overlays; entity-protocol enables entity and block-entity NBT inspection. Both are disabled by default, and players still need a Servux-capable MiniHUD or Litematica client.
+
+## Recipe Sync
+
+| Key | Default | Meaning |
+| --- | ---: | --- |
+| neoforge | true | Send recipe data through neoforge:recipe_content to NeoForge clients. |
+| fabric | true | Send recipe data through fabric:recipe_sync to Fabric clients. |
+| skip-fabric-on-via-non-native | true | Skip Fabric sync when ViaVersion/ViaBackwards reports a non-native protocol. |
+
+Recipe Sync only sends recipes known by the server; it does not install JEI or another client mod. When a protocol error appears, keep one protocol enabled and verify the client platform before changing more options.
+
+## Custom Recipe
+
+custom-recipe.enabled is false by default. When enabled, the core reads config/custom-recipes.yml and supports shaped, shapeless, smelting, blasting, smoking, campfire_cooking, and stonecutting. The full shape and result-item properties are shown in the custom-recipe section of [Features and client protocols](../features).
+
+Fully restart after editing. A YAML file can parse successfully while its item ID, recipe type, or result is invalid, so check the log and the in-game recipe together.
+
+## When not to change defaults directly
+
+- do not enable FakePlayer just to make a server look populated;
+- do not change stronghold generation in an existing world without a test;
+- do not enable Syncmatica without client support, backups, and disk monitoring;
+- do not override vanilla recipes before testing the resulting gameplay;
+- do not open posture, protocols, and every utility command at once;
+- change one group at a time and keep a rollback copy.

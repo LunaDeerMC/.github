@@ -1,0 +1,57 @@
+---
+title: DeerFolia · Features and optimizations
+description: Understand restored vanilla behavior, performance optimizations, AFK network suppression, and their trade-offs.
+icon: Sparkles
+sidebar:
+  label: Features and optimizations
+  order: 30
+---
+
+## Feature overview
+
+| Feature | Default | Main goal | Watch for |
+| --- | --- | --- | --- |
+| Restored vanilla behavior | On | Restore behavior such as sand duplication where Folia differs | Changes selected upstream defaults |
+| Dynamic Activation of Brain | On | Reduce AI work for distant entities | Farms and villagers may show delay |
+| Async Pathfinding | On | Reduce pathfinding pressure on region ticks | Too many threads can add GC pressure |
+| Kaiiju Entity Throttling | On | Control high-density entity updates | Low limits affect farms and trading halls |
+| Network Optimizations | On | Reduce packet-processing overhead | Debug one option at a time with proxies |
+| Lithium Optimize | On | Optimize hot server paths | Changes require a restart |
+| POI Optimizations | On | Reduce villager POI and golem-check CPU | Check cadence can change |
+| AFK Network Optimization | On | Reduce downstream traffic for AFK players | Resume depends on resynchronization |
+
+## Restored vanilla behavior
+
+DeerFolia restores sand-duplication-related vanilla behavior in its Folia environment and adjusts parts of End teleport handling. This is not an individual configuration switch. If your server must match upstream Folia exactly, validate the differences on a test server first.
+
+## Dynamic Activation of Brain
+
+Distance and a maximum activation interval reduce AI work for distant entities. See [DeerFolia configuration](./configuration/deer-folia#dynamic-activation-of-brain) for the fields and farm-tuning workflow.
+
+## Async Pathfinding
+
+Selected pathfinding work runs asynchronously through a virtual-thread pool. See [DeerFolia configuration](./configuration/deer-folia#async-pathfinding) for thread guidance and rollback.
+
+## Kaiiju Entity Throttling
+
+Selected entity types are throttled and gradually removed per region. It is for extreme density in a target region, not a reason to give every entity a low limit without understanding the gameplay impact. See [Entity throttling](./configuration/entity-throttling) for the full format.
+
+## Network optimizations
+
+DeerFolia includes focused optimizations for VarInt reads/writes and frame encoding. They should not change gameplay. If a network issue appears only with a proxy, compression plugin, or protocol bridge, disable one option at a time in a test copy.
+
+## Lithium-derived optimizations
+
+DeerFolia ports selected Lithium server hot paths and adapts them to the Paper, Moonrise, and Folia execution models. Current groups cover allocations, AI, collections, entities, math, and world paths. Client-only behavior and assumptions that require one mutable main-thread state are not copied directly.
+
+## POI optimizations
+
+POI work reduces the frequency of villager golem checks, secondary sensors, and village-distance calculations. Large villager areas can start with defaults and observe; compare output after changing values in a time-sensitive iron farm.
+
+## AFK network suppression
+
+AFK players still participate in server world logic, but selected chunk, block, entity, world-effect, and UI data is suppressed on the way to the client. When activity resumes, DeerFolia resynchronizes required chunks and entities. Use /afknetstats with administrator permission to inspect accumulated savings.
+
+## Why everything is on by default
+
+Defaults provide a bootable, observable baseline, not a universal tuning profile. When behavior changes, do not disable every optimization at once. Change one group, record the result, and keep only changes that help your workload.

@@ -1,0 +1,11 @@
+---
+import SupportPage from "../../components/site/SupportPage.astro";
+import { loadSiteConfig } from "../../lib/site";
+import SiteLayout from "../../layouts/SiteLayout.astro";
+
+const locale = "en" as const;
+const site = loadSiteConfig();
+---
+<SiteLayout title="Support" description="Find LunaDeerMC community, acquisition, sponsorship, and policy paths." locale={locale} currentPath="/en/support" brandPage>
+  <SupportPage locale={locale} site={site} />
+</SiteLayout>

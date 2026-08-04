@@ -1,0 +1,75 @@
+---
+import { ArrowRight, ExternalLink } from "lucide-astro";
+import { commonCopy, localize, type Locale, withLocale } from "../../i18n/common";
+import type { SiteConfig } from "../../lib/site";
+import LunaIcon from "../shared/LunaIcon.astro";
+
+interface Props { locale: Locale; site: SiteConfig; }
+const { locale, site } = Astro.props;
+const sections = [
+  ["organization", locale === "en" ? "What we do" : "组织介绍"],
+  ["philosophy", locale === "en" ? "Principles" : "开发理念"],
+  ["team", locale === "en" ? "Members" : "成员"],
+  ["open-source", locale === "en" ? "Open source" : "开源"],
+  ["contact", locale === "en" ? "Collaboration & contact" : "合作与联系"],
+  ["brand", locale === "en" ? "Brand resources" : "品牌资源"],
+] as const;
+---
+
+<div class="about-page page-grid" data-about-page>
+  <aside class="about-index" data-reveal="left">
+    <img class="about-index__logo" src={site.logo} alt="" width="100" height="100" />
+    <h1>{locale === "en" ? "About" : "关于"}</h1>
+    <p>{locale === "en" ? "Learn what we make, how we work, and how to contact us." : "这里介绍我们制作什么、如何开发，以及如何联系。"}</p>
+    <nav aria-label={locale === "en" ? "About sections" : "关于页面目录"}>{sections.map(([id, label], index) => <a data-about-link={id} class:list={[{ "is-active": index === 0 }]} aria-current={index === 0 ? "location" : undefined} href={`#${id}`}>{label}</a>)}</nav>
+    <a class="button button--outline about-index__download" href={site.logo} download="lunadeermc-brand-logo.png"><LunaIcon name="Download" size={16} />{locale === "en" ? "Download Logo" : "获取 Logo"}</a>
+  </aside>
+
+  <div class="about-content">
+    <section class="about-opening" id="organization" data-about-section aria-labelledby="about-opening-title">
+      <div data-reveal="left"><h2 id="about-opening-title">{locale === "en" ? "LunaDeerMC is a Minecraft development organization." : "LunaDeerMC 是一个专注于 Minecraft 的开发组织。"}</h2><p>{locale === "en" ? "We make plugins, server cores, and developer tools. We focus on stability, clear usage, and work that can be maintained over time." : "我们制作插件、服务端核心和开发工具，重点是稳定、易用和长期维护。"}</p><a class="text-link" href={withLocale(locale, "/works")}>{commonCopy[locale].actions.viewAll}<ArrowRight size={17} /></a></div>
+      <div class="about-opening__media" data-reveal="right"><img class="scene-image scene-image--light" src={site.scenes.light.foreground} alt={locale === "en" ? "Sunlit pastoral world" : "阳光下的 Minecraft 牧场"} /><img class="scene-image scene-image--dark" src={site.scenes.dark.foreground} alt="" /></div>
+    </section>
+
+    <section class="about-section about-philosophy" id="philosophy" data-about-section aria-labelledby="philosophy-title"><div class="section-heading" data-reveal="left"><h2 id="philosophy-title">{locale === "en" ? "We value practical, stable, and open work." : "我们重视实用、稳定和开放。"}</h2></div><div class="philosophy-grid">{site.philosophy.map((item, index) => <article data-reveal="up" style={`--reveal-delay: ${index * 80}ms`}><LunaIcon name={item.icon} size={30} strokeWidth={1.55} /><h3>{localize(item.title, locale)}</h3><p>{localize(item.description, locale)}</p><a class="text-link" href={withLocale(locale, "/works")}>{locale === "en" ? "See the work" : "查看作品"}<ArrowRight size={15} /></a></article>)}</div></section>
+
+    <section class="about-section about-team" id="team" data-about-section aria-labelledby="team-title"><div class="section-heading" data-reveal="left"><h2 id="team-title">{locale === "en" ? "The people maintaining these works." : "这些作品由谁维护？"}</h2></div><div class="member-list">{site.members.map((member, index) => <div class="member-row" data-reveal="up" style={`--reveal-delay: ${index * 80}ms`}><div class="member-avatar" aria-hidden="true">{member.name.slice(0, 1)}</div><div class="member-copy"><h3>{member.name} <span>{localize(member.role, locale)}</span></h3><p>{localize(member.description, locale)}</p></div><a href={member.github} target="_blank" rel="noreferrer" aria-label={`${member.name} GitHub`}><span>GitHub</span><ExternalLink size={16} /></a></div>)}</div></section>
+
+    <section class="about-section about-compact-sections" id="open-source" data-about-section data-reveal="up" aria-labelledby="open-source-title"><div class="compact-icon"><LunaIcon name="BookOpen" size={30} /></div><div><h2 id="open-source-title">{locale === "en" ? "Source and docs are public." : "源码和文档都公开。"}</h2><p>{locale === "en" ? "Source, docs, and issues stay close to the work so people can inspect, learn, and contribute." : "源码、文档和问题反馈都公开，方便查看、学习和参与。"}</p><a class="text-link" href={site.github} target="_blank" rel="noreferrer">{locale === "en" ? "Visit GitHub organization" : "查看 GitHub 组织"}<ExternalLink size={16} /></a></div></section>
+    <section class="about-section about-compact-sections" id="contact" data-about-section data-reveal="up" aria-labelledby="contact-title"><div class="compact-icon"><LunaIcon name="Mail" size={30} /></div><div><h2 id="contact-title">{locale === "en" ? "Need to collaborate or contact us?" : "需要合作或联系？"}</h2><p>{locale === "en" ? "For technical support, start in the support center. For collaboration and private matters, email the team." : "技术支持请先查看支持中心；合作和其他私事可以直接邮件联系。"}</p><a class="text-link" href={`mailto:${site.email}`}>{site.email}<ArrowRight size={16} /></a></div></section>
+    <section class="about-section about-compact-sections" id="brand" data-about-section data-reveal="up" aria-labelledby="brand-title"><div class="compact-icon"><LunaIcon name="Tag" size={30} /></div><div><h2 id="brand-title">{locale === "en" ? "Use the official brand resources." : "使用官方品牌资源。"}</h2><p>{locale === "en" ? "Keep the original Logo, its proportions, and its black-and-white relationship intact. Do not recolor or distort it." : "请保留官方 Logo 的比例、黑白关系和透明背景，不改色、不变形。"}</p><a class="text-link" href={site.logo} download="lunadeermc-brand-logo.png">{locale === "en" ? "Download the official Logo" : "下载官方 Logo"}<ArrowRight size={16} /></a></div></section>
+  </div>
+</div>
+
+<script is:inline>
+  (() => {
+    const root = document.querySelector('[data-about-page]');
+    if (!root) return;
+    const links = [...root.querySelectorAll('[data-about-link]')];
+    const sections = [...root.querySelectorAll('[data-about-section]')];
+    if (!links.length || !sections.length) return;
+    let frame = 0;
+    const setActive = (id) => links.forEach((link) => {
+      const active = link.dataset.aboutLink === id;
+      link.classList.toggle('is-active', active);
+      if (active) link.setAttribute('aria-current', 'location'); else link.removeAttribute('aria-current');
+    });
+    const update = () => {
+      frame = 0;
+      const navHeight = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--nav-height')) || 72;
+      const marker = window.scrollY + navHeight + Math.min(window.innerHeight * 0.34, 300);
+      let active = sections[0].id;
+      sections.forEach((section) => {
+        if (section.getBoundingClientRect().top + window.scrollY <= marker) active = section.id;
+      });
+      if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4) active = sections[sections.length - 1].id;
+      setActive(active);
+    };
+    const requestUpdate = () => { if (!frame) frame = requestAnimationFrame(update); };
+    links.forEach((link) => link.addEventListener('click', () => setActive(link.dataset.aboutLink)));
+    update();
+    window.addEventListener('scroll', requestUpdate, { passive: true });
+    window.addEventListener('resize', requestUpdate, { passive: true });
+    window.addEventListener('hashchange', requestUpdate);
+  })();
+</script>
