@@ -86,6 +86,11 @@ for (const file of walk(dist).filter((path) => path.endsWith(".html"))) {
   const html = readFileSync(file, "utf8");
   assert(!html.includes("undefined"), `Unexpected undefined value in ${relative(dist, file)}`);
   assert(!html.includes("[object Object]"), `Unexpected object URL in ${relative(dist, file)}`);
+  const rasterReferences = [...html.matchAll(/\/assets\/[^"'#?]+\.(?:png|jpe?g)(?=["'#?])/g)].map(([asset]) => asset);
+  assert(
+    rasterReferences.every((asset) => asset === "/assets/lunadeermc-brand-logo.png"),
+    `Unoptimized raster image reference in ${relative(dist, file)}: ${rasterReferences.join(", ")}`,
+  );
   for (const match of html.matchAll(/(?:src|href)=["'](\/(?:assets|_astro|pagefind)\/[^"'#?]+)["']/g)) {
     const asset = match[1];
     assert(existsSync(join(dist, asset.slice(1))), `Missing local asset ${asset} referenced by ${relative(dist, file)}`);
