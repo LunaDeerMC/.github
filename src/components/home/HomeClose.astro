@@ -1,18 +1,19 @@
 ---
 import { ArrowRight } from "lucide-astro";
 import { type Locale, withLocale } from "../../i18n/common";
-import type { SiteConfig } from "../../lib/site";
+import { avifAssetPath, type SiteConfig } from "../../lib/site";
 
 interface Props { locale: Locale; site: SiteConfig; }
 const { locale, site } = Astro.props;
+const optimizedImages = import.meta.env.PROD;
 ---
 
 <>
   <section class="home-about-close page-grid" aria-labelledby="home-about-title">
     <div class="home-about-close__heading" data-reveal="left"><h2 id="home-about-title">{locale === "en" ? "Make every step part of dependable work." : "关于我们"}</h2></div>
     <div class="home-about-close__visual" aria-hidden="true" data-reveal="right">
-      <img class="scene-image scene-image--light" src={site.scenes.light.foreground} alt={site.scenes.light.alt[locale]} loading="lazy" />
-      <img class="scene-image scene-image--dark" src={site.scenes.dark.foreground} alt="" loading="lazy" />
+      <picture class="scene-image scene-image--light">{optimizedImages && <source srcset={avifAssetPath(site.scenes.light.foreground)} type="image/avif" />}<img src={site.scenes.light.foreground} alt={site.scenes.light.alt[locale]} loading="lazy" decoding="async" /></picture>
+      <picture class="scene-image scene-image--dark">{optimizedImages && <source srcset={avifAssetPath(site.scenes.dark.foreground)} type="image/avif" />}<img src={site.scenes.dark.foreground} alt="" loading="lazy" decoding="async" /></picture>
     </div>
     <div class="home-about-close__copy" data-reveal="up"><p>{locale === "en" ? "We are a small Minecraft development organization focused on reliable work, clear interaction, and knowledge that can be reused by the next person." : "我们是一群 Minecraft 创作者与开发者，关心代码的可靠性、交互的清晰度，以及下一位使用者能否复用已经走过的经验。"}</p><a class="text-link" href={withLocale(locale, "/about")}>{locale === "en" ? "Meet LunaDeerMC" : "了解 LunaDeerMC"}<ArrowRight size={17} /></a></div>
   </section>

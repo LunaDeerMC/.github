@@ -91,10 +91,12 @@ finalizeTree(treeRoot);
   <div class="docs-drawer-backdrop" data-close-doc-drawers></div>
 </div>
 
-<script is:inline>
+<script is:inline data-astro-rerun>
   (() => {
     const root = document.querySelector('[data-docs-reader]');
     if (!root) return;
+    const controller = new AbortController();
+    document.addEventListener('astro:before-swap', () => controller.abort(), { once: true });
     const sidebar = root.querySelector('[data-docs-sidebar]');
     const toc = root.querySelector('[data-docs-toc]');
     const close = () => { root.classList.remove('is-sidebar-open', 'is-toc-open'); document.body.classList.remove('doc-drawer-open'); };
@@ -103,6 +105,6 @@ finalizeTree(treeRoot);
     root.querySelector('[data-close-doc-drawers]')?.addEventListener('click', close);
     sidebar?.querySelectorAll('a').forEach((link) => link.addEventListener('click', close));
     toc?.querySelectorAll('a').forEach((link) => link.addEventListener('click', close));
-    document.addEventListener('keydown', (event) => { if (event.key === 'Escape') close(); });
+    document.addEventListener('keydown', (event) => { if (event.key === 'Escape') close(); }, { signal: controller.signal });
   })();
 </script>

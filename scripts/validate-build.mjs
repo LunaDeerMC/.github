@@ -34,8 +34,10 @@ for (const file of requiredFiles) assert(existsSync(join(dist, file)), `Missing 
 
 for (const theme of ["light", "dark"]) {
   for (const layer of ["sky", "distance", "settlement", "foreground"]) {
-    const asset = `assets/scenes/${theme}/${layer}.webp`;
-    assert(existsSync(join(dist, asset)), `Missing Hero scene layer: ${asset}`);
+    for (const extension of ["webp", "avif"]) {
+      const asset = `assets/scenes/${theme}/${layer}.${extension}`;
+      assert(existsSync(join(dist, asset)), `Missing Hero scene layer: ${asset}`);
+    }
   }
 }
 
@@ -90,6 +92,11 @@ for (const file of walk(dist).filter((path) => path.endsWith(".html"))) {
   assert(
     rasterReferences.every((asset) => asset === "/assets/lunadeermc-brand-logo.png"),
     `Unoptimized raster image reference in ${relative(dist, file)}: ${rasterReferences.join(", ")}`,
+  );
+  const imageTags = [...html.matchAll(/<img\b[^>]*>/g)].map(([tag]) => tag);
+  assert(
+    imageTags.every((tag) => /\bloading="lazy"/.test(tag) && /\bdecoding="async"/.test(tag)),
+    `Image is not lazy and asynchronously decoded in ${relative(dist, file)}`,
   );
   for (const match of html.matchAll(/(?:src|href)=["'](\/(?:assets|_astro|pagefind)\/[^"'#?]+)["']/g)) {
     const asset = match[1];

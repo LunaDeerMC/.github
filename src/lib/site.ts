@@ -43,3 +43,7 @@ export function loadSiteConfig(): SiteConfig {
   cachedSite = parsed.site;
   return cachedSite;
 }
+
+export function avifAssetPath(src: string): string {
+  return src.replace(/\.(?:jpe?g|png|webp)$/i, ".avif");
+}

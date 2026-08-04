@@ -16,7 +16,7 @@ const copy = commonCopy[locale];
   <script is:inline type="application/json" data-full-search-index set:html={JSON.stringify(records)}></script>
 </div>
 
-<script is:inline>
+<script is:inline data-astro-rerun>
   (() => {
     const root = document.querySelector('[data-full-search]');
     if (!root) return;

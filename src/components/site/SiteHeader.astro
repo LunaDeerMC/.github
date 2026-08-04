@@ -24,7 +24,7 @@ const alternatePath = withLocale(alternateLocale, basePath);
   <nav class="site-nav page-grid" aria-label={locale === "en" ? "Primary navigation" : "主导航"}>
     <div class="nav-group nav-group--brand">
       <a class="brand-lockup" href={withLocale(locale, "/")} aria-label={locale === "en" ? "LunaDeerMC home" : "LunaDeerMC 首页"}>
-        <img src={site.logo} alt="" width="34" height="34" />
+        <img src={site.logo} alt="" width="34" height="34" loading="lazy" decoding="async" />
         <span>LunaDeerMC</span>
       </a>
       <a class:list={["nav-link", "nav-link--organization", { "is-active": isActive("/support") }]} href={withLocale(locale, "/support")} aria-current={isActive("/support") ? "page" : undefined}>{copy.nav.support}</a>

@@ -1,6 +1,6 @@
 ---
 import { commonCopy, type Locale, withLocale } from "../../i18n/common";
-import type { SiteConfig } from "../../lib/site";
+import { avifAssetPath, type SiteConfig } from "../../lib/site";
 import LunaIcon from "../shared/LunaIcon.astro";
 
 interface Props {
@@ -12,14 +12,18 @@ interface Props {
 const { locale, site, contentPage = false } = Astro.props;
 const copy = commonCopy[locale];
 const year = new Date().getFullYear();
+const optimizedImages = import.meta.env.PROD;
 ---
 
 <footer class:list={["site-footer", { "site-footer--content": contentPage }]}>
-  <div class="horizon-veil" style={`--veil-image-light: url(${site.scenes.light.foreground}); --veil-image-dark: url(${site.scenes.dark.foreground})`} aria-hidden="true"></div>
+  <div class="horizon-veil" aria-hidden="true">
+    <picture class="horizon-veil__image horizon-veil__image--light">{optimizedImages && <source srcset={avifAssetPath(site.scenes.light.foreground)} type="image/avif" />}<img src={site.scenes.light.foreground} alt="" loading="lazy" decoding="async" /></picture>
+    <picture class="horizon-veil__image horizon-veil__image--dark">{optimizedImages && <source srcset={avifAssetPath(site.scenes.dark.foreground)} type="image/avif" />}<img src={site.scenes.dark.foreground} alt="" loading="lazy" decoding="async" /></picture>
+  </div>
   <div class="site-footer__body page-grid">
     <div class="footer-brand">
       <a class="footer-logo" href={withLocale(locale, "/")}>
-        <img src={site.logo} alt="" width="52" height="52" />
+        <img src={site.logo} alt="" width="52" height="52" loading="lazy" decoding="async" />
         <span>LunaDeerMC</span>
       </a>
       <p>{site.slogan}</p>

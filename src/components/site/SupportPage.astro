@@ -1,7 +1,7 @@
 ---
 import { ArrowRight, ArrowUpRight } from "lucide-astro";
 import { localize, type Locale, withLocale } from "../../i18n/common";
-import type { SiteConfig } from "../../lib/site";
+import { avifAssetPath, type SiteConfig } from "../../lib/site";
 import LunaIcon from "../shared/LunaIcon.astro";
 
 interface Props {
@@ -9,6 +9,7 @@ interface Props {
   site: SiteConfig;
 }
 const { locale, site } = Astro.props;
+const optimizedImages = import.meta.env.PROD;
 const pathways = [
   {
     id: "community",
@@ -71,15 +72,8 @@ const sectionHeadings = {
       </p>
     </div>
     <div class="support-hero__media" aria-hidden="true" data-reveal="right">
-      <img
-        class="scene-image scene-image--light"
-        src={site.scenes.light.foreground}
-        alt=""
-      /><img
-        class="scene-image scene-image--dark"
-        src={site.scenes.dark.foreground}
-        alt=""
-      />
+        <picture class="scene-image scene-image--light">{optimizedImages && <source srcset={avifAssetPath(site.scenes.light.foreground)} type="image/avif" />}<img src={site.scenes.light.foreground} alt="" loading="lazy" decoding="async" /></picture>
+        <picture class="scene-image scene-image--dark">{optimizedImages && <source srcset={avifAssetPath(site.scenes.dark.foreground)} type="image/avif" />}<img src={site.scenes.dark.foreground} alt="" loading="lazy" decoding="async" /></picture>
     </div>
   </section>
 

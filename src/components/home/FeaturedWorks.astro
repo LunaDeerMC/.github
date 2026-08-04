@@ -2,6 +2,7 @@
 import { ArrowRight, ArrowUpRight } from "lucide-astro";
 import { commonCopy, localize, type Locale, withLocale } from "../../i18n/common";
 import type { WorkRecord } from "../../lib/content/types";
+import { avifAssetPath } from "../../lib/site";
 
 interface Props {
   locale: Locale;
@@ -9,6 +10,7 @@ interface Props {
 }
 
 const { locale, works } = Astro.props;
+const optimizedImages = import.meta.env.PROD;
 const copy = commonCopy[locale];
 const candidates = works.filter((work) => work.featured);
 const fallback = candidates.slice(0, 3);
@@ -30,7 +32,7 @@ function status(work: WorkRecord) {
         {fallback.map((work, index) => (
           <a class="work-feature" href={withLocale(locale, `/works/${work.id}`)} data-featured-item data-work-id={work.id} data-reveal="up" style={`--reveal-delay: ${index * 90}ms`}>
             <div class="work-feature__media">
-              <img src={work.cover.src} alt={work.cover.alt ? localize(work.cover.alt, locale) : ""} loading="lazy" />
+              <picture>{optimizedImages && <source srcset={avifAssetPath(work.cover.src)} type="image/avif" />}<img src={work.cover.src} alt={work.cover.alt ? localize(work.cover.alt, locale) : ""} loading="lazy" decoding="async" fetchpriority="low" /></picture>
               <span class="work-feature__index">{String(candidates.indexOf(work) + 1).padStart(2, "0")}</span>
               <span class="work-feature__arrow"><ArrowUpRight size={18} /></span>
             </div>
@@ -44,7 +46,7 @@ function status(work: WorkRecord) {
       </div>
     </div>
     <script is:inline type="application/json" data-featured-candidates set:html={JSON.stringify(candidates)}></script>
-    <script is:inline>
+    <script is:inline data-astro-rerun>
       (() => {
         const grid = document.querySelector('[data-featured-grid]');
         const payload = document.querySelector('[data-featured-candidates]');

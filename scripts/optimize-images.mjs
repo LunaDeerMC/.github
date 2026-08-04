@@ -4,7 +4,7 @@ import { fileURLToPath } from "node:url";
 
 import sharp from "sharp";
 
-const rasterExtensions = new Set([".jpeg", ".jpg", ".png"]);
+const sourceImageExtensions = new Set([".jpeg", ".jpg", ".png", ".webp"]);
 const textExtensions = new Set([".css", ".html", ".js", ".json", ".map", ".txt", ".webmanifest", ".xml"]);
 const preservedFiles = new Set(["assets/lunadeermc-brand-logo.png"]);
 
@@ -36,15 +36,25 @@ function logBuildMessage(logger, message) {
   else console.log(`[image-optimization] ${message}`);
 }
 
+function addAsyncImageAttributes(source) {
+  return source.replace(/<img\b([^>]*?)>/gi, (_match, rawAttributes) => {
+    let attributes = rawAttributes.replace(/\s*\/\s*$/, "");
+    if (!/\bloading\s*=/.test(attributes)) attributes += ' loading="lazy"';
+    if (!/\bdecoding\s*=/.test(attributes)) attributes += ' decoding="async"';
+    return `<img${attributes}>`;
+  });
+}
+
 async function optimizeImages(outputDirectory, logger) {
   const assetsDirectory = join(outputDirectory, "assets");
   const allFiles = await walk(outputDirectory);
   const assetFiles = allFiles.filter((path) => path === assetsDirectory || path.startsWith(`${assetsDirectory}${sep}`));
-  const imageFiles = assetFiles.filter((path) => rasterExtensions.has(extname(path).toLowerCase()));
+  const imageFiles = assetFiles.filter((path) => sourceImageExtensions.has(extname(path).toLowerCase()));
   const replacements = new Map();
   let sourceBytes = 0;
   let optimizedBytes = 0;
   let convertedCount = 0;
+  let avifCount = 0;
 
   for (const sourcePath of imageFiles) {
     const relativePath = toPosixPath(relative(outputDirectory, sourcePath));
@@ -52,44 +62,48 @@ async function optimizeImages(outputDirectory, logger) {
 
     const sourceStats = await stat(sourcePath);
     const sourceExtension = extname(sourcePath);
-    const webpPath = sourcePath.slice(0, -sourceExtension.length) + ".webp";
-    const webpRelativePath = toPosixPath(relative(outputDirectory, webpPath));
 
-    await sharp(sourcePath, { failOn: "none" })
-      .webp({ quality: 82, effort: 5, smartSubsample: true })
-      .toFile(webpPath);
+    if (sourceExtension.toLowerCase() !== ".webp") {
+      const webpPath = sourcePath.slice(0, -sourceExtension.length) + ".webp";
+      const webpRelativePath = toPosixPath(relative(outputDirectory, webpPath));
+      await sharp(sourcePath, { failOn: "none" })
+        .webp({ quality: 82, effort: 5, smartSubsample: true })
+        .toFile(webpPath);
 
-    const webpStats = await stat(webpPath);
-    if (webpStats.size >= sourceStats.size) {
-      await unlink(webpPath);
-      continue;
+      const webpStats = await stat(webpPath);
+      if (webpStats.size < sourceStats.size) {
+        sourceBytes += sourceStats.size;
+        optimizedBytes += webpStats.size;
+        convertedCount += 1;
+        replacements.set(`/${relativePath}`, `/${webpRelativePath}`);
+      } else {
+        await unlink(webpPath);
+      }
     }
 
-    sourceBytes += sourceStats.size;
-    optimizedBytes += webpStats.size;
-    convertedCount += 1;
-    replacements.set(`/${relativePath}`, `/${webpRelativePath}`);
+    const avifPath = sourcePath.slice(0, -sourceExtension.length) + ".avif";
+    await sharp(sourcePath, { failOn: "none" })
+      .avif({ quality: 55, effort: 6 })
+      .toFile(avifPath);
+    avifCount += 1;
   }
 
-  if (replacements.size > 0) {
-    const textFiles = allFiles.filter((path) => textExtensions.has(extname(path).toLowerCase()));
-    const orderedReplacements = [...replacements.entries()].sort(([a], [b]) => b.length - a.length);
+  const textFiles = allFiles.filter((path) => textExtensions.has(extname(path).toLowerCase()));
+  const orderedReplacements = [...replacements.entries()].sort(([a], [b]) => b.length - a.length);
 
-    for (const textPath of textFiles) {
-      const source = await readFile(textPath, "utf8");
-      const rewritten = orderedReplacements.reduce(
-        (content, [from, to]) => content.split(from).join(to),
-        source,
-      );
-      if (rewritten !== source) await writeFile(textPath, rewritten);
-    }
+  for (const textPath of textFiles) {
+    const source = await readFile(textPath, "utf8");
+    let rewritten = orderedReplacements.reduce(
+      (content, [from, to]) => content.split(from).join(to),
+      source,
+    );
+    if (extname(textPath).toLowerCase() === ".html") rewritten = addAsyncImageAttributes(rewritten);
+    if (rewritten !== source) await writeFile(textPath, rewritten);
   }
 
   logBuildMessage(
     logger,
-    convertedCount > 0
-      ? `converted ${convertedCount} image${convertedCount === 1 ? "" : "s"} to WebP; loaded assets reduced by ${formatBytes(sourceBytes - optimizedBytes)}`
-      : "no smaller WebP variants were generated",
+    `generated ${convertedCount} WebP and ${avifCount} AVIF variants; WebP references reduced by ${formatBytes(sourceBytes - optimizedBytes)}`,
   );
 }
 

@@ -2,7 +2,8 @@
 import { type Locale, withLocale } from "../i18n/common";
 import { getSearchIndex } from "../lib/content/search";
 import type { SearchRecord } from "../lib/content/types";
-import { loadSiteConfig } from "../lib/site";
+import { avifAssetPath, loadSiteConfig } from "../lib/site";
+import { ClientRouter } from "astro:transitions";
 import SiteFooter from "../components/site/SiteFooter.astro";
 import SiteHeader from "../components/site/SiteHeader.astro";
 import "../styles/global.css";
@@ -47,8 +48,15 @@ const alternateEn = new URL(withLocale("en", canonicalPath), site.url).toString(
     <link rel="alternate" hreflang="x-default" href={alternateZh} />
     <link rel="icon" type="image/png" href={site.logo} />
     <link rel="manifest" href="/manifest.webmanifest" />
+    {(import.meta.env.PROD && ((currentPath === "/") || (currentPath === "/en/"))) && (
+      <>
+        <link rel="preload" as="image" href={avifAssetPath(site.scenes.light.layers.sky)} type="image/avif" media="(prefers-color-scheme: light)" />
+        <link rel="preload" as="image" href={avifAssetPath(site.scenes.dark.layers.sky)} type="image/avif" media="(prefers-color-scheme: dark)" />
+      </>
+    )}
     <title>{title} — {site.name}</title>
-    <script is:inline>
+    <ClientRouter fallback="swap" />
+    <script is:inline data-astro-rerun>
       (() => {
         document.documentElement.classList.add('has-js');
         const allowed = new Set(["system", "light", "dark"]);
@@ -66,9 +74,13 @@ const alternateEn = new URL(withLocale("en", canonicalPath), site.url).toString(
     <SiteHeader locale={locale} currentPath={currentPath} brandPage={brandPage} site={site} searchIndex={searchIndex} />
     <main id="main-content" class="site-main"><slot /></main>
     <SiteFooter locale={locale} site={site} contentPage={contentPage} />
-    <script is:inline>
+    <script is:inline data-astro-rerun>
       (() => {
         const root = document.documentElement;
+        window.__lunadeerSiteController?.abort();
+        const controller = new AbortController();
+        window.__lunadeerSiteController = controller;
+        const on = (target, type, handler, options = {}) => target?.addEventListener(type, handler, { ...options, signal: controller.signal });
         const header = document.querySelector('[data-header]');
         const menuTrigger = document.querySelector('[data-menu-trigger]');
         const menu = document.querySelector('[data-utility-menu]');
@@ -213,15 +225,15 @@ const alternateEn = new URL(withLocale("en", canonicalPath), site.url).toString(
         }
 
         setTheme(root.dataset.themePreference || 'system');
-        document.querySelectorAll('[data-theme-choice]').forEach((button) => button.addEventListener('click', () => setTheme(button.dataset.themeChoice)));
+        document.querySelectorAll('[data-theme-choice]').forEach((button) => on(button, 'click', () => setTheme(button.dataset.themeChoice)));
         const systemMedia = window.matchMedia('(prefers-color-scheme: dark)');
-        systemMedia.addEventListener?.('change', () => { if (root.dataset.themePreference === 'system') setTheme('system'); });
-        window.addEventListener('storage', (event) => { if (event.key === 'lunadeer-theme') setTheme(event.newValue || 'system'); });
-        menuTrigger?.addEventListener('mousedown', () => { menuTriggerPointerDown = true; });
-        menuTrigger?.addEventListener('mouseup', () => { menuTriggerPointerDown = false; });
-        menuTrigger?.addEventListener('touchstart', () => { menuTriggerPointerDown = true; }, { passive: true });
-        menuTrigger?.addEventListener('touchend', () => { menuTriggerPointerDown = false; });
-        menuTrigger?.addEventListener('click', () => {
+        on(systemMedia, 'change', () => { if (root.dataset.themePreference === 'system') setTheme('system'); });
+        on(window, 'storage', (event) => { if (event.key === 'lunadeer-theme') setTheme(event.newValue || 'system'); });
+        on(menuTrigger, 'mousedown', () => { menuTriggerPointerDown = true; });
+        on(menuTrigger, 'mouseup', () => { menuTriggerPointerDown = false; });
+        on(menuTrigger, 'touchstart', () => { menuTriggerPointerDown = true; }, { passive: true });
+        on(menuTrigger, 'touchend', () => { menuTriggerPointerDown = false; });
+        on(menuTrigger, 'click', () => {
           menuTriggerPointerDown = false;
           if (menuOpenedByHover) {
             setMenu(true);
@@ -238,34 +250,34 @@ const alternateEn = new URL(withLocale("en", canonicalPath), site.url).toString(
           clearMenuCloseTimer();
           menuCloseTimer = window.setTimeout(() => setMenu(false), menuCloseDelay);
         };
-        menuTrigger?.addEventListener('mouseenter', () => {
+        on(menuTrigger, 'mouseenter', () => {
           menuOpenedByHover = true;
           cancelMenuClose();
           setMenu(true);
         });
-        menu?.addEventListener('mouseenter', () => {
+        on(menu, 'mouseenter', () => {
           menuOpenedByHover = true;
           cancelMenuClose();
           setMenu(true);
         });
-        menuTrigger?.addEventListener('mouseleave', scheduleMenuClose);
-        menu?.addEventListener('mouseleave', scheduleMenuClose);
-        menuTrigger?.addEventListener('focus', () => { if (!menuTriggerPointerDown) setMenu(true); });
-        menu?.addEventListener('focusin', () => setMenu(true));
+        on(menuTrigger, 'mouseleave', scheduleMenuClose);
+        on(menu, 'mouseleave', scheduleMenuClose);
+        on(menuTrigger, 'focus', () => { if (!menuTriggerPointerDown) setMenu(true); });
+        on(menu, 'focusin', () => setMenu(true));
         const handleMenuFocusOut = () => {
           window.setTimeout(() => {
             if (!menuTrigger?.matches(':focus') && !menu?.contains(document.activeElement)) setMenu(false);
           }, 0);
         };
-        menuTrigger?.addEventListener('focusout', handleMenuFocusOut);
-        menu?.addEventListener('focusout', handleMenuFocusOut);
-        document.querySelectorAll('[data-open-search]').forEach((button) => button.addEventListener('click', openSearch));
-        document.querySelectorAll('[data-close-search]').forEach((button) => button.addEventListener('click', closeSearch));
-        searchDialog?.addEventListener('close', () => document.body.classList.remove('search-open'));
-        searchInput?.addEventListener('input', () => { activeResult = -1; renderSearch(); });
-        document.querySelectorAll('[data-search-scope]').forEach((button) => button.addEventListener('click', () => { currentScope = button.dataset.searchScope || 'all'; document.querySelectorAll('[data-search-scope]').forEach((item) => item.classList.toggle('is-active', item === button)); activeResult = -1; renderSearch(); }));
-        searchResults?.addEventListener('click', (event) => { const result = event.target.closest('[data-search-result-index]'); if (result) closeSearch(); });
-        document.addEventListener('keydown', (event) => {
+        on(menuTrigger, 'focusout', handleMenuFocusOut);
+        on(menu, 'focusout', handleMenuFocusOut);
+        document.querySelectorAll('[data-open-search]').forEach((button) => on(button, 'click', openSearch));
+        document.querySelectorAll('[data-close-search]').forEach((button) => on(button, 'click', closeSearch));
+        on(searchDialog, 'close', () => document.body.classList.remove('search-open'));
+        on(searchInput, 'input', () => { activeResult = -1; renderSearch(); });
+        document.querySelectorAll('[data-search-scope]').forEach((button) => on(button, 'click', () => { currentScope = button.dataset.searchScope || 'all'; document.querySelectorAll('[data-search-scope]').forEach((item) => item.classList.toggle('is-active', item === button)); activeResult = -1; renderSearch(); }));
+        on(searchResults, 'click', (event) => { const result = event.target.closest('[data-search-result-index]'); if (result) closeSearch(); });
+        on(document, 'keydown', (event) => {
           if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') { event.preventDefault(); openSearch(); return; }
           if (event.key === 'Escape') { if (searchDialog?.open) closeSearch(); else setMenu(false); }
           if (searchDialog?.open && (event.key === 'ArrowDown' || event.key === 'ArrowUp')) {
@@ -280,13 +292,13 @@ const alternateEn = new URL(withLocale("en", canonicalPath), site.url).toString(
             if (target) window.location.href = target.href;
           }
         });
-        document.addEventListener('click', (event) => { if (menu && !menu.hidden && !header?.contains(event.target)) setMenu(false); });
+        on(document, 'click', (event) => { if (menu && !menu.hidden && !header?.contains(event.target)) setMenu(false); });
         const updateScroll = () => header?.classList.toggle('is-scrolled', window.scrollY > 12);
         updateScroll();
-        window.addEventListener('scroll', updateScroll, { passive: true });
+        on(window, 'scroll', updateScroll, { passive: true });
       })();
     </script>
-    <script is:inline>
+    <script is:inline data-astro-rerun>
       (() => {
         const revealItems = [...document.querySelectorAll('[data-reveal]')];
         if (!revealItems.length) return;

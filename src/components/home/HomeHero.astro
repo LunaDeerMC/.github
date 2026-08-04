@@ -1,7 +1,7 @@
 ---
 import { ArrowDown, ArrowRight } from "lucide-astro";
 import { commonCopy, type Locale, withLocale } from "../../i18n/common";
-import type { SiteConfig } from "../../lib/site";
+import { avifAssetPath, type SiteConfig } from "../../lib/site";
 
 interface Props {
   locale: Locale;
@@ -16,6 +16,11 @@ const sceneLayers = [
   { name: "settlement", depth: 2 },
   { name: "foreground", depth: 1 },
 ] as const;
+
+function sceneImageValue(src: string) {
+  if (!import.meta.env.PROD) return `url('${src}')`;
+  return `image-set(url('${avifAssetPath(src)}') type("image/avif"), url('${src}') type("image/webp"))`;
+}
 ---
 
 <section class="home-hero" id="top" data-parallax-hero aria-labelledby="home-title">
@@ -28,7 +33,7 @@ const sceneLayers = [
               class:list={["scene-layer", `scene-layer--${layer.name}`]}
               data-depth={layer.depth}
               data-parallax-layer={layer.name}
-              style={`--scene-depth: ${layer.depth}; --scene-image: url('${site.scenes[theme].layers[layer.name]}')`}
+              style={`--scene-depth: ${layer.depth}; --scene-image: ${sceneImageValue(site.scenes[theme].layers[layer.name])}`}
             ></div>
           ))}
           <div class="scene-fade"></div>
@@ -54,10 +59,12 @@ const sceneLayers = [
   </div>
 </section>
 
-<script is:inline>
+<script is:inline data-astro-rerun>
   (() => {
     const hero = document.querySelector('[data-parallax-hero]');
     if (!hero || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const controller = new AbortController();
+    document.addEventListener('astro:before-swap', () => controller.abort(), { once: true });
     let ticking = false;
     const update = () => {
       const rect = hero.getBoundingClientRect();
@@ -68,6 +75,6 @@ const sceneLayers = [
     };
     const onScroll = () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } };
     update();
-    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('scroll', onScroll, { passive: true, signal: controller.signal });
   })();
 </script>
