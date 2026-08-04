@@ -1,0 +1,98 @@
+---
+github: https://github.com/LunaDeerMC/TimeManager
+license:
+  name: MIT
+  url: https://github.com/LunaDeerMC/TimeManager/blob/master/LICENSE
+links:
+  - type: source
+    url: https://github.com/LunaDeerMC/TimeManager
+  - type: issues
+    url: https://github.com/LunaDeerMC/TimeManager/issues
+  - type: support
+    url: /support#community
+acquisition:
+  - id: open-source
+    name:
+      zh-CN: 开源免费仓库
+      en: Open-source repository
+    access: free
+    description:
+      zh-CN: TimeManager 以 MIT License 发布。当前获取入口是 GitHub 仓库；使用前请核对项目当前的构建产物、Minecraft 版本和 Java 要求。
+      en: TimeManager is released under the MIT License. The current acquisition entry is its GitHub repository; check the current build artifact, Minecraft version, and Java requirements before use.
+    benefits:
+      - zh-CN: MIT License 授权
+        en: MIT License
+      - zh-CN: 每位玩家独立控制自己的客户端时间
+        en: Per-player client-side time control
+      - zh-CN: 支持 Paper、Spigot 与 Folia
+        en: Supports Paper, Spigot, and Folia
+      - zh-CN: 不写入领地、世界或玩家持久化数据
+        en: No claim, world, or player data is persisted by the plugin
+    channels:
+      - name: GitHub
+        url: https://github.com/LunaDeerMC/TimeManager
+        actionLabel:
+          zh-CN: 打开 GitHub
+          en: Open GitHub
+        note:
+          zh-CN: 如果仓库没有提供适合当前版本的预构建 JAR，请按仓库中的 Maven 配置自行构建。
+          en: If the repository does not provide a pre-built JAR for the current version, build it with the repository's Maven configuration.
+---
+
+import Localized from "../../../components/shared/Localized.astro";
+
+<Localized locale="zh-CN">
+
+## 作品介绍
+
+TimeManager 是一个轻量的 Minecraft 时间管理插件。它让玩家只改变自己客户端看到的时间：同一服务器中的其他玩家、世界实际时间和服务器的昼夜循环不会被一起改动。
+
+它适合拍摄建筑或风景、在不同光照下检查作品，以及在不影响其他玩家的情况下临时冻结自己的画面。插件通过玩家时间控制实现效果，不提供世界时间、天气或全服时间表功能。
+
+### 核心能力
+
+- 用 `/ptime set <time>` 为当前玩家设置个人时间。
+- 用 `/ptime freeze` 固定当前个人时间，用 `/ptime unfreeze` 恢复时间推进。
+- 用 `/ptime reset` 完全回到服务器时间，用 `/ptime info` 查看服务器时间、个人时间和当前状态。
+- 支持 Paper、Spigot 与 Folia；项目声明使用 Minecraft API 1.21 和 Java 21。
+- 状态保存在运行时内存中，玩家退出后会清理；插件不提供数据库或跨重启的个人时间保存。
+
+### 使用边界
+
+个人时间只影响执行命令的玩家的客户端画面，不会改变世界中的红石、作物、生物、服务器事件或其他玩家看到的时间。想拍摄“白天”和“夜晚”的两个版本时，可以让拍摄者使用 TimeManager，而不必暂停或修改服务器世界。
+
+`unfreeze` 与 `reset` 不是同一件事：前者取消冻结并让个人时间继续按服务器节奏推进，后者清除个人覆盖状态并恢复完全同步。管理员测试权限时，应使用没有 OP 或额外管理权限的测试账号确认普通玩家的实际行为。
+
+### 文档入口
+
+这套文档只有两个页面：根页面说明管理员安装、首次启动和配置；[命令、时间格式与权限](./commands)面向普通玩家，也补充管理员需要授予的权限节点。
+
+</Localized>
+
+<Localized locale="en">
+
+## Introduction
+
+TimeManager is a small Minecraft time-management plugin. It changes only the time seen by the player who uses it: other players, the actual world time, and the server's day-night cycle continue normally.
+
+It is useful for photographing builds or landscapes, checking a creation under different lighting, and freezing a personal view without affecting anyone else. The plugin controls player time; it is not a world-time, weather, or server-wide schedule system.
+
+### Core capabilities
+
+- Set a personal time with `/ptime set <time>`.
+- Freeze the current personal time with `/ptime freeze`, then resume it with `/ptime unfreeze`.
+- Fully return to server time with `/ptime reset`, or inspect server time, personal time, and status with `/ptime info`.
+- Supports Paper, Spigot, and Folia; the project declares Minecraft API 1.21 and Java 21.
+- Keeps state in runtime memory and cleans it up when a player leaves; it does not provide database or cross-restart persistence.
+
+### Boundaries
+
+Personal time affects only the client view of the player who runs the command. It does not change redstone, crops, mobs, server events, or the time seen by other players. A photographer can capture daylight and nighttime versions without pausing or changing the server world.
+
+`unfreeze` and `reset` are different: the former cancels the frozen state and lets personal time advance with the server's pace, while the latter clears the personal override and restores full synchronization. When checking permissions, administrators should use a test account without OP or extra administrative permissions.
+
+### Documentation entry
+
+This document set has two pages: the root page covers administrator installation, first start, and configuration; [Commands, time formats, and permissions](./commands) covers ordinary player use and the permission nodes administrators may grant.
+
+</Localized>

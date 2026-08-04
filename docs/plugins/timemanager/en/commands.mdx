@@ -1,0 +1,86 @@
+---
+title: Commands, time formats, and permissions
+description: Reference TimeManager player commands, time aliases, freeze and synchronization behavior, and the permission nodes administrators can grant.
+icon: Terminal
+sidebar:
+  label: Commands, time formats, and permissions
+  order: 20
+---
+
+## Before you start
+
+TimeManager uses `/ptime` as its main command. Every subcommand can only be run by a player; the console receives a player-only error. With no arguments, `/ptime` displays the help message.
+
+## Command overview
+
+| Command | Permission | Purpose |
+| --- | --- | --- |
+| `/ptime set <time>` | `ptime.set` | Set your client-side time. |
+| `/ptime reset` | No extra node | Clear the personal override and fully return to server time. |
+| `/ptime freeze` | `ptime.freeze` | Freeze the current personal time. Without an existing override, it starts from the current server time. |
+| `/ptime unfreeze` | `ptime.freeze` | Cancel the frozen state and let personal time advance at the server's pace. |
+| `/ptime info` | No extra node | Show server time, personal time, and synchronized/overridden/frozen status. |
+| `/ptime help` | No extra node | Show command help and accepted time formats. |
+
+`reset`, `info`, and `help` do not have separate TimeManager permission nodes, although a server permission manager can still affect command visibility. When a required node is missing, the plugin returns an in-game error.
+
+## Time formats
+
+`/ptime set` accepts time names or game ticks from `0` through `24000`, inclusive:
+
+| Input | Ticks | Meaning |
+| --- | ---: | --- |
+| `sunrise` | `0` | Around sunrise. |
+| `day` | `1000` | Morning, commonly used as the start of daytime. |
+| `noon` | `6000` | Noon. |
+| `sunset` | `12000` | Around sunset. |
+| `night` | `14000` | Nighttime. |
+| `midnight` | `18000` | Midnight. |
+| Number | `0–24000` | Use the specified game tick directly. |
+
+Names are case-insensitive. Values outside the range, negative numbers, and unrecognized text are rejected with a format error.
+
+## Common workflows
+
+### Temporarily switch to daytime
+
+```text
+/ptime set day
+```
+
+This changes only the executor's view. After taking a photograph, run `/ptime reset` to return to the server's current time.
+
+### Freeze the current view
+
+```text
+/ptime freeze
+```
+
+While frozen, personal time does not continue to change. Resume it with:
+
+```text
+/ptime unfreeze
+```
+
+Use `/ptime reset` when you want to clear the personal override completely rather than only canceling the freeze.
+
+### Inspect the current state
+
+```text
+/ptime info
+```
+
+The output lists server time and personal time separately and reports `SYNCHRONIZED`, `OVERRIDDEN`, or `FROZEN`.
+
+## Permission setup
+
+Both feature permissions are declared with a default value of `true` in `plugin.yml`:
+
+| Permission node | Default | Controls |
+| --- | --- | --- |
+| `ptime.set` | `true` | `/ptime set`. |
+| `ptime.freeze` | `true` | `/ptime freeze` and `/ptime unfreeze`. |
+
+If only a photography or administration group should use personal time, disable inheritance for ordinary groups in your permission manager and grant these nodes as needed. Verify the result with a non-OP account; OP may bypass the normal group rules.
+
+TimeManager does not provide a command for an administrator to set another player's time. The executor is always the current player. When investigating a problem, record the player's permission nodes, exact command, server core version, and console log.

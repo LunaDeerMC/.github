@@ -1,0 +1,25 @@
+name: TimeManager
+summary:
+  zh-CN: 允许玩家独立调整自己客户端时间而不影响服务器实际时间的 Minecraft 插件，适合拍照、建造和个人视角调试。
+  en: A Minecraft plugin that lets each player adjust their client-side time without changing the server world, useful for screenshots, building, and personal visual testing.
+type: plugin
+accessModel: free
+lifecycle: active
+featured: false
+publishedAt: "2025-07-22"
+icon: MoonStar
+iconSrc: /assets/works/timemanager/timemanager-logo.png
+cover:
+  src: /assets/works/timemanager/timemanager-cover-v2.png
+  alt:
+    zh-CN: TimeManager Minecraft 风格封面：一间方块小屋在温暖日落与安静夜色之间过渡
+    en: "TimeManager Minecraft-style cover: a small block-built cottage transitioning from warm sunset to a quiet blue evening"
+compatibility:
+  minecraft:
+    - "1.21.x"
+  platforms:
+    - Paper
+    - Spigot
+    - Folia
+docs:
+  root: plugins/timemanager
