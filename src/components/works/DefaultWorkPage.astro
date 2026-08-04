@@ -1,5 +1,5 @@
 ---
-import { ArrowRight, ArrowUpRight, Check, ExternalLink } from "lucide-astro";
+import { ArrowRight, ArrowUpRight, Check, ExternalLink, Maximize2, X } from "lucide-astro";
 import { commonCopy, localize, type Locale, withLocale } from "../../i18n/common";
 import type { WorkPageRecord, WorkRecord } from "../../lib/content/types";
 import LunaIcon from "../shared/LunaIcon.astro";
@@ -17,6 +17,12 @@ const lifecycle = copy.status[work.lifecycle === "early-access" ? "earlyAccess" 
 const access = copy.status[work.accessModel];
 const docsUrl = work.docs ? withLocale(locale, `/docs/${work.docs.root}`) : "";
 const linkLabels = { source: locale === "en" ? "Source" : "源码", issues: locale === "en" ? "Issues" : "问题反馈", support: locale === "en" ? "Support" : "支持", community: locale === "en" ? "Community" : "社区", other: "" };
+const galleryItems = page.gallery.map((item) => ({
+  ...item,
+  alt: localize(item.alt, locale),
+  title: item.title ? localize(item.title, locale) : "",
+  description: item.description ? localize(item.description, locale) : "",
+}));
 ---
 
 <div class="work-page page-grid" data-work-page>
@@ -35,7 +41,35 @@ const linkLabels = { source: locale === "en" ? "Source" : "源码", issues: loca
   <div class="work-page__layout">
     <div class="work-page__main">
       <section class="work-panel is-active" data-work-panel="intro" role="tabpanel"><div class="markdown-body"><Content /></div></section>
-      {page.gallery.length > 0 && <section class="work-panel" data-work-panel="gallery" role="tabpanel" hidden><div class="gallery-grid">{page.gallery.map((item) => <figure><img src={item.src} alt={localize(item.alt, locale)} loading="lazy" decoding="async" /><figcaption>{item.title && <strong>{localize(item.title, locale)}</strong>}{item.description && <span>{localize(item.description, locale)}</span>}</figcaption></figure>)}</div></section>}
+      {galleryItems.length > 0 && <section class="work-panel" data-work-panel="gallery" role="tabpanel" hidden>
+        <div class="gallery-grid">
+          {galleryItems.map((item) => <figure class="gallery-item">
+            <button
+              class="gallery-item__trigger"
+              type="button"
+              data-gallery-trigger
+              data-gallery-src={item.src}
+              data-gallery-alt={item.alt}
+              data-gallery-title={item.title}
+              data-gallery-description={item.description}
+              aria-label={locale === "en" ? `Open ${item.title || "image"} in full size` : `放大查看${item.title || "图片"}`}
+            >
+              <img src={item.src} alt={item.alt} loading="lazy" decoding="async" />
+              <span class="gallery-item__zoom" aria-hidden="true"><Maximize2 size={17} /></span>
+            </button>
+            <figcaption>{item.title && <strong>{item.title}</strong>}{item.description && <span>{item.description}</span>}</figcaption>
+          </figure>)}
+        </div>
+        <dialog class="gallery-lightbox" data-gallery-lightbox aria-label={locale === "en" ? "Image preview" : "图片预览"}>
+          <div class="gallery-lightbox__surface">
+            <button class="gallery-lightbox__close" type="button" data-gallery-close aria-label={locale === "en" ? "Close image preview" : "关闭图片预览"}><X size={19} /></button>
+            <figure>
+              <img data-gallery-lightbox-image alt="" decoding="async" />
+              <figcaption data-gallery-lightbox-caption hidden><strong data-gallery-lightbox-title hidden></strong><span data-gallery-lightbox-description hidden></span></figcaption>
+            </figure>
+          </div>
+        </dialog>
+      </section>}
       {page.github && <section class="work-panel" data-work-panel="releases" role="tabpanel" hidden data-releases data-github={page.github}><div class="releases-loading">{locale === "en" ? "Loading public releases…" : "正在加载公开版本……"}</div><noscript><a class="text-link" href={`${page.github}/releases`}>{locale === "en" ? "Open GitHub releases" : "打开 GitHub Releases"}<ExternalLink size={15} /></a></noscript></section>}
       {page.acquisition.length > 0 && <section class="work-panel" data-work-panel="acquisition" role="tabpanel" hidden><div class="acquisition-list">{page.acquisition.map((option) => <article class:list={["acquisition-option", { "is-recommended": option.recommended }]}><div class="acquisition-option__top"><div><p class="eyebrow">{option.access === "paid" ? copy.status.paid : copy.status.free}</p><h2>{localize(option.name, locale)}</h2></div>{option.priceText && <strong class="acquisition-option__price">{localize(option.priceText, locale)}</strong>}</div><p>{localize(option.description, locale)}</p>{option.benefits && <ul>{option.benefits.map((benefit) => <li><Check size={15} />{localize(benefit, locale)}</li>)}</ul>}<div class="acquisition-option__channels">{option.channels.map((channel) => { const href = channel.url.startsWith("/") ? withLocale(locale, channel.url) : channel.url; return <a class="button button--outline" href={href} target={href.startsWith("http") ? "_blank" : undefined} rel={href.startsWith("http") ? "noreferrer" : undefined}>{channel.actionLabel ? localize(channel.actionLabel, locale) : option.access === "paid" ? (locale === "en" ? "Get access" : "获取授权") : (locale === "en" ? "Download" : "前往下载")}<ArrowUpRight size={15} /></a>; })}</div></article>)}</div></section>}
     </div>
@@ -57,6 +91,38 @@ const linkLabels = { source: locale === "en" ? "Source" : "源码", issues: loca
     const buttons = [...root.querySelectorAll('[data-work-tab]')];
     const panels = [...root.querySelectorAll('[data-work-panel]')];
     buttons.forEach((button) => button.addEventListener('click', () => { const tab = button.dataset.workTab; buttons.forEach((item) => { const active = item === button; item.classList.toggle('is-active', active); item.setAttribute('aria-selected', String(active)); }); panels.forEach((panel) => { const active = panel.dataset.workPanel === tab; panel.hidden = !active; panel.classList.toggle('is-active', active); }); }));
+    const lightbox = root.querySelector('[data-gallery-lightbox]');
+    const galleryTriggers = [...root.querySelectorAll('[data-gallery-trigger]')];
+    if (lightbox && galleryTriggers.length) {
+      const image = lightbox.querySelector('[data-gallery-lightbox-image]');
+      const caption = lightbox.querySelector('[data-gallery-lightbox-caption]');
+      const title = lightbox.querySelector('[data-gallery-lightbox-title]');
+      const description = lightbox.querySelector('[data-gallery-lightbox-description]');
+      const closeButton = lightbox.querySelector('[data-gallery-close]');
+      let activeTrigger = null;
+      const closeLightbox = () => {
+        if (typeof lightbox.close === 'function' && lightbox.open) lightbox.close();
+        else lightbox.removeAttribute('open');
+      };
+      const updateCaption = (value, element) => {
+        if (!element) return;
+        element.textContent = value || '';
+        element.hidden = !value;
+      };
+      galleryTriggers.forEach((trigger) => trigger.addEventListener('click', () => {
+        activeTrigger = trigger;
+        if (image) { image.src = trigger.dataset.gallerySrc || ''; image.alt = trigger.dataset.galleryAlt || ''; }
+        updateCaption(trigger.dataset.galleryTitle, title);
+        updateCaption(trigger.dataset.galleryDescription, description);
+        if (caption) caption.hidden = !trigger.dataset.galleryTitle && !trigger.dataset.galleryDescription;
+        if (typeof lightbox.showModal === 'function') lightbox.showModal();
+        else lightbox.setAttribute('open', '');
+        closeButton?.focus();
+      }));
+      closeButton?.addEventListener('click', closeLightbox);
+      lightbox.addEventListener('click', (event) => { if (event.target === lightbox) closeLightbox(); });
+      lightbox.addEventListener('close', () => { activeTrigger?.focus(); activeTrigger = null; });
+    }
     const release = root.querySelector('[data-releases]');
     if (release) {
       const github = release.dataset.github.replace('https://github.com/', '').replace(/\/$/, '').replace(/\.git$/, '');
