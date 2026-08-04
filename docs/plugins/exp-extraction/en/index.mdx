@@ -1,0 +1,37 @@
+---
+title: ExpExtraction
+description: Introduction, usage, installation, and configuration docs for ExpExtraction.
+icon: Sparkles
+link: /docs/plugins/exp-extraction
+documentSet:
+  order: 50
+  status: active
+---
+
+## Scope
+
+ExpExtraction is a lightweight Minecraft plugin that stores experience in enchanted bottles. These docs use the repository's `master` branch and `1.3.2` build configuration as their reference; the plugin declares the Minecraft `1.20` API and Folia support, but the target server should still be tested before production use.
+
+It has no database, panel, or complex administration system. An administrator installs the plugin, assigns permissions, and chooses the settings for the two extraction paths; players can then save experience with a command or an enchanting table.
+
+## What it does
+
+- `/extract [amount]`: put experience into a plugin-created bottle; omitting the amount uses the current total but still respects the command limit.
+- Enchanting-table extraction: sneak, hold an empty glass bottle, and right-click an enchanting table to extract the configured amount.
+- Bottle use: right-click while holding a plugin-created bottle to receive its stored experience and consume one bottle.
+- Lightweight deployment: supports Paper and Folia without an additional database or runtime dependency.
+
+## Recommended reading order
+
+| If you want to | Read |
+| --- | --- |
+| Understand the feature and current behavior | [Introduction](./index) |
+| Start extracting and using experience | [Usage](./usage) |
+| Install the plugin, assign permissions, or edit the config | [Installation and configuration](./installation) |
+
+## Defaults and boundaries
+
+- The default command limit is `2000` experience points per bottle.
+- The enchanting-table method extracts `100` points by default, or the player's remaining experience when less is available.
+- `/extract` is a player command and cannot be run from the console.
+- `enchantingTable.enable` is written to the config, but the current enchanting-table event checks `commandExtraction.enable` instead; see [Installation and configuration](./installation).

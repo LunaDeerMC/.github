@@ -1,0 +1,61 @@
+---
+title: ExpExtraction · Usage
+description: Player-facing commands, enchanting-table extraction, and bottle usage for ExpExtraction.
+icon: Terminal
+link: /docs/plugins/exp-extraction/usage
+sidebar:
+  label: Usage
+  order: 20
+---
+
+## Quick start
+
+1. Confirm that ExpExtraction is installed and enabled on the server.
+2. Run `/extract 100`, or run `/extract` and let the plugin calculate the amount from your current experience.
+3. Pick up the generated experience bottle near the player.
+4. Hold the bottle and right-click to return its stored experience to yourself.
+
+For the enchanting-table path, hold an empty glass bottle, sneak, and right-click an enchanting table.
+
+## Extract with the command
+
+```text
+/extract [amount]
+```
+
+| Argument | Meaning |
+| --- | --- |
+| `amount` | Optional non-negative integer for the amount to extract |
+| Omitted | Use the player's current total experience, still subject to the per-bottle limit |
+
+On success, the plugin drops an experience bottle near the player and removes the stored amount from the player's total experience. The default per-bottle limit is `2000` points; when a requested amount is higher, the plugin warns and clamps this extraction to `2000`.
+
+The plugin does not create a bottle when the argument is not an integer, is negative, exceeds the player's available experience, or the player has no experience to extract.
+
+## Extract at an enchanting table
+
+The enchanting-table path has no amount argument:
+
+1. Hold at least one empty glass bottle.
+2. Start sneaking.
+3. Right-click an enchanting table.
+
+Each successful extraction consumes one empty glass bottle and creates one experience bottle. The default amount is `100`; when less experience is available, the actual amount is reduced to the player's remaining experience.
+
+## Use an experience bottle
+
+Plugin-created bottles still use Minecraft's experience-bottle item appearance, but they contain custom data with the stored amount and source player. When a player right-clicks while holding one:
+
+- the stored experience is added directly to the current player;
+- a level-up sound is played and a message reports the amount received;
+- one bottle is consumed;
+- the event is cancelled instead of launching it as a normal projectile.
+
+An ordinary vanilla experience bottle has no ExpExtraction custom data and does not trigger this return behavior.
+
+## Permissions and common limits
+
+- `/extract` requires `expextraction.extract`, which the plugin declares as granted by default.
+- The current enchanting-table path has no separate permission check, so revoking `expextraction.extract` does not automatically disable table extraction.
+- The console cannot run `/extract`; it is a player command, not an administrator console command.
+- If the command stops working, check `commandExtraction.enable`, the permission, and the player's current experience before troubleshooting the server.

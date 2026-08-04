@@ -1,0 +1,24 @@
+name: ExpExtraction
+summary:
+  zh-CN: 将经验封存进附魔之瓶，随时取出或分享给其他玩家的轻量 Minecraft 插件。
+  en: A lightweight Minecraft plugin that stores experience in enchanted bottles for later use or sharing.
+type: plugin
+accessModel: free
+lifecycle: active
+featured: false
+publishedAt: "2026-08-04"
+icon: Sparkles
+iconSrc: /assets/works/exp-extraction/expextraction-logo.png
+cover:
+  src: /assets/works/exp-extraction/expextraction-cover-v2.png
+  alt:
+    zh-CN: ExpExtraction 封面：方块风格的经验瓶在附魔台旁储存经验光粒，右侧显示作品名称
+    en: "ExpExtraction cover: a block-built experience bottle storing glowing experience beside an enchanting table, with the work title on the right"
+compatibility:
+  minecraft:
+    - "1.20.x–1.21.x"
+  platforms:
+    - Paper
+    - Folia
+docs:
+  root: plugins/exp-extraction
