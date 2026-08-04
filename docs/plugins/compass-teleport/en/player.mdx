@@ -1,0 +1,55 @@
+---
+title: CompassTeleport · Player use
+description: Bind a lodestone, prepare a teleport compass, start a teleport, and handle common invalid-target cases.
+icon: Compass
+sidebar:
+  label: Player use
+  order: 10
+---
+
+## What you need
+
+Prepare:
+
+- one ordinary compass;
+- one lodestone;
+- a safe place where the lodestone can remain;
+- enough experience levels to pay the anvil rename cost.
+
+The compass does not need a specific name. When an anvil produces a lodestone compass, the plugin adds the teleport marker and usage instructions to the result.
+
+## Prepare a teleport compass
+
+### 1. Bind the lodestone
+
+Hold the compass and right-click a placed lodestone. The plugin records the destination and tells you in chat to rename the compass.
+
+### 2. Rename it in an anvil
+
+Put the compass in an anvil, enter a name, and take the result. The experience cost is controlled by the administrator's `cost-level` setting. The result includes a “teleport compass” description, the target world, and the target coordinates.
+
+If the result has no teleport instructions, confirm that the compass was bound to a lodestone and check that the server has enabled CompassTeleport.
+
+### 3. Start the teleport
+
+Hold the compass produced by the anvil and right-click the air. The plugin shows a status message, waits for the configured `delay-sec`, and then teleports you near the lodestone.
+
+Right-click the air rather than a block. Right-clicking a lodestone starts the normal binding flow again; right-clicking the air uses an already prepared teleport compass.
+
+## Delay, cooldown, and repeated use
+
+- The pre-teleport wait is controlled by `delay-sec`; avoid moving or starting another interaction while you are waiting for the status message to resolve.
+- After the teleport task completes, the player enters the per-player cooldown configured by `cooldown-sec`. It does not make every player on the server wait together.
+- Using the compass again while a teleport task is still pending does not create a second task; the plugin reports that the current attempt cannot continue.
+- When an administrator sets `delay-sec` to `0`, the plugin omits the visible delay message but still keeps a very short internal scheduler wait. It should not be read as an exact same-tick teleport.
+
+## If the compass becomes invalid
+
+If the chat says that the compass can no longer track its lodestone, check these common causes:
+
+1. The lodestone was broken, moved, or is no longer valid.
+2. The compass lost its vanilla lodestone-tracking state.
+3. The held item is an ordinary compass or was not produced by the plugin's anvil flow.
+4. You do not have `compassteleport.use`.
+
+After replacing the lodestone, use a fresh ordinary compass and prepare a new result instead of relying on the invalid item.

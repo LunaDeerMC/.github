@@ -1,0 +1,90 @@
+---
+github: https://github.com/LunaDeerMC/CompassTeleport
+links:
+  - type: source
+    url: https://github.com/LunaDeerMC/CompassTeleport
+  - type: issues
+    url: https://github.com/LunaDeerMC/CompassTeleport/issues
+  - type: support
+    url: /support#community
+gallery:
+  - src: /assets/works/compass-teleport/compass-rename.png
+    alt:
+      zh-CN: CompassTeleport 在铁砧中为磁石指南针设置名称并生成传送指南针
+      en: CompassTeleport preparing a renamed lodestone compass in an anvil
+    title:
+      zh-CN: 铁砧制作传送指南针
+      en: Prepare the teleport compass
+    description:
+      zh-CN: 指南针绑定磁石后，在铁砧中重命名即可获得带有传送说明的指南针。
+      en: Rename a lodestone-bound compass in an anvil to create a compass with teleport instructions.
+acquisition:
+  - id: open-source
+    name:
+      zh-CN: 开源免费版本
+      en: Open-source release
+    access: free
+    description:
+      zh-CN: 从 GitHub Releases 获取插件 JAR；安装前请核对 Minecraft 版本、服务端平台和文档中的配置说明。
+      en: Get the plugin JAR from GitHub Releases, then check the Minecraft version, server platform, and configuration notes before installing.
+    benefits:
+      - zh-CN: 免费使用
+        en: Free to use
+      - zh-CN: 使用原版指南针与磁石完成传送
+        en: Uses the vanilla compass and lodestone workflow
+      - zh-CN: 可配置传送延迟、冷却和铁砧花费
+        en: Configurable delay, cooldown, and anvil cost
+      - zh-CN: 声明支持 Folia
+        en: Declares Folia support
+    channels:
+      - name: GitHub Releases
+        url: https://github.com/LunaDeerMC/CompassTeleport/releases
+        actionLabel:
+          zh-CN: 前往下载
+          en: Download
+        note:
+          zh-CN: 当前仓库最新发行版为 v1.4.1；下载后请以发行包和服务端日志为准。
+          en: The repository's current latest release is v1.4.1; verify the release package and server log after downloading.
+---
+
+import Localized from "../../../components/shared/Localized.astro";
+
+<Localized locale="zh-CN">
+
+## 作品介绍
+
+CompassTeleport 把原版的磁石指南针变成一条轻量的传送路线：先让指南针绑定磁石，再用铁砧重命名，之后手持成品右键空气即可开始传送。它不增加新的命令或复杂菜单，适合希望保留原版物品体验、又需要更方便进行长途移动的生存服务器。
+
+### 核心能力
+
+- 右键磁石为指南针记录目标位置。
+- 通过铁砧重命名生成带有说明和目标坐标的传送指南针。
+- 右键空气触发延迟传送，并在完成后进入玩家冷却。
+- 由管理员调整传送前延迟、传送后冷却和铁砧经验花费。
+- 在 `plugin.yml` 中声明支持 Folia。
+
+### 使用边界
+
+传送指南针仍然依赖磁石目标：目标被移除、指南针失去磁石追踪状态或物品不是插件识别的铁砧成品时，传送不会执行。权限节点只控制传送操作，不限制普通玩家制作指南针。具体步骤与失败情况见[玩家使用文档](/docs/plugins/compass-teleport/player)；服主和管理员可以继续阅读[管理员配置文档](/docs/plugins/compass-teleport/admin)。
+
+</Localized>
+
+<Localized locale="en">
+
+## Introduction
+
+CompassTeleport turns a vanilla lodestone compass into a lightweight teleport route: bind a compass to a lodestone, rename it in an anvil, then right-click the air while holding the result to start teleporting. It adds no new commands or complex menus, making it a good fit for survival servers that want faster long-distance travel while keeping the vanilla item workflow.
+
+### Core capabilities
+
+- Right-click a lodestone to record the compass destination.
+- Rename the compass in an anvil to create a teleport compass with instructions and target coordinates.
+- Right-click the air to start a delayed teleport, followed by a per-player cooldown.
+- Let administrators tune the pre-teleport delay, post-teleport cooldown, and anvil experience cost.
+- Declares Folia support in `plugin.yml`.
+
+### Boundaries
+
+The teleport compass still depends on its lodestone target. Teleportation does not start when the target is removed, the compass is no longer tracking a lodestone, or the item is not an anvil result recognized by the plugin. The permission node controls teleport use only; it does not prevent ordinary players from preparing a compass. See [Player use](/docs/plugins/compass-teleport/player) for the workflow and failure cases, or continue with [Administrator configuration](/docs/plugins/compass-teleport/admin).
+
+</Localized>

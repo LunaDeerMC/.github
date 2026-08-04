@@ -1,0 +1,25 @@
+name: CompassTeleport
+summary:
+  zh-CN: 使用磁石绑定的指南针快速返回指定位置的 Minecraft 传送插件。
+  en: A Minecraft plugin that turns a lodestone compass into a quick route back to a chosen destination.
+type: plugin
+accessModel: free
+lifecycle: active
+featured: false
+publishedAt: "2025-06-22"
+icon: Compass
+iconSrc: /assets/works/compass-teleport/compass-teleport-logo.png
+cover:
+  src: /assets/works/compass-teleport/compass-teleport-cover.png
+  alt:
+    zh-CN: CompassTeleport 封面：前景的发光指南针沿蓝色路径指向远处的磁石祭坛
+    en: "CompassTeleport cover: a luminous compass follows a blue path toward a distant lodestone shrine"
+compatibility:
+  minecraft:
+    - "1.20+"
+  platforms:
+    - Spigot
+    - Paper
+    - Folia
+docs:
+  root: plugins/compass-teleport

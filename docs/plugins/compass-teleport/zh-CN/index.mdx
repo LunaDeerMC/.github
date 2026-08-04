@@ -1,0 +1,34 @@
+---
+title: CompassTeleport
+description: 面向普通玩家与服务器管理员的 CompassTeleport 作品简介、安装入口和阅读索引。
+icon: Compass
+link: /docs/plugins/compass-teleport
+documentSet:
+  order: 40
+  status: active
+---
+
+## 这套文档服务谁
+
+这套文档同时面向想使用传送指南针的普通玩家，以及负责安装、配置和权限管理的服主与管理员。CompassTeleport 功能集中，因此文档只保留一个简介索引和两个实际使用页面，不拆分出命令、配置、故障排查等大量独立章节。
+
+## CompassTeleport 是什么
+
+CompassTeleport 使用原版磁石和指南针建立传送目标。玩家先用指南针右键磁石，再在铁砧中重命名指南针；拿着生成的传送指南针右键空气，就可以在短暂延迟后回到磁石附近。管理员可以调整延迟、冷却和铁砧花费，普通玩家不需要记忆额外命令。
+
+## 建议阅读顺序
+
+| 你要做的事 | 从这里开始 |
+| --- | --- |
+| 第一次制作并使用传送指南针 | [玩家使用](./player) |
+| 让插件加载、修改默认值或管理权限 | [管理员配置](./admin) |
+| 只想快速了解作品、兼容性和下载入口 | [LunaDeerMC 作品介绍](/works/compass-teleport) |
+
+## 当前资料基准
+
+- CompassTeleport：仓库当前最新发行版 `v1.4.1`。
+- Minecraft API：`1.20`。
+- 服务端：Spigot、Paper，以及声明支持 Folia 的 Folia 服务端。
+- 构建环境：仓库 Maven 配置使用 Java `21` 编译目标。
+
+发行版和源码可能继续更新。如果当前 JAR、自动生成的 `config.yml` 或服务端日志与本文不同，优先以实际生成文件和日志为准，并在测试服务器中验证。
