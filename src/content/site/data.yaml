@@ -40,7 +40,7 @@ site:
           zh-CN: 加入公开社区，参与讨论、获取公告并分享使用反馈。
           en: Join the public community for discussion, announcements, and feedback.
         icon: MessageCircle
-        url: https://github.com/LunaDeerMC
+        url: 点击链接加入群聊【鹿鸣𐂂的插件交流群】：https://qm.qq.com/q/4ehoO9VvPO
       - name: GitHub 主页
         nameEn: GitHub organization
         description:
@@ -48,13 +48,6 @@ site:
           en: Browse open-source work, file issues, and participate in public collaboration.
         icon: Github
         url: https://github.com/LunaDeerMC
-      - name: 支持邮箱
-        nameEn: Support email
-        description:
-          zh-CN: 通过邮件处理不适合在公开社区讨论的支持事项。
-          en: Use email for support matters that do not belong in a public channel.
-        icon: Mail
-        url: mailto:support@lunadeermc.dev
     obtain:
       - name: 免费作品与社区版本
         nameEn: Free work and community editions
@@ -63,28 +56,28 @@ site:
           en: Start from a work page, use its public download channel, and read the docs first.
         icon: Download
         url: /works
-      - name: 授权权益与退款政策
-        nameEn: Licensing and refund policy
+      - name: 付费作品与授权购买
+        nameEn: Paid work and license purchase
         description:
-          zh-CN: 购买、交付和退款由第三方平台处理，详细边界见通用文档。
-          en: Purchases, delivery, and refunds are handled by third-party platforms; see the policy docs.
+          zh-CN: 通过爱发电平台购买授权，获取付费作品下载与使用权。
+          en: Purchase licenses through the Afdian platform to obtain paid work downloads and usage rights.
+        icon: ReceiptText
+        url: https://ifdian.net/a/LunaDeerMC?tab=shop
+      - name: 付费作品提取与一对一支持
+        nameEn: Paid work extraction and one-on-one support
+        description:
+          zh-CN: 通过 KeyAnchor 平台激活提取你的付费资源或获取一对一支持。
+          en: Activate and extract your paid resources or get one-on-one support through the KeyAnchor platform.
         icon: KeyRound
-        url: /docs/general/legal/obtain-and-refund
+        url: https://keyanchor.lunadeer.cn/
     sponsor:
-      - name: 赞助项目发展
+      - name: 赞助
         nameEn: Sponsor project development
         description:
           zh-CN: 用可持续的方式支持维护、基础设施和新作品探索。
           en: Support maintenance, infrastructure, and exploration of new work.
         icon: Heart
-        url: https://github.com/sponsors/LunaDeerMC
-      - name: 优先测试与反馈
-        nameEn: Early testing and feedback
-        description:
-          zh-CN: 赞助权益以公开说明为准，不与付费作品授权混为一谈。
-          en: Sponsor benefits follow the published scope and are separate from work licenses.
-        icon: Gift
-        url: /docs/general/getting-started
+        url: https://ifdian.net/a/LunaDeerMC?tab=home
     legal:
       - name: 隐私政策
         nameEn: Privacy policy
@@ -100,11 +93,11 @@ site:
           en: Understand the boundaries for using our work, docs, site, and external channels.
         icon: ScrollText
         url: /docs/general/legal/terms
-      - name: 获取、退款与免责声明
-        nameEn: Obtain, refunds, and disclaimers
+      - name: 退款与免责声明
+        nameEn: Refunds and disclaimers
         description:
-          zh-CN: 查看第三方获取平台、退款流程和责任边界的完整说明。
-          en: Read the full explanation of third-party acquisition, refunds, and liability boundaries.
+          zh-CN: 阅读退款政策、流程与免责说明。
+          en: Read the refund policy, process, and disclaimers.
         icon: CircleAlert
         url: /docs/general/legal/obtain-and-refund
   philosophy:
@@ -119,38 +112,30 @@ site:
         zh-CN: 稳定可靠
         en: Steady and reliable
       description:
-        zh-CN: 长期维护与向后兼容比短期的功能数量更值得被认真对待。
-        en: Long-term maintenance and compatibility matter more than short-term feature count.
+        zh-CN: 从基础架构上注重长期维护和兼容性，而非短期功能数量。
+        en: Focus on long-term maintenance and compatibility from the infrastructure, rather than short-term feature count.
       icon: ShieldCheck
     - title:
         zh-CN: 开放协作
         en: Open collaboration
       description:
-        zh-CN: 把源码、文档和反馈路径留在公开空间，让更多人可以一起改进。
-        en: Keep source, docs, and feedback paths open so more people can improve the work.
+        zh-CN: 保持开源项目的维护、文档和反馈渠道开放，让更多人参与改进工作。
+        en: Keep the open-source project, docs, and feedback channels open for more people to participate in improving the work.
       icon: Users
   members:
-    - name: Luna
-      role:
-        zh-CN: 核心开发者
+    - name: 𐂂未央鹿鸣
+      role: 
+        zh-CN: 开发者
         en: Core developer
       description:
-        zh-CN: 负责服务端架构、系统设计与长期维护。
-        en: Works on server architecture, systems, and long-term maintenance.
-      github: https://github.com/lunamc
-    - name: Deer
+        zh-CN: 架构设计、组织管理、核心开发
+        en: Architecture design, organization management, core development
+      github: https://github.com/ColdeZhang
+    - name: 小鹿包
       role:
-        zh-CN: 插件开发者
-        en: Plugin developer
+        zh-CN: 秘书
+        en: Secretary
       description:
-        zh-CN: 关注玩家体验、交互细节和社区反馈。
-        en: Focuses on player experience, interaction details, and community feedback.
-      github: https://github.com/deermc
-    - name: Maple
-      role:
-        zh-CN: 构建与工具
-        en: Build and tools
-      description:
-        zh-CN: 让开发工作流更容易运行、调试和复用。
-        en: Makes development workflows easier to run, debug, and reuse.
-      github: https://github.com/maplemc
+        zh-CN: 售后支持、社区运营、文档维护
+        en: After-sales support, community operation, documentation maintenance
+      github: https://github.com/LunaDeerMC

@@ -4,17 +4,54 @@ import { localize, type Locale, withLocale } from "../../i18n/common";
 import type { SiteConfig } from "../../lib/site";
 import LunaIcon from "../shared/LunaIcon.astro";
 
-interface Props { locale: Locale; site: SiteConfig; }
+interface Props {
+  locale: Locale;
+  site: SiteConfig;
+}
 const { locale, site } = Astro.props;
 const pathways = [
-  { id: "community", icon: "Users", title: locale === "en" ? "Community" : "社区与交流", description: locale === "en" ? "Join the community for questions and feedback." : "加入社区，获取帮助和反馈。" },
-  { id: "obtain", icon: "Download", title: locale === "en" ? "Obtain & license" : "获取与授权", description: locale === "en" ? "Find the correct way to get a work." : "从正确的渠道获取作品。" },
-  { id: "sponsor", icon: "Heart", title: locale === "en" ? "Sponsor & support" : "赞助与支持", description: locale === "en" ? "Support project maintenance." : "支持项目维护。" },
-  { id: "legal", icon: "ShieldCheck", title: locale === "en" ? "Legal & policies" : "法律与政策", description: locale === "en" ? "Read privacy, terms, and disclaimers." : "查看隐私、条款和免责声明。" },
+  {
+    id: "community",
+    icon: "Users",
+    title: locale === "en" ? "Community" : "社区与交流",
+    description:
+      locale === "en"
+        ? "Join the community for questions and feedback."
+        : "加入社区，获取帮助和反馈。",
+  },
+  {
+    id: "obtain",
+    icon: "Download",
+    title: locale === "en" ? "Obtain & license" : "获取与授权",
+    description:
+      locale === "en"
+        ? "Find the correct way to get a work."
+        : "从正确的渠道获取作品。",
+  },
+  {
+    id: "sponsor",
+    icon: "Heart",
+    title: locale === "en" ? "Sponsor & support" : "赞助与支持",
+    description:
+      locale === "en" ? "Support project maintenance." : "支持项目维护。",
+  },
+  {
+    id: "legal",
+    icon: "ShieldCheck",
+    title: locale === "en" ? "Legal & policies" : "法律与政策",
+    description:
+      locale === "en"
+        ? "Read privacy, terms, and disclaimers."
+        : "查看隐私、条款和免责声明。",
+  },
 ];
 const sectionHeadings = {
-  community: locale === "en" ? "Get help and send feedback." : "获取帮助，提交反馈。",
-  obtain: locale === "en" ? "Get works from the correct channel." : "从正确的渠道获取作品。",
+  community:
+    locale === "en" ? "Get help and send feedback." : "获取帮助，提交反馈。",
+  obtain:
+    locale === "en"
+      ? "Get works from the correct channel."
+      : "从正确的渠道获取作品。",
   sponsor: locale === "en" ? "Support project maintenance." : "支持项目维护。",
   legal: locale === "en" ? "Read the policies that apply." : "查看适用的政策。",
 };
@@ -22,22 +59,118 @@ const sectionHeadings = {
 
 <div class="support-page page-grid">
   <section class="support-hero" aria-labelledby="support-title">
-    <div class="support-hero__copy" data-reveal="left"><h1 id="support-title">{locale === "en" ? "Support LunaDeerMC" : "获取支持"}</h1><p>{locale === "en" ? "Need help, a download, sponsorship, or a policy? Start here." : "需要帮助、获取作品、赞助项目或查看政策？从这里开始。"}</p></div>
-    <div class="support-hero__media" aria-hidden="true" data-reveal="right"><img class="scene-image scene-image--light" src={site.scenes.light.foreground} alt="" /><img class="scene-image scene-image--dark" src={site.scenes.dark.foreground} alt="" /></div>
-  </section>
-
-  <section class="support-paths" aria-labelledby="support-paths-title">
-    <h2 id="support-paths-title" data-reveal="left">{locale === "en" ? "What do you need?" : "你需要什么？"}</h2>
-    <div class="support-paths__grid">
-      {pathways.map((pathway, index) => <a class="support-path" href={`#${pathway.id}`} data-reveal="up" style={`--reveal-delay: ${index * 80}ms`}><LunaIcon name={pathway.icon} size={30} strokeWidth={1.55} /><strong>{pathway.title}</strong><p>{pathway.description}</p><ArrowRight size={18} /></a>)}
+    <div class="support-hero__copy" data-reveal="left">
+      <h1 id="support-title">
+        {locale === "en" ? "Support LunaDeerMC" : "获取支持"}
+      </h1><p>
+        {
+          locale === "en"
+            ? "Need help, a download, sponsorship, or a policy? Start here."
+            : "需要帮助、获取作品、赞助项目或查看政策？从这里开始。"
+        }
+      </p>
+    </div>
+    <div class="support-hero__media" aria-hidden="true" data-reveal="right">
+      <img
+        class="scene-image scene-image--light"
+        src={site.scenes.light.foreground}
+        alt=""
+      /><img
+        class="scene-image scene-image--dark"
+        src={site.scenes.dark.foreground}
+        alt=""
+      />
     </div>
   </section>
 
-  {pathways.map((pathway) => {
-    const channels = site.channels[pathway.id as keyof SiteConfig["channels"]];
-    const heading = sectionHeadings[pathway.id as keyof typeof sectionHeadings];
-    return <section class="support-section" id={pathway.id} aria-labelledby={`${pathway.id}-title`}><div class="support-section__heading" data-reveal="left"><h2 id={`${pathway.id}-title`}>{heading}</h2></div><div class="support-channel-list">{channels.map((channel, index) => { const href = channel.url.startsWith("/") ? withLocale(locale, channel.url) : channel.url; const external = href.startsWith("http") || href.startsWith("mailto:"); return <a class="support-channel" href={href} data-reveal="right" style={`--reveal-delay: ${index * 70}ms`} target={external ? "_blank" : undefined} rel={href.startsWith("http") ? "noreferrer" : undefined}><LunaIcon name={channel.icon} size={23} strokeWidth={1.6} /><span><strong>{locale === "en" ? channel.nameEn : channel.name}</strong><small>{localize(channel.description, locale)}</small></span><LunaIcon name={external ? "ExternalLink" : "ArrowRight"} size={18} /></a>; })}</div></section>;
-  })}
+  <section class="support-paths" aria-labelledby="support-paths-title">
+    <h2 id="support-paths-title" data-reveal="left">
+      {locale === "en" ? "What do you need?" : "你需要什么？"}
+    </h2>
+    <div class="support-paths__grid">
+      {
+        pathways.map((pathway, index) => (
+          <a
+            class="support-path"
+            href={`#${pathway.id}`}
+            data-reveal="up"
+            style={`--reveal-delay: ${index * 80}ms`}
+          >
+            <>
+              <LunaIcon name={pathway.icon} size={30} strokeWidth={1.55} />
+              <strong>{pathway.title}</strong>
+              <p>{pathway.description}</p>
+              <ArrowRight size={18} />
+            </>
+          </a>
+        ))
+      }
+    </div>
+  </section>
 
-  <div class="support-docs-note"><span>{locale === "en" ? "Need the complete policy text?" : "需要完整的政策原文？"}</span><a class="text-link" href={withLocale(locale, "/docs/general/legal")}>{locale === "en" ? "Read the general docs" : "阅读通用文档"}<ArrowUpRight size={16} /></a></div>
+  {
+    pathways.map((pathway) => {
+      const channels =
+        site.channels[pathway.id as keyof SiteConfig["channels"]];
+      const heading =
+        sectionHeadings[pathway.id as keyof typeof sectionHeadings];
+      return (
+        <section
+          class="support-section"
+          id={pathway.id}
+          aria-labelledby={`${pathway.id}-title`}
+        >
+          <>
+            <div class="support-section__heading" data-reveal="left">
+              <h2 id={`${pathway.id}-title`}>{heading}</h2>
+            </div>
+            <div class="support-channel-list">
+              {channels.map((channel, index) => {
+                const href = channel.url.startsWith("/")
+                  ? withLocale(locale, channel.url)
+                  : channel.url;
+                const external =
+                  href.startsWith("http") || href.startsWith("mailto:");
+                return (
+                  <a
+                    class="support-channel"
+                    href={href}
+                    data-reveal="right"
+                    style={`--reveal-delay: ${index * 70}ms`}
+                    target={external ? "_blank" : undefined}
+                    rel={href.startsWith("http") ? "noreferrer" : undefined}
+                  >
+                    <LunaIcon name={channel.icon} size={23} strokeWidth={1.6} />
+                    <span>
+                      <strong>
+                        {locale === "en" ? channel.nameEn : channel.name}
+                      </strong>
+                      <small>{localize(channel.description, locale)}</small>
+                    </span>
+                    <LunaIcon
+                      name={external ? "ExternalLink" : "ArrowRight"}
+                      size={18}
+                    />
+                  </a>
+                );
+              })}
+            </div>
+          </>
+        </section>
+      );
+    })
+  }
+
+  <div class="support-docs-note">
+    <span
+      >{
+        locale === "en"
+          ? "Need the complete policy text?"
+          : "需要完整的政策原文？"
+      }</span
+    ><a class="text-link" href={withLocale(locale, "/docs/general/legal")}
+      >{locale === "en" ? "Read the general docs" : "阅读通用文档"}<ArrowUpRight
+        size={16}
+      /></a>
+  </div>
 </div>
