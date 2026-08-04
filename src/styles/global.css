@@ -567,6 +567,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   .home-about-close__copy { justify-self: start; width: 100%; padding: 20px 0 0 18px; border-left-width: 2px; }
   .support-hero { min-height: 0; display: grid; grid-template-columns: 1fr; align-items: start; gap: 30px; }
   .support-hero__copy { padding-bottom: 0; }
+  .support-hero h1 { font-size: clamp(2.5375rem, 5.5vw, 3.5rem); }
   .support-hero__media { position: relative; inset: auto; height: clamp(240px, 65vw, 360px); min-height: 0; opacity: 1; }
   .support-paths { padding-top: 34px; }
   .support-paths__grid { grid-template-columns: 1fr 1fr; }

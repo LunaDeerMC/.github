@@ -36,7 +36,7 @@ const categories = [
   <div class="works-results" data-works-results>
     <p class="works-result-count" data-result-count>{works.length} {locale === "en" ? "works" : "件作品"}</p>
     <div class="works-grid" data-work-grid>
-      {works.map((work) => <WorkCard work={work} locale={locale} />)}
+      {works.map((work, index) => <WorkCard work={work} locale={locale} revealDelay={index * 90} />)}
     </div>
     <div class="empty-state" data-filter-empty hidden><SlidersHorizontal size={25} /><p>{locale === "en" ? "No works match those filters." : "没有符合当前筛选条件的作品。"}</p><a class="text-link" href={withLocale(locale, "/works")}>{copy.actions.clear}</a></div>
   </div>
