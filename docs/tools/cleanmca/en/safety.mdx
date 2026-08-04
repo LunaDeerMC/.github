@@ -1,0 +1,79 @@
+---
+title: CleanMCA · Safety and recovery
+description: Cover shutdown, backups, test copies, irreversible deletion, the Bash confirmation flaw, and rollback.
+icon: ShieldCheck
+sidebar:
+  label: Safety and recovery
+  order: 50
+---
+
+## This is not lossless maintenance
+
+CleanMCA deletes files. None of the Python, Bash, or Windows entry points provides:
+
+- a dry run or per-file approval mode;
+- a recycle bin, undo action, or automatic recovery package;
+- reliable detection that the world is currently running;
+- Minecraft-aware validation of whether a coordinate is safe to remove;
+- analysis of the chunks, entities, or POIs inside an `.mca` file.
+
+It only knows whether a filename appears in the whitelist. Retention policy, shutdown, backup, and recovery remain administrator responsibilities.
+
+## Safe production order
+
+Use this sequence:
+
+1. Record the server version, world path, target dimension, current file counts, and whitelist source.
+2. Stop the server, wait for the panel to show the process exited, and confirm that no backup or sync task is writing the world.
+3. Back up the whole server or at least the whole world directory, and verify that the backup can be read.
+4. Copy the world to a test directory and run CleanMCA there.
+5. Start the test server and check login, chunk loading, travel, villagers and POIs, entities, and important machines.
+6. Preserve the final whitelist, script revision, and command in an operations record.
+7. Stop production again, confirm the path, and prefer the Python entry point.
+8. Review the full log and key areas before reopening the server to players.
+9. Keep the pre-cleanup backup until the result is known to be stable.
+
+## Bash confirmation warning
+
+The current `CleanMCA.sh` uses `read -p` to display a confirmation question, but the following code does not inspect the variable or exit status and proceeds to process the directories. Even if an administrator types `n`, it cannot be treated as a reliable cancel. This is a safety flaw in the current script, not a documentation translation issue.
+
+Use `CleanMCA.py` in production: it exits when the input is not `y`, `yes`, or `是`. Even then, keep the backup and test copy; a confirmation prompt reduces accidental clicks but cannot prove that the whitelist is correct.
+
+## Scope risks
+
+The same whitelist is applied to all three directories, and the Python implementation deletes every unlisted regular file there, not only `.mca` files. Check for:
+
+- extra files written by a server, panel, or backup tool;
+- public areas, transit routes, farms, or administration areas not included in the list;
+- regions containing villagers, POIs, entities, or structures that must remain;
+- a dimension mismatch between the generator and the target path;
+- differences in which filenames exist in each of the three directories.
+
+Do not use “the file count dropped a lot” as a success criterion. A large drop may be the result of an incorrect whitelist.
+
+## Restore and rollback
+
+If the scope is wrong, the server fails to start, or important areas are missing, stop immediately. Do not run another cleanup command against the changed directories. Restore the complete pre-cleanup world backup; if only related directories were backed up, restore `region`, `poi`, and `entities` from the same point in time.
+
+An example flow that must be adapted to your explicit backup path:
+
+~~~sh
+# After stopping the server, keep the changed directory for investigation
+mv /srv/minecraft/world /srv/minecraft/world.after-cleanmca
+cp -a /srv/backup/world-before-cleanmca /srv/minecraft/world
+~~~
+
+After restoring, check that the world, configuration, and database come from a compatible point in time. Restoring only three directories while leaving related plugin data unchanged can create mismatches; valuable production servers should use a complete backup or storage snapshot.
+
+## Repeated runs and maintenance
+
+Running the same whitelist again normally does not delete files that are already gone, but it does not update the whitelist. As the live world generates new regions, regenerate or review the list before deciding whether those new files should remain.
+
+Keep these records for audit and rollback:
+
+- CleanMCA commit or download date;
+- operator, shutdown time, and target dimension;
+- the original whitelist and its source;
+- the pre-cleanup backup location;
+- command, terminal output, and post-run checks.
+

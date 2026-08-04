@@ -1,0 +1,43 @@
+---
+title: CleanMCA
+description: CleanMCA installation, whitelists, execution, safety, and troubleshooting for server administrators.
+icon: Terminal
+link: /docs/tools/cleanmca
+documentSet:
+  order: 50
+  status: active
+---
+
+## Documentation scope
+
+These docs are for server owners and administrators who maintain Minecraft saves, manage disk usage, and are responsible for recovery. CleanMCA is a command-line deletion tool, not a Minecraft plugin; it does not stop the server, create backups, validate paths, or judge whether a whitelist is correct.
+
+The docs follow the Bash, Python, and Windows batch entries currently in the repository, with the Python implementation recommended for production. A run applies one whitelist to the `region`, `poi`, and `entities` directories of one selected dimension; read [Safety and recovery](./safety) before executing it.
+
+## Suggested reading order
+
+1. [Installation and runtime](./installation): scripts, Python/Bash dependencies, test copies, and target layout.
+2. [Whitelist files](./whitelist): exact retention matching, dimension scope, and the risks of Dominion-generated lists.
+3. [Using the tool](./usage): choose Python, Bash, or Windows, run one cleanup, and verify the result.
+4. [Platform and entry-point differences](./platforms): Windows paths, WSL, Git Bash, encoding, and scheduled tasks.
+5. [Safety and recovery](./safety): shutdown, backups, production runs, and rollback.
+6. [Troubleshooting](./troubleshooting): paths, permissions, over-deletion, and post-cleanup server issues.
+
+## The shortest safe path
+
+Stop the server, copy the test world, and use the Python entry point:
+
+~~~sh
+python3 CleanMCA.py --mca /path/to/whitelist.txt --region /path/to/world/region
+~~~
+
+Confirm that the displayed whitelist and all three target directories are correct, then enter `y`, `yes`, or `是`. After the test server is verified, keep the pre-cleanup backup, whitelist, and operation record before repeating the same process on production.
+
+## Important limits
+
+- There is no dry run, undo, or automatic recovery;
+- `--region` must point to a `region` directory; its sibling `poi` and `entities` directories are discovered one level above it;
+- the same whitelist is applied to all three directories, and the current Python implementation deletes every unlisted regular file there, not only `.mca` files;
+- the current Bash script displays a confirmation prompt but does not check the `y/n` response, so prefer Python in production;
+- CleanMCA does not understand chunk contents; the filename whitelist defines the deletion scope.
+

@@ -1,0 +1,67 @@
+---
+title: CleanMCA · Platform and entry-point differences
+description: Compare Python, Bash, Windows, WSL, and Git Bash boundaries so paths and interpreters do not drift.
+icon: Monitor
+sidebar:
+  label: Platform and entry points
+  order: 40
+---
+
+## Choose an entry point
+
+| Environment | First choice | Notes |
+| --- | --- | --- |
+| Linux server | `python3 CleanMCA.py ...` | Easiest to pin to a known interpreter and result |
+| macOS workstation | `python3 CleanMCA.py ...` | Avoids Bash `realpath` differences |
+| Windows | `python CleanMCA.py ...` or `CleanMCA.bat ...` | Quote paths containing spaces |
+| WSL | Python; Bash is also possible | Use paths WSL can resolve, such as `/mnt/...` |
+| Git Bash | Prefer Python | Use Bash only after checking `realpath` and related commands |
+
+## Linux and macOS
+
+The interpreter may be named `python3` or installed at an administrator-selected absolute path. Check and run the same executable:
+
+~~~sh
+/usr/bin/python3 --version
+/usr/bin/python3 CleanMCA.py -m ./whitelist.txt -r "/srv/minecraft/world/region"
+~~~
+
+Quote paths containing spaces, parentheses, or `[` and `]`. Relative paths depend on the current terminal directory; use absolute paths for production so a panel, cron job, or systemd unit cannot change the target by changing the working directory.
+
+System Bash, Homebrew Bash, and GNU utilities may behave differently on macOS. The repository Bash script depends on `getopt` and `realpath`; if those checks fail, use Python instead of replacing system commands just to run a deletion tool.
+
+## Windows
+
+The Python implementation supports Chinese paths and filenames; the repository README lists Python 3.6 or newer. Example:
+
+~~~powershell
+python CleanMCA.py --mca "C:\Tools\CleanMCA\whitelist.txt" --region "D:\Minecraft\world\region"
+~~~
+
+The batch wrapper is also available:
+
+~~~powershell
+"C:\Tools\CleanMCA\CleanMCA.bat" -m "C:\Tools\CleanMCA\whitelist.txt" -r "D:\Minecraft\world\region"
+~~~
+
+The batch file calls `CleanMCA.py` from its own directory; it does not select a virtual environment or the Python installation configured by a panel. Test under the same account and working directory used by the service.
+
+## WSL and Git Bash
+
+WSL paths and Windows paths are not interchangeable strings. A Windows drive is commonly visible in WSL as `/mnt/d/Minecraft/world/region`; Git Bash may perform another conversion. Do not paste `D:\Minecraft\...` into a WSL Bash command or copy a WSL path into PowerShell without checking it.
+
+Resolve the path with the same interpreter before deleting:
+
+~~~sh
+python3 -c 'from pathlib import Path; print(Path("/mnt/d/Minecraft/world/region").resolve())'
+~~~
+
+For mounted, network, or symlinked paths, confirm the effective directory in both the file manager and the shell before running the tool.
+
+## Encoding, permissions, and automation
+
+- Save the whitelist as UTF-8. On Windows, avoid generating a file with an incompatible local encoding.
+- The Linux account must be able to read the whitelist, enter all three directories, and delete files there; read-only access is not enough.
+- Panels, cron, systemd, Docker, and scheduled tasks can use a different PATH, user, and working directory. Replace `python`, `python3`, and relative paths with verified absolute paths where appropriate.
+- Do not schedule the cleanup while the server is running. CleanMCA does not lock the world, detect a Java process reliably, or coordinate shutdown with a panel.
+

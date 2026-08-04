@@ -1,0 +1,69 @@
+---
+title: CleanMCA · Whitelist files
+description: Explain MCA filename format, comments, dimension scope, and the risks of generating a list from Dominion.
+icon: FileText
+sidebar:
+  label: Whitelist files
+  order: 20
+---
+
+## The whitelist is the retention boundary
+
+The whitelist is a plain text file with one filename to keep per line. It is not a deletion list and not a list of directory paths. A minimal example:
+
+~~~text
+r.0.0.mca
+r.0.1.mca
+r.1.0.mca
+r.-1.-1.mca
+~~~
+
+Minecraft region files usually look like `r.<region X>.<region Z>.mca`. CleanMCA performs an exact filename comparison. `r.*.*.mca`, `region/r.0.0.mca`, and coordinate ranges are not valid replacements for individual filenames.
+
+## File format rules
+
+- Put one filename on each line; do not append explanations to a filename.
+- Blank lines are ignored. Keeping the file simple makes reviews easier.
+- The repository example uses comment lines beginning with `#`. The Python implementation reads every non-empty line into a set, so a comment does not match a normal MCA filename; for predictable reviews across Bash and Python, use comments only as annotations and do not make them look like real filenames.
+- Matching is case-sensitive. `r.0.0.mca` and `R.0.0.MCA` are different strings.
+- Save the file as UTF-8, especially when comments or nearby paths contain non-ASCII characters.
+- The same whitelist is applied to `region`, `poi`, and `entities`. Matching files normally share names, but a file may exist in only one of the three directories.
+
+The official [whitelist_example.txt](https://github.com/LunaDeerMC/CleanMCA/blob/master/whitelist_example.txt) is a useful starting point, but its coordinates are examples, not a recommendation for your world.
+
+## Dimension and path scope
+
+One run handles only the three sibling directories of the `--region` path. The overworld, Nether, End, and custom dimensions must each be checked with their actual `region` directory and an appropriate whitelist. Do not assume that a correct overworld list is safe for another dimension.
+
+If you want to shrink only one world or dimension, the whitelist should contain only the filenames to keep in that target directory. Adding another dimension's filenames does not preserve them: the tool never visits paths outside `--region` and its two siblings.
+
+## Review lists generated from Dominion
+
+CleanMCA's README mentions using [Dominion](https://dominion.lunadeer.cn/) to generate a whitelist from claims. That list represents the generator's retention policy; it is not automatically “everything players have recently visited”. Before running it, confirm that:
+
+1. the generator used the correct server, world, and dimension;
+2. public areas, transit lines, farms, or administration areas outside claims were added when they must be kept;
+3. deleted or migrated claims and cross-dimension data have not left old names behind or omitted new names;
+4. no backup directory, relative path, or wildcard was mistaken for a filename;
+5. the test copy preserves common player areas, villagers and POIs, entity-heavy machines, and important structures.
+
+If the list is generated only from claims, unclaimed regions will be treated as eligible for cleanup. That may be the desired storage policy for one server and a destructive mistake for another; the administrator owns the final decision.
+
+## Manual preflight
+
+Use a file manager or shell to list the target directory, then spot-check several filenames that should remain and one that should not. Linux/macOS:
+
+~~~sh
+ls -la /srv/minecraft/world/region
+sed -n '1,40p' /srv/tools/CleanMCA/whitelist.txt
+~~~
+
+Windows:
+
+~~~powershell
+Get-ChildItem "D:\Minecraft\world\region"
+Get-Content "D:\Tools\CleanMCA\whitelist.txt" -TotalCount 40
+~~~
+
+Do not treat the number of whitelist lines as the number of valid files that will be retained. Python strips whitespace and uses a set; Bash only displays the number of text lines. Neither implementation proves that every line names an existing file.
+

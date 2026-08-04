@@ -1,0 +1,107 @@
+---
+title: CleanMCA · Installation and runtime
+description: Prepare CleanMCA, check the Python or Bash runtime, and complete a first run in a test copy.
+icon: Download
+sidebar:
+  label: Installation and runtime
+  order: 10
+---
+
+## Recommended entry point
+
+CleanMCA does not need to be compiled and has no third-party Python packages. The repository provides three entry points:
+
+| Entry point | Suitable environments | Recommendation |
+| --- | --- | --- |
+| `CleanMCA.py` | Linux, macOS, and Windows | Prefer it in production; its confirmation and error handling are clearer |
+| `CleanMCA.sh` | Bash, Linux, macOS, WSL, and Git Bash | Compatibility path, but the current `n` prompt cannot reliably cancel |
+| `CleanMCA.bat` | Windows CMD or PowerShell | A wrapper around the Python script in the same directory |
+
+Every entry point writes directly to the save directories. The repository does not create a copy or back up the world for you.
+
+## Get the files
+
+Download a ZIP from the [CleanMCA GitHub repository](https://github.com/LunaDeerMC/CleanMCA), or clone it into a separate tools directory:
+
+~~~sh
+git clone https://github.com/LunaDeerMC/CleanMCA.git
+cd CleanMCA
+~~~
+
+Keep the scripts and whitelist separate from the world, for example:
+
+~~~text
+/srv/tools/CleanMCA/
+├── CleanMCA.py
+├── CleanMCA.sh
+├── CleanMCA.bat
+└── whitelist.txt
+~~~
+
+Do not copy the scripts into `world/region`, `poi`, or `entities`. The repository does not require `pip`; the Python implementation uses only the standard library.
+
+## Check the runtime
+
+### Python
+
+The repository's Python README lists Python 3.6 or newer. Check the account that will actually run the cleanup rather than only your interactive login:
+
+~~~sh
+python3 --version
+python3 -c 'import sys; print(sys.executable)'
+~~~
+
+On Windows:
+
+~~~powershell
+python --version
+py --version
+~~~
+
+If several Python versions are installed, use one consistent executable for the following commands. The batch wrapper expects `python` to be available on PATH, so a panel or scheduled task may need an explicit environment configuration.
+
+### Bash dependencies
+
+Before using the Bash entry point, check for `bash`, `getopt`, `realpath`, `grep`, `wc`, and `rm`:
+
+~~~sh
+bash --version
+command -v getopt realpath grep wc rm
+~~~
+
+The commands and flags available on Linux, macOS, WSL, and Git Bash can differ. If `realpath` is missing or behaves differently, use the Python implementation instead.
+
+## Prepare a test copy first
+
+Do not point the tool at production on the first run. Stop the server, wait for the world to finish saving, and copy a complete test directory. The copy needs enough disk space and must not happen while the server is writing:
+
+~~~sh
+cp -a /srv/minecraft /srv/minecraft-cleanmca-test
+~~~
+
+Generate or adjust the whitelist only against the test copy. Start a test server and verify login, common areas, villagers, and POI behavior before planning the production run.
+
+## Check the target layout
+
+The `--region` argument must point to a dimension's `region` directory. The tool automatically treats sibling `poi` and `entities` directories as the other two targets:
+
+~~~text
+<dimension>/
+├── region/       ← pass this directory to --region / -r
+├── poi/          ← discovered automatically
+└── entities/     ← discovered automatically
+~~~
+
+Both the Python and Bash versions require all three directories to exist. Do not pass the world root, the `poi` directory, or a single `.mca` file as `--region`; do not reuse a path from the overworld for the Nether or End without checking the actual layout. Confirm each dimension separately.
+
+## Perform an environment-only check
+
+Before a real run, confirm that:
+
+1. the server is stopped and the backup can be read;
+2. the whitelist and target `region` paths are explicit absolute paths;
+3. sibling `poi` and `entities` directories exist;
+4. you understand that the whitelist contains files to keep, not files to delete;
+5. the Python entry point shows its preview and waits before deleting;
+6. if you use Bash, you have manually verified the paths because `n` cannot be treated as a reliable cancel.
+

@@ -1,0 +1,67 @@
+---
+title: CleanMCA · 平台与入口差异
+description: 比较 Python、Bash、Windows、WSL 和 Git Bash 的使用边界，避免路径与解释器不一致。
+icon: Monitor
+sidebar:
+  label: 平台与入口差异
+  order: 40
+---
+
+## 入口选择
+
+| 环境 | 首选命令 | 说明 |
+| --- | --- | --- |
+| Linux 服务器 | `python3 CleanMCA.py ...` | 最容易固定解释器和处理结果 |
+| macOS 运维机 | `python3 CleanMCA.py ...` | 避免 Bash 依赖的 `realpath` 差异 |
+| Windows | `python CleanMCA.py ...` 或 `CleanMCA.bat ...` | 使用引号包住带空格的路径 |
+| WSL | Python 版本；也可用 Bash | 使用 WSL 能识别的 `/mnt/...` 路径 |
+| Git Bash | Python 版本优先 | 只有在确认 `realpath` 等命令可用时再用 Bash |
+
+## Linux 与 macOS
+
+Python 解释器名称可能是 `python3` 或管理员自行安装的绝对路径。用同一个解释器检查版本并执行：
+
+~~~sh
+/usr/bin/python3 --version
+/usr/bin/python3 CleanMCA.py -m ./whitelist.txt -r "/srv/minecraft/world/region"
+~~~
+
+路径中出现空格、括号或 `[`、`]` 时使用引号。相对路径以当前终端目录为准；生产操作建议使用绝对路径，避免面板、cron 或 systemd 改变工作目录后指向错误位置。
+
+macOS 上系统 Bash、Homebrew Bash 和 GNU 命令的行为可能不同。仓库 Bash 版本依赖 `getopt` 和 `realpath`，如果检查失败，直接使用 Python 版本，不要为了运行删除脚本临时替换系统命令。
+
+## Windows
+
+Windows Python 版本支持中文路径和文件名，README 给出的最低版本为 Python 3.6。示例：
+
+~~~powershell
+python CleanMCA.py --mca "C:\Tools\CleanMCA\whitelist.txt" --region "D:\Minecraft\world\region"
+~~~
+
+也可以通过批处理文件调用：
+
+~~~powershell
+"C:\Tools\CleanMCA\CleanMCA.bat" -m "C:\Tools\CleanMCA\whitelist.txt" -r "D:\Minecraft\world\region"
+~~~
+
+批处理文件会执行同目录的 `CleanMCA.py`，不会自动选择虚拟环境或面板配置的 Python。如果服务器由服务账户运行，请在相同账户和相同工作目录下测试。
+
+## WSL 与 Git Bash
+
+WSL 中的 Linux 路径和 Windows 路径不是同一种字符串。访问 Windows 磁盘时通常要使用类似 `/mnt/d/Minecraft/world/region` 的路径；Git Bash 的路径转换又可能不同。不要把 PowerShell 的 `D:\Minecraft\...` 原样复制到 WSL 的 Bash 命令中，反之亦然。
+
+无论使用哪种 shell，都先让 Python 把路径解析出来并确认指向目标副本：
+
+~~~sh
+python3 -c 'from pathlib import Path; print(Path("/mnt/d/Minecraft/world/region").resolve())'
+~~~
+
+如果路径跨越挂载点、网络盘或符号链接，先在文件管理器和命令行分别确认实际目录，再运行清理。
+
+## 编码、权限和自动任务
+
+- 白名单保存为 UTF-8；Windows 生成文件时不要把文件名编码成不兼容的本地编码。
+- Linux 的运行用户必须同时能读白名单、进入三个目标目录并删除其中的文件；只拥有读权限不能完成清理。
+- 计划任务、systemd、Docker 或面板可能使用不同的 PATH、用户和工作目录。脚本命令中的 `python`、`python3` 和相对路径都应替换成经过验证的绝对路径。
+- 不要让自动任务在服务器未停服时运行。CleanMCA 不提供锁定世界、检测 Java 进程或与面板协调停机的能力。
+

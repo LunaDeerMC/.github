@@ -1,0 +1,101 @@
+---
+title: CleanMCA · Troubleshooting
+description: Resolve interpreter, path, permission, encoding, empty-result, over-deletion, and post-cleanup server issues.
+icon: CircleHelp
+sidebar:
+  label: Troubleshooting
+  order: 60
+---
+
+## Python or the entry file is not found
+
+Check the current directory and filename, then check the interpreter:
+
+~~~sh
+pwd
+ls -la
+python3 --version
+~~~
+
+On Windows, use `Get-Location`, `Get-ChildItem`, and `python --version`. Do not assume that `python CleanMCA.py` resolves to the same Python used by the server or panel; use an absolute interpreter path when necessary.
+
+## The whitelist file does not exist
+
+The scripts resolve `--mca` and require it to be a file. Common causes include:
+
+- the current working directory is not where the whitelist lives;
+- a relative path is misspelled;
+- a Windows path with spaces is not quoted;
+- a directory was supplied instead of a file;
+- a scheduled task uses a different account than the interactive shell.
+
+Use an absolute whitelist path and verify it with `ls -l` or `Get-Item` before running.
+
+## Region, POI, or entities directory is missing
+
+CleanMCA requires `poi` and `entities` to exist beside the `region` directory supplied to `--region`:
+
+~~~text
+target parent/
+├── region/
+├── poi/
+└── entities/
+~~~
+
+If you pass the world root, the tool looks for the wrong `world/../poi`. If you pass `poi`, it looks for `poi/../poi`. Correct the path to the actual `region` directory rather than creating empty directories to hide a path error. Dimension layouts vary by server and version; use the save's real layout.
+
+## Permission or deletion failures
+
+Read permission is not delete permission. Confirm that the runtime account can enter all three directories, read the files, and remove them, and check for a server, backup process, or sync service holding files open.
+
+The Python version prints a specific deletion failure. Stop anything that can write the world and reproduce on a test copy first. Do not switch to an unfamiliar root/administrator account on production just to bypass a permission error.
+
+## Nothing was deleted
+
+Possible causes:
+
+1. every file in the target directory is listed;
+2. you inspected a cleaned test directory but ran against another path;
+3. the whitelist contains full paths, wildcards, or names with the wrong case;
+4. `--region` points at a different dimension than the one you checked;
+5. the directory contains only subdirectories, which the Python implementation does not recurse into.
+
+Spot-check a real filename against the whitelist character by character, then verify the resolved absolute path printed by your command.
+
+## The deletion scope is larger than expected
+
+Stop the operation and restore from backup; do not try to “repair” a changed directory with a new whitelist. Check whether:
+
+- you wrote files to keep into a list of files to delete;
+- public areas, transit routes, or administration areas were omitted;
+- a list from another dimension was used;
+- non-`.mca` regular files also needed to be kept;
+- a Dominion-generated claim range was mistaken for a complete save-retention policy.
+
+CleanMCA has no undo. Recovery depends on a pre-cleanup backup or snapshot.
+
+## The server is broken after cleanup
+
+If startup fails, chunks report errors, villagers or POIs behave unexpectedly, or important entities are missing:
+
+1. stop the server so the abnormal state is not written further;
+2. save the startup log, CleanMCA output, command, and whitelist;
+3. compare the result with the pre-cleanup backup;
+4. restore the complete pre-cleanup world first, then test a narrower list in a copy;
+5. decide whether the cause was the script scope, whitelist source, or the server itself before scheduling another production run.
+
+## Bash `n` still continues
+
+This is a known implementation issue in the current Bash script: it reads the confirmation but does not branch on it. Stop the flow and switch to Python. If deletion has already happened, use the backup or snapshot to recover.
+
+## What to include in a report
+
+When opening a [CleanMCA Issue](https://github.com/LunaDeerMC/CleanMCA/issues) or contacting support, do not upload a world or sensitive paths. Include at least:
+
+- CleanMCA commit or download date;
+- operating system and Python/Bash versions;
+- entry point and command shape with sensitive paths redacted;
+- an anonymized target directory tree;
+- a few non-sensitive whitelist lines;
+- terminal errors, deletion failures, and whether you restored from backup.
+

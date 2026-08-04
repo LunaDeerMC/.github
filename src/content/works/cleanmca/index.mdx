@@ -1,0 +1,126 @@
+---
+github: https://github.com/LunaDeerMC/CleanMCA
+license:
+  name: MIT
+  url: https://github.com/LunaDeerMC/CleanMCA/blob/master/LICENSE
+links:
+  - type: source
+    url: https://github.com/LunaDeerMC/CleanMCA
+  - type: issues
+    url: https://github.com/LunaDeerMC/CleanMCA/issues
+  - type: support
+    url: /support#community
+  - type: other
+    label:
+      zh-CN: Dominion 白名单来源
+      en: Dominion whitelist source
+    url: https://dominion.lunadeer.cn/
+  - type: other
+    label:
+      zh-CN: 白名单示例
+      en: Whitelist example
+    url: https://github.com/LunaDeerMC/CleanMCA/blob/master/whitelist_example.txt
+acquisition:
+  - id: open-source
+    name:
+      zh-CN: 开源免费脚本
+      en: Open-source scripts
+    access: free
+    description:
+      zh-CN: 从 GitHub 获取脚本和示例白名单。正式执行前请先阅读管理员文档，并在停服和备份后处理测试副本。
+      en: Get the scripts and example whitelist from GitHub. Read the administrator docs and test a copy after stopping the server and backing up the world.
+    benefits:
+      - zh-CN: MIT License
+        en: MIT License
+      - zh-CN: Bash、Python 和 Windows 批处理入口
+        en: Bash, Python, and Windows batch entry points
+      - zh-CN: 同时处理 region、poi 和 entities
+        en: Processes region, poi, and entities together
+      - zh-CN: 支持用白名单控制保留范围
+        en: Controls the retained scope with a whitelist
+    channels:
+      - name: GitHub repository
+        url: https://github.com/LunaDeerMC/CleanMCA
+        actionLabel:
+          zh-CN: 打开仓库
+          en: Open repository
+        note:
+          zh-CN: 当前仓库以脚本文件和 master 分支源码为主要获取方式，使用前请核对当前内容。
+          en: The repository and its master branch are the primary distribution path; check the current files before use.
+      - name: Master ZIP
+        url: https://github.com/LunaDeerMC/CleanMCA/archive/refs/heads/master.zip
+        actionLabel:
+          zh-CN: 下载源码包
+          en: Download ZIP
+        note:
+          zh-CN: 下载后请解压到独立的工具目录，不要把脚本直接放进世界的 region 目录。
+          en: Extract it to a separate tool directory; do not place the scripts inside the world's region directory.
+---
+
+import Localized from "../../../components/shared/Localized.astro";
+
+<Localized locale="zh-CN">
+
+## 这件工具解决什么问题
+
+CleanMCA 是一个面向服务器管理员的命令行清理工具。它读取一份 MCA 文件白名单，然后在指定存档的 `region`、`poi` 和 `entities` 三个目录中，删除名称不在白名单里的普通文件。它不会分析区块内部内容，也不会判断文件是否“看起来可以删除”；白名单就是最终保留范围。
+
+工具仓库同时提供 Bash 脚本、Python 版本和 Windows 批处理入口。对于生产服，建议优先使用 Python 版本：它跨平台、支持 UTF-8 路径和文件名，并且会在删除前真正等待 `y`、`yes` 或 `是` 确认。
+
+## 开始前必须知道
+
+- 这是删除工具，不是压缩工具，也没有回收站、撤销或内置恢复功能。
+- 运行前必须停止服务器，并备份整个世界；至少要能恢复 `region`、`poi` 和 `entities`，更推荐备份整个世界目录。
+- `--region` / `-r` 参数必须指向某个维度的 `region` 目录，而不是世界根目录。工具会从它的上一级寻找同级的 `poi` 和 `entities`。
+- 同一份白名单会同时作用于三个目录。一个文件名只要不在白名单中，就可能在对应目录被删除；工具不会只删除扩展名为 `.mca` 的文件。
+- 当前 master 分支的 Bash 版本虽然显示确认提示，但读取结果后没有分支判断；输入 `n` 也可能继续执行。因此生产操作应优先使用 Python 版本，并把 Bash 当作已确认路径后的兼容入口。
+
+## 推荐阅读顺序
+
+| 你要做的事 | 从这里开始 |
+| --- | --- |
+| 第一次部署工具 | [安装与运行环境](./installation) |
+| 编写或检查保留列表 | [白名单文件](./whitelist) |
+| 执行一次清理并验证结果 | [实际使用](./usage) |
+| 在 Windows、Linux、macOS 或 WSL 上运行 | [平台与入口差异](./platforms) |
+| 规划备份、停服和回滚 | [安全边界与恢复](./safety) |
+| 运行失败或清理后出现异常 | [故障排查](./troubleshooting) |
+
+## 资料基准
+
+本文档按 CleanMCA 仓库 master 分支现有的 `CleanMCA.sh`、`CleanMCA.py`、`CleanMCA.bat`、`README_python.md` 和 `whitelist_example.txt` 撰写；仓库最近一次提交记录为 2025-07-17。脚本可能继续变化，实际运行时应优先查看当前仓库文件、终端输出和备份状态。
+
+</Localized>
+
+<Localized locale="en">
+
+## What this tool does
+
+CleanMCA is a command-line cleanup tool for server administrators. It reads an MCA filename whitelist and removes regular files whose names are not listed from the selected save's `region`, `poi`, and `entities` directories. It does not inspect chunk contents or decide whether a file appears safe to remove; the whitelist is the retention boundary.
+
+The repository provides a Bash script, a Python implementation, and a Windows batch entry point. For production servers, prefer the Python implementation: it is cross-platform, handles UTF-8 paths and filenames, and actually waits for `y`, `yes`, or `是` before deleting.
+
+## Read this before using it
+
+- This is a deletion tool. It has no recycle bin, undo operation, or built-in recovery.
+- Stop the server and back up the whole world before running it. At minimum, be able to restore `region`, `poi`, and `entities`; a complete world backup is safer.
+- The `--region` / `-r` argument must point to a dimension's `region` directory, not the world root. The tool looks for sibling `poi` and `entities` directories one level above it.
+- The same whitelist is applied to all three directories. A filename not listed can be removed from the corresponding directory; the tool does not limit deletion to files ending in `.mca`.
+- In the current master Bash script, the confirmation prompt is displayed but its response is not checked before processing continues. Typing `n` may therefore still continue. Prefer the Python implementation for production work, and treat Bash as a compatibility entry point only after verifying the target and backup.
+
+## Suggested reading order
+
+| Task | Start here |
+| --- | --- |
+| Set up the tool for the first time | [Installation and runtime](./installation) |
+| Write or review the retention list | [Whitelist files](./whitelist) |
+| Run and verify one cleanup | [Using CleanMCA](./usage) |
+| Run it on Windows, Linux, macOS, or WSL | [Platform and entry-point differences](./platforms) |
+| Plan backups, shutdown, and recovery | [Safety and recovery](./safety) |
+| Diagnose a failed run or world issue | [Troubleshooting](./troubleshooting) |
+
+## Documentation baseline
+
+This documentation is based on the current master-branch `CleanMCA.sh`, `CleanMCA.py`, `CleanMCA.bat`, `README_python.md`, and `whitelist_example.txt`. The repository's latest recorded commit is dated 2025-07-17. The scripts may change; during an operation, treat the current repository files, terminal output, and backup state as authoritative.
+
+</Localized>

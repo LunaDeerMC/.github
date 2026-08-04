@@ -1,0 +1,95 @@
+---
+title: CleanMCA · Using the tool
+description: Step-by-step commands for the Python, Bash, and Windows entries, including confirmation, scope, and post-run checks.
+icon: Terminal
+sidebar:
+  label: Using the tool
+  order: 30
+---
+
+## Pre-run checklist
+
+Before running the command, confirm that:
+
+- the server process is stopped and the panel will not restart it;
+- the world, plugin data, and database have readable backups;
+- `whitelist.txt` contains the files you intend to keep;
+- `--region` points to the target dimension's `region` directory;
+- sibling `poi` and `entities` directories exist;
+- the current user can read and delete files in all three directories;
+- paths with spaces are quoted;
+- the first run is against a test copy.
+
+## Recommended: Python
+
+Linux or macOS:
+
+~~~sh
+cd /srv/tools/CleanMCA
+python3 CleanMCA.py \
+  --mca /srv/tools/CleanMCA/whitelist.txt \
+  --region /srv/minecraft/world/region
+~~~
+
+Short options:
+
+~~~sh
+python3 CleanMCA.py -m whitelist.txt -r /srv/minecraft/world/region
+~~~
+
+Windows:
+
+~~~powershell
+cd "D:\Tools\CleanMCA"
+python CleanMCA.py --mca "D:\Tools\CleanMCA\whitelist.txt" --region "D:\Minecraft\world\region"
+~~~
+
+The Python version checks the whitelist and all three directories, then prints the whitelist path, target paths, and file count. Its confirmation accepts `y`, `yes`, or `是` (case-insensitive for English); any other input cancels, and `Ctrl+C` cancels as well. After confirmation it processes `region`, `poi`, and `entities` in that order and prints each deletion path.
+
+## Bash boundaries
+
+After manually checking the target, backup, and whitelist, the Bash entry point can be invoked with:
+
+~~~sh
+cd /srv/tools/CleanMCA
+bash CleanMCA.sh --mca /srv/tools/CleanMCA/whitelist.txt --region /srv/minecraft/world/region
+~~~
+
+The Bash version needs commands such as `getopt`, `realpath`, and `grep`, and checks that all three directories exist. It displays a “continue?” prompt, but the current repository script does not use the response to decide whether to return; `n` is not a reliable cancel. Do not treat the prompt as a second approval or a dry run. Use the Python version when you need a cancellable confirmation.
+
+## Windows batch entry point
+
+`CleanMCA.bat` only switches to UTF-8 and invokes the Python script in the same directory. The arguments remain `--mca` and `--region`:
+
+~~~powershell
+cd "D:\Tools\CleanMCA"
+.\CleanMCA.bat -m "D:\Tools\CleanMCA\whitelist.txt" -r "D:\Minecraft\world\region"
+~~~
+
+If Windows reports that `python` cannot be found, check `python --version` in the same CMD/PowerShell session and make sure the panel, scheduled task, or service account sees the same PATH.
+
+## What the tool actually processes
+
+For each of the three target directories, the script compares the name of each first-level entry with the whitelist:
+
+1. a listed filename is kept;
+2. an unlisted filename is deleted when it is a regular file;
+3. the Python implementation does not delete directories as regular files;
+4. the Bash loop is broader, so unexpected directories or other entries should not be present in the target directories;
+5. the tool does not recurse into subdirectories or inspect chunk, entity, or POI data inside an `.mca` file.
+
+Important: the current Python implementation does not mean “delete only `.mca` files”. It means “delete every unlisted regular file in the three target directories”. If a server, panel, or other tool writes additional files there, decide whether they belong in the whitelist first.
+
+## Verify the result
+
+Do not treat the test copy as a production result immediately. Check that:
+
+1. all three directories report completion without permission or deletion errors;
+2. the directories still exist and spot-checked filenames match the whitelist;
+3. the server starts without persistent missing-save errors;
+4. players can log in, move through common areas, and load chunks;
+5. important villagers, POIs, entity-heavy machines, portals, structures, and public areas behave as expected;
+6. the production run keeps the pre-cleanup backup and the exact whitelist.
+
+CleanMCA has no built-in dry run. To observe without deleting, use a test copy or an independent file-review method before invoking CleanMCA; do not run it on production and then attempt to reconstruct the deleted set.
+

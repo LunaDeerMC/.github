@@ -1,0 +1,43 @@
+---
+title: CleanMCA
+description: 面向服务器管理员的 CleanMCA 安装、白名单、执行、安全与故障排查文档。
+icon: Terminal
+link: /docs/tools/cleanmca
+documentSet:
+  order: 50
+  status: active
+---
+
+## 文档范围
+
+这套文档面向需要维护 Minecraft 存档、控制磁盘占用并承担恢复责任的服主和服务器管理员。CleanMCA 是直接删除文件的命令行工具，不是 Minecraft 插件，也不会替你停服、备份、判断路径或验证白名单。
+
+文档按当前仓库中的 Bash、Python 和 Windows 批处理入口撰写，并把 Python 版本作为生产操作的首选。脚本会依据白名单处理指定维度的 `region`、`poi` 和 `entities` 三个目录；在运行前请先确认[安全边界与恢复](./safety)。
+
+## 推荐阅读顺序
+
+1. [安装与运行环境](./installation)：准备脚本、Python/Bash 依赖、测试副本和目标目录。
+2. [白名单文件](./whitelist)：理解“保留列表”的精确匹配、维度范围和 Dominion 列表风险。
+3. [实际使用](./usage)：选择 Python、Bash 或 Windows 入口，执行一次清理并验证结果。
+4. [平台与入口差异](./platforms)：处理 Windows 路径、WSL、Git Bash、编码和自动任务。
+5. [安全边界与恢复](./safety)：安排停服、备份、生产运行和回滚。
+6. [故障排查](./troubleshooting)：解决路径、权限、误删和清理后的服务器异常。
+
+## 一条最短但安全的路径
+
+先停服并复制测试世界，再用 Python 版本运行：
+
+~~~sh
+python3 CleanMCA.py --mca /path/to/whitelist.txt --region /path/to/world/region
+~~~
+
+确认终端中的白名单和三个目标目录都正确后，才输入 `y`、`yes` 或 `是`。测试服验证通过后，保留清理前备份、白名单和执行记录，再对生产世界执行相同流程。
+
+## 重要限制
+
+- 没有 dry-run、撤销或自动恢复；
+- `--region` 必须指向 `region` 目录，工具从其上一级寻找同级 `poi` 和 `entities`；
+- 同一白名单应用到三个目录，当前 Python 实现会删除其中所有不在名单里的普通文件，而不只删除 `.mca`；
+- 当前 Bash 脚本显示确认提示但没有校验 `y/n` 分支，生产环境优先使用 Python；
+- CleanMCA 不理解区块内容，最终删除范围完全由文件名白名单决定。
+

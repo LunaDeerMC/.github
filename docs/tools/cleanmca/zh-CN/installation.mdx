@@ -1,0 +1,107 @@
+---
+title: CleanMCA · 安装与运行环境
+description: 准备 CleanMCA、检查 Python 或 Bash 环境，并在测试副本中完成第一次运行。
+icon: Download
+sidebar:
+  label: 安装与运行环境
+  order: 10
+---
+
+## 推荐的运行方式
+
+CleanMCA 不需要编译，也没有第三方 Python 包。仓库包含三个入口：
+
+| 入口 | 适用环境 | 建议 |
+| --- | --- | --- |
+| `CleanMCA.py` | Linux、macOS、Windows | 生产环境优先使用，确认逻辑和错误信息更完整 |
+| `CleanMCA.sh` | Bash、Linux、macOS、WSL、Git Bash | 兼容已有 shell 流程，但当前版本的 `n` 确认不能可靠取消 |
+| `CleanMCA.bat` | Windows CMD 或 PowerShell | 只是调用同目录下的 Python 版本 |
+
+无论选择哪一个入口，清理动作都直接作用于存档目录。安装脚本本身不会创建副本，也不会自动备份世界。
+
+## 获取文件
+
+可以从 [CleanMCA GitHub 仓库](https://github.com/LunaDeerMC/CleanMCA) 下载 ZIP，或在工具目录中执行：
+
+~~~sh
+git clone https://github.com/LunaDeerMC/CleanMCA.git
+cd CleanMCA
+~~~
+
+建议把脚本和白名单放在独立的运维工具目录，例如：
+
+~~~text
+/srv/tools/CleanMCA/
+├── CleanMCA.py
+├── CleanMCA.sh
+├── CleanMCA.bat
+└── whitelist.txt
+~~~
+
+不要把脚本复制到 `world/region`、`poi` 或 `entities` 目录中。当前仓库没有要求通过 `pip` 安装依赖；Python 版本只使用标准库。
+
+## 检查环境
+
+### Python 版本
+
+README 中给出的 Python 版本要求是 3.6 或更高版本。请使用实际执行清理的用户检查，而不是只检查面板或你自己的登录用户：
+
+~~~sh
+python3 --version
+python3 -c 'import sys; print(sys.executable)'
+~~~
+
+Windows 可以使用：
+
+~~~powershell
+python --version
+py --version
+~~~
+
+如果 `python` 指向多个版本，后续命令要固定使用同一个可执行文件。批处理入口依赖 PATH 中的 `python`，因此面板或计划任务可能需要显式配置环境变量。
+
+### Bash 依赖
+
+使用 Bash 入口前，确认环境具有 `bash`、`getopt`、`realpath`、`grep`、`wc` 和 `rm` 等常用命令：
+
+~~~sh
+bash --version
+command -v getopt realpath grep wc rm
+~~~
+
+不同 Linux 发行版、macOS、WSL 和 Git Bash 提供的命令参数可能不同。尤其是 `realpath` 缺失或行为不同的时候，应改用 Python 版本。
+
+## 先准备测试副本
+
+第一次执行不要直接指向生产世界。停服并确认世界已经完成保存后，复制一个完整的测试目录；复制过程需要足够磁盘空间，并且不能与服务器写入同时进行：
+
+~~~sh
+cp -a /srv/minecraft /srv/minecraft-cleanmca-test
+~~~
+
+之后只在测试副本上生成或调整白名单，确认服务器能够启动、玩家能够进入、常用区域和村民/POI 行为正常，再安排生产清理。
+
+## 检查目标目录
+
+`--region` 参数需要指向一个维度中的 `region` 目录。工具会自动把它的上一级目录下的 `poi` 和 `entities` 当作另外两个目标：
+
+~~~text
+<dimension>/
+├── region/       ← 传给 --region / -r 的目录
+├── poi/          ← 工具自动寻找
+└── entities/     ← 工具自动寻找
+~~~
+
+Python 和 Bash 版本都会要求三个目录都存在。不要把世界根目录、`poi` 目录或单个 `.mca` 文件作为 `--region` 参数；也不要把主世界的路径套用到下界或末地。每个维度都要根据实际目录单独确认。
+
+## 第一次只做环境验证
+
+在正式执行前，至少确认以下信息：
+
+1. 服务器已经停止，备份可以读取；
+2. 白名单文件路径和目标 `region` 路径都使用了明确的绝对路径；
+3. 目标 `region` 的同级 `poi` 和 `entities` 目录确实存在；
+4. 你知道该白名单代表的是“要保留的文件”，而不是“要删除的文件”；
+5. 如果使用 Python，终端能看到预览并在删除前等待确认；
+6. 如果使用 Bash，已经人工确认路径，因为当前脚本的 `n` 输入不能视为取消。
+

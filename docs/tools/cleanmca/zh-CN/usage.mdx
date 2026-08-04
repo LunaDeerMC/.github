@@ -1,0 +1,95 @@
+---
+title: CleanMCA · 实际使用
+description: 逐步说明 Python、Bash 和 Windows 入口的命令、确认过程、处理范围与执行后验证。
+icon: Terminal
+sidebar:
+  label: 实际使用
+  order: 30
+---
+
+## 运行前检查清单
+
+在命令行中执行前，确认：
+
+- 服务器进程已经停止，面板不会自动拉起它；
+- 世界、插件数据和数据库已有可读取的备份；
+- `whitelist.txt` 是你要保留的文件名列表；
+- `--region` 指向目标维度的 `region` 目录；
+- `region` 的同级 `poi` 和 `entities` 都存在；
+- 当前用户对三个目录拥有读取和删除权限；
+- 路径中有空格时已使用引号；
+- 第一次运行在测试副本中完成。
+
+## 推荐：运行 Python 版本
+
+Linux 或 macOS：
+
+~~~sh
+cd /srv/tools/CleanMCA
+python3 CleanMCA.py \
+  --mca /srv/tools/CleanMCA/whitelist.txt \
+  --region /srv/minecraft/world/region
+~~~
+
+短参数形式：
+
+~~~sh
+python3 CleanMCA.py -m whitelist.txt -r /srv/minecraft/world/region
+~~~
+
+Windows：
+
+~~~powershell
+cd "D:\Tools\CleanMCA"
+python CleanMCA.py --mca "D:\Tools\CleanMCA\whitelist.txt" --region "D:\Minecraft\world\region"
+~~~
+
+Python 版本会先检查白名单和三个目录，再显示白名单路径、目标路径和文件数量。确认提示接受 `y`、`yes` 或 `是`（不区分英文大小写）；其他输入会取消，按 `Ctrl+C` 也会取消。输入确认后，脚本按 `region`、`poi`、`entities` 的顺序处理目录，并逐个输出删除路径。
+
+## 使用 Bash 版本时的边界
+
+在已经人工核对目标、备份和白名单后，可以使用：
+
+~~~sh
+cd /srv/tools/CleanMCA
+bash CleanMCA.sh --mca /srv/tools/CleanMCA/whitelist.txt --region /srv/minecraft/world/region
+~~~
+
+Bash 版本需要 `getopt`、`realpath`、`grep` 等命令，并会检查三个目录是否存在。它会显示一个“是否继续”的读取提示，但当前仓库的脚本没有根据读取到的字符决定是否返回；`n` 不是可靠的取消方式。不要把这个提示当作二次确认或 dry-run。需要可取消的确认时，请改用 Python 版本。
+
+## Windows 批处理入口
+
+`CleanMCA.bat` 只负责切换到 UTF-8 代码页并调用同目录的 Python 脚本，参数仍然是 `--mca` 和 `--region`：
+
+~~~powershell
+cd "D:\Tools\CleanMCA"
+.\CleanMCA.bat -m "D:\Tools\CleanMCA\whitelist.txt" -r "D:\Minecraft\world\region"
+~~~
+
+如果出现“找不到 python”，先在同一个 CMD/PowerShell 会话中检查 `python --version`，再确认面板、计划任务或服务账户的 PATH 与交互式终端一致。
+
+## 工具实际会处理什么
+
+脚本会把白名单中的每一行当作文件名，在三个目标目录的第一层进行比较：
+
+1. 文件名在白名单中：保留；
+2. 文件名不在白名单中：删除该普通文件；
+3. Python 版本遇到目录时不会把目录当作普通文件删除；
+4. Bash 版本遍历方式更宽，目录或其他非预期条目不应出现在目标目录中；
+5. 工具不会递归进入子目录，也不会读取 `.mca` 内部的区块、实体或 POI 数据。
+
+特别注意：当前 Python 实现的判断不是“只删除 `.mca` 文件”，而是“删除三个目标目录中所有不在白名单里的普通文件”。如果目录里有服务器、面板或其他工具写入的额外文件，必须先确认它们是否应被列入白名单。
+
+## 执行后验证
+
+清理完成后不要立即把测试副本当成生产结果。先检查：
+
+1. 终端显示三个目录均处理完成，没有权限或删除失败信息；
+2. 目标目录仍然存在，保留的文件名与白名单抽查一致；
+3. 服务器能够启动，日志没有因为缺失存档文件产生持续错误；
+4. 玩家可以登录、移动到常用区域并加载区块；
+5. 重要村民、POI、实体密集机器、传送点、下界/末地入口和公共建筑按预期工作；
+6. 测试稳定后才安排生产目录，并保留清理前的备份和本次白名单。
+
+CleanMCA 没有内置 dry-run。想要“只观察不删除”，请先在测试副本上运行，或在正式执行前用独立脚本/文件管理器审查列表，不要通过运行 CleanMCA 后再尝试恢复。
+

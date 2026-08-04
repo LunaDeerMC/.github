@@ -1,0 +1,25 @@
+name: CleanMCA
+summary:
+  zh-CN: 依据白名单清理 Minecraft 存档 region、poi 与 entities 目录中的多余文件，帮助服主释放磁盘空间。
+  en: A command-line tool that removes unlisted files from a Minecraft world's region, poi, and entities directories.
+type: tool
+accessModel: free
+lifecycle: active
+featured: false
+publishedAt: "2025-06-30"
+icon: Terminal
+iconSrc: /assets/works/cleanmca/cleanmca-logo.png
+cover:
+  src: /assets/works/cleanmca/cleanmca-cover.png
+  alt:
+    zh-CN: CleanMCA 封面：正在终端中依据白名单处理 Minecraft 存档的 region、poi 与 entities 文件
+    en: "CleanMCA cover: a terminal processing a Minecraft world's region, poi, and entities files from a whitelist"
+compatibility:
+  minecraft:
+    - Java Edition world saves
+  platforms:
+    - Bash-compatible shell
+    - Python 3.6+
+    - Windows
+docs:
+  root: tools/cleanmca
