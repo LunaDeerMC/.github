@@ -25,7 +25,7 @@ export async function getDocumentPages(locale?: Locale): Promise<DocumentPageRec
         title: data.title,
         label: data.sidebar?.label,
         description: data.description,
-        icon: data.icon,
+        icon: data.icon ?? undefined,
         layout: data.layout ?? "default",
         draft: data.draft ?? false,
         hidden: data.sidebar?.hidden ?? false,

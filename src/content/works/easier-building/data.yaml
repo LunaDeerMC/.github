@@ -1,0 +1,24 @@
+name: EasierBuilding
+summary:
+  zh-CN: 面向 Paper 与 Folia、适用于生存模式的 Minecraft 建筑辅助插件，通过实时预览和形状建造模式让大型结构更轻松地完成。
+  en: A survival-friendly Minecraft building-assistant plugin for Paper and Folia, with live previews and shape-based tools for building large structures with ease.
+type: plugin
+accessModel: freemium
+lifecycle: active
+featured: true
+publishedAt: "2026-08-05"
+icon: Wrench
+iconSrc: /assets/works/easier-building/easierbuilding-logo.png
+cover:
+  src: /assets/works/easier-building/easierbuilding-cover.png
+  alt:
+    zh-CN: EasierBuilding 封面：Minecraft 工作台上铺着一张城市规划设计蓝图
+    en: "EasierBuilding cover: a city-planning blueprint spread across a Minecraft crafting table"
+compatibility:
+  minecraft:
+    - "1.20+"
+  platforms:
+    - Paper
+    - Folia
+docs:
+  root: plugins/easier-building

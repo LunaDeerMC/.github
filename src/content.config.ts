@@ -103,7 +103,7 @@ const docs = defineCollection({
     .object({
       title: z.string(),
       description: z.string().optional(),
-      icon: z.string().optional(),
+      icon: z.string().nullable().optional(),
       link: z.string().optional(),
       layout: z.enum(["default", "wide"]).default("default"),
       draft: z.boolean().default(false),
