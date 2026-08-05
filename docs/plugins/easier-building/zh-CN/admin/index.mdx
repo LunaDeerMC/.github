@@ -1,9 +1,63 @@
 ---
-title: 管理员手册
-description: EasierBuilding 的使用、配置和维护指南。
-icon: 
+title: 管理员手册 · 总览
+description: 面向服主与运维人员的 EasierBuilding 安装、配置、权限与公平用量指南。
+icon: Server
 link: /docs/plugins/easier-building/admin
 sidebar:
+  label: 管理员手册 · 总览
   order: 3010
 ---
+
+## 管理职责
+
+EasierBuilding 的管理工作围绕「让建筑助力可用，同时守住服务器平衡」展开：
+
+- 选择版本：基础版（免费）或专业版（付费），把对应 JAR 放进 `plugins/`；
+- 启动一次生成配置与语言文件，核对日志中的 `EasierBuilding enabled`；
+- 按服务器性能调校队列与预览参数；
+- 决定拆除保护的强度（工具亲和性、掉落、矿物与方块实体保护）；
+- 按需配置公平用量计划，防止个别玩家刷方块；
+- 用普通账号验证玩家行为，而不是只用 OP 账号测试。
+
+## 一次完整的部署顺序
+
+1. 停服，把 `EasierBuilding-<version>-basic.jar`（或 `-advanced.jar`）放进 `plugins/`；
+2. 启动服务端，确认日志出现 `EasierBuilding enabled`（专业版还会提示 `advanced`）；
+3. 停服，检查 `plugins/EasierBuilding/` 生成的 `config.yml`、`messages/` 与 `gui/` 文件；
+4. 修改 `config.yml`，用 `/eb reload` 热重载（无需重启）；
+5. 用普通玩家账号创建测试任务，验证材料消耗、工具亲和性、替换策略和领地保护；
+6. 开放给全体玩家，并定期查看任务报告与服务器 tick 表现。
+
+## 文件地图
+
+| 文件 / 目录 | 管理内容 | 修改方式 |
+| :--- | :--- | :--- |
+| `config.yml` | 语言、性能、预览、放置、拆除、生存、Folia、公平用量 | 可改；`version` 不要改 |
+| `messages/zh_cn.yml` | 中文界面文案（MiniMessage 格式） | 可改；用 `/eb reload` 生效 |
+| `messages/en_us.yml` | 英文界面文案 | 可改；初始内容与中文一致，需自行翻译 |
+| `gui/zh_cn.yml`、`gui/en_us.yml` | 菜单标题、按钮名称与说明 | 可改 |
+| `player-data/<uuid>.yml` | 玩家模式、变体、替换设置、随机袋、用量记录 | 不要手工改表；删除即重置该玩家偏好 |
+
+## 页面导航
+
+- [配置文件](./configure)：`config.yml` 全部键的说明与默认值。
+- [权限节点](./permission)：全部权限节点、默认值与常见配置陷阱。
+- 公平用量计划的完整配置见[其他功能：公平用量](../features/fair-usage)。
+
+## 常用命令
+
+| 命令 | 权限 | 说明 |
+| :--- | :--- | :--- |
+| `/eb` | `easierbuilding.use` | 打开玩家主菜单 |
+| `/eb reload` | `easierbuilding.reload` 或 `easierbuilding.admin.reload` | 重载配置与语言文件 |
+| `/eb debug <玩家>` | `easierbuilding.admin` | 输出玩家会话、预览与任务状态 |
+| `/eb cancel <玩家>` | `easierbuilding.admin` | 取消玩家当前任务 |
+
+## 重要的安全边界
+
+- **升级前备份**：`config.yml` 会在结构升级时自动备份为 `config.yml.v<旧版本>.<时间戳>.bak`，但玩家数据与语言自定义建议自行定期备份。
+- **不要手工修改玩家档案**：`player-data/` 由插件管理，手工改动可能导致偏好与用量记录异常。
+- **OP 直接写方块**：OP 放置走直写路径，不触发保护插件事件，但仍消耗材料（除非授予豁免权限）。测试领地保护时请使用普通账号。
+- **专业版功能**：基础版中显示「未解锁」是正常的；安装专业版 JAR 后自动解锁，不需要改任何配置。
+- **没有撤销功能**：任务一旦执行无法回滚，建议在开放大范围拆除前用普通账号验证保护规则。
 

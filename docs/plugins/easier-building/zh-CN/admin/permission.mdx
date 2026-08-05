@@ -1,8 +1,122 @@
 ---
 title: 权限节点
-description: 关于 EasierBuilding 权限节点的说明
-icon: 
+description: 全部权限节点的说明、默认值与常见配置陷阱。
+icon: KeyRound
 link: /docs/plugins/easier-building/admin/permission
 sidebar:
   order: 3030
 ---
+
+## 权限总览
+
+EasierBuilding 的权限以 `easierbuilding.` 为前缀，按功能分组：基础使用、模式、修改器、替换策略、拆除与豁免。以下为全部权限节点及其默认值。
+
+## 基础权限
+
+| 权限 | 默认 | 说明 |
+| :--- | :---: | :--- |
+| `easierbuilding.use` | 全员 | 使用插件（打开 `/eb` 菜单） |
+| `easierbuilding.admin` | OP | 管理权限（`/eb debug`、`/eb cancel`、GUI 管理入口） |
+| `easierbuilding.reload` | OP | 执行 `/eb reload` |
+| `easierbuilding.admin.reload` | OP | 执行 `/eb reload`（备用节点） |
+
+## 模式权限
+
+| 权限 | 默认 | 对应模式 |
+| :--- | :---: | :--- |
+| `easierbuilding.mode.normal` | 全员 | 普通编辑 |
+| `easierbuilding.mode.line` | 全员 | 直线 |
+| `easierbuilding.mode.wall` | 全员 | 墙面 |
+| `easierbuilding.mode.cube` | 全员 | 立方体 |
+| `easierbuilding.mode.diagonal_line` | 全员 | 斜线 |
+| `easierbuilding.mode.diagonal_wall` | 全员 | 斜墙 |
+| `easierbuilding.mode.slope` | 全员 | 斜坡 |
+| `easierbuilding.mode.ellipse` | 全员 | 椭圆 |
+| `easierbuilding.mode.cylinder` | 全员 | 圆柱 |
+| `easierbuilding.mode.sphere` | 全员 | 球体 |
+| `easierbuilding.mode.dome` | 全员 | 半球 |
+
+> 高级模式的权限默认**全员可用**，但功能本身需要专业版解锁；未安装专业版时，即使有权限也显示「未解锁」。
+
+## 修改器权限
+
+| 权限 | 默认 | 对应修改器 |
+| :--- | :---: | :--- |
+| `easierbuilding.modifier.mirror` | 全员 | 镜像 |
+| `easierbuilding.modifier.array` | 全员 | 线性阵列（声明节点） |
+| `easierbuilding.modifier.radial_mirror` | 全员 | 旋转镜像（别名 `radial-mirror` 兼容） |
+
+> **配置陷阱**：代码实际检查线性阵列的权限节点为 `easierbuilding.modifier.linear-array`（兼容 `linear_array`），但 `plugin.yml` 默认声明的只有 `easierbuilding.modifier.array`。**默认配置下，线性阵列在菜单中会显示「权限不足」**，需要管理员额外授予 `easierbuilding.modifier.linear-array` 权限才能使用。
+
+## 替换策略权限
+
+| 权限 | 默认 | 对应策略 |
+| :--- | :---: | :--- |
+| `easierbuilding.replace.air-only` | 全员 | 仅空气（免费） |
+| `easierbuilding.replace.blocks-and-air` | 关闭 | 空气与方块（专业版） |
+| `easierbuilding.replace.blocks-only` | 关闭 | 仅方块（专业版） |
+| `easierbuilding.replace.offhand-filter` | 关闭 | 副手匹配（专业版） |
+| `easierbuilding.replace.whitelist` | 关闭 | 白名单（专业版） |
+| `easierbuilding.replace.quick` | 关闭 | 快捷替换（专业版） |
+
+> 专业版替换策略的权限默认关闭，授予权限后才可选用对应策略（仍需专业版解锁功能本身）。
+
+## 拆除与豁免权限
+
+| 权限 | 默认 | 说明 |
+| :--- | :---: | :--- |
+| `easierbuilding.break` | 全员 | 允许批量拆除（无此权限时拆除被跳过） |
+| `easierbuilding.break.drops` | 关闭 | 批量拆除是否掉落物品（还需配置 `breaking.drop-items: true`） |
+| `easierbuilding.bypass.survival-cost` | OP | 绕过生存消耗（放置不消耗材料） |
+
+## 推荐的最小配置
+
+**普通生存服**（保留默认即可）：
+
+```text
+easierbuilding.use: true
+easierbuilding.break: true
+easierbuilding.break.drops: false
+```
+
+**建筑团队 / 活动测试**（授予豁免与高级策略）：
+
+```text
+# 让指定玩家或组免材料消耗
+easierbuilding.bypass.survival-cost: true
+# 解锁专业版替换策略
+easierbuilding.replace.blocks-and-air: true
+easierbuilding.replace.whitelist: true
+# 解锁线性阵列（修复默认未声明的节点）
+easierbuilding.modifier.linear-array: true
+```
+
+**严格模式**（只允许基础模式，不允许拆除掉落）：
+
+```text
+easierbuilding.mode.diagonal_line: false
+easierbuilding.mode.diagonal_wall: false
+easierbuilding.mode.slope: false
+easierbuilding.mode.ellipse: false
+easierbuilding.mode.cylinder: false
+easierbuilding.mode.sphere: false
+easierbuilding.mode.dome: false
+easierbuilding.modifier.mirror: false
+easierbuilding.modifier.linear-array: false
+easierbuilding.modifier.radial_mirror: false
+easierbuilding.break.drops: false
+```
+
+## 常见问题
+
+**授予了权限但功能还是「未解锁」？**
+
+权限控制「能不能用」，专业版控制「有没有这个功能」。未安装专业版时，高级模式 / 修改器 / 替换策略 / 随机材料袋显示「未解锁」是正常现象，与权限无关。
+
+**为什么玩家有 `modifier.array` 权限，线性阵列还是提示权限不足？**
+
+因为代码检查的是 `easierbuilding.modifier.linear-array` 节点（见上文陷阱）。授予该节点即可。
+
+**OP 还需要额外权限吗？**
+
+OP 默认拥有 `easierbuilding.admin` 与 `easierbuilding.bypass.survival-cost`；各模式的 `mode.*` 与 `break` 默认全员，OP 自然可用。但 OP 不等于拥有所有权限，测试玩家行为请使用普通账号。

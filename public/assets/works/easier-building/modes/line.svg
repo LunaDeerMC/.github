@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 360">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0 0L10 5L0 10Z" fill="#d95d39"/>
+    </marker>
+  </defs>
+  <rect width="1080" height="360" rx="20" fill="#f7f5ef"/>
+  <path d="M322 180H354M346 171L355 180L346 189M692 180H724M716 171L725 180L716 189" fill="none" stroke="#d95d39" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <g transform="translate(20 0)">
+    <rect x="0" y="18" width="280" height="324" rx="16" fill="#fffdf8" stroke="#e3ddd2" stroke-width="2"/>
+    <path d="M20 240L140 300L260 240L140 180Z" fill="#f2eee6" stroke="#d3cdc2" stroke-width="2"/>
+    <path d="M50 225L140 270L230 225M80 210L140 240L200 210M110 195L140 210L170 195" fill="none" stroke="#ded8cd" stroke-width="1.5"/>
+    <path d="M80 266L80 242M80 266L70 260M80 266L90 260" fill="none" stroke="#d95d39" stroke-width="2.5" stroke-linecap="round"/>
+    <circle cx="72" cy="266" r="11" fill="#d95d39" stroke="#fffdf8" stroke-width="5"/>
+  </g>
+
+  <g transform="translate(390 0)">
+    <rect x="0" y="18" width="280" height="324" rx="16" fill="#fffdf8" stroke="#e3ddd2" stroke-width="2"/>
+    <path d="M20 240L140 300L260 240L140 180Z" fill="#f2eee6" stroke="#d3cdc2" stroke-width="2"/>
+    <path d="M50 225L140 270L230 225M80 210L140 240L200 210M110 195L140 210L170 195" fill="none" stroke="#ded8cd" stroke-width="1.5"/>
+    <path d="M72 266L170 217" fill="none" stroke="#d95d39" stroke-width="3" stroke-dasharray="7 8" stroke-linecap="round" marker-end="url(#arrow)"/>
+    <circle cx="72" cy="266" r="9" fill="#fffdf8" stroke="#57554e" stroke-width="3"/>
+    <circle cx="170" cy="217" r="11" fill="#d95d39" stroke="#fffdf8" stroke-width="5"/>
+  </g>
+
+  <g transform="translate(760 0)">
+    <rect x="0" y="18" width="280" height="324" rx="16" fill="#fffdf8" stroke="#e3ddd2" stroke-width="2"/>
+    <path d="M20 240L140 300L260 240L140 180Z" fill="#f2eee6" stroke="#d3cdc2" stroke-width="2"/>
+    <path d="M50 225L140 270L230 225M80 210L140 240L200 210M110 195L140 210L170 195" fill="none" stroke="#ded8cd" stroke-width="1.5"/>
+    <path d="M72 266L170 217" fill="none" stroke="#242420" stroke-width="8" stroke-linecap="round"/>
+    <circle cx="72" cy="266" r="9" fill="#fffdf8" stroke="#242420" stroke-width="3"/>
+    <circle cx="170" cy="217" r="11" fill="#d95d39" stroke="#fffdf8" stroke-width="5"/>
+  </g>
+</svg>

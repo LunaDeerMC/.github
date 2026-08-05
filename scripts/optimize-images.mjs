@@ -86,6 +86,19 @@ async function optimizeImages(outputDirectory, logger) {
       .avif({ quality: 55, effort: 6 })
       .toFile(avifPath);
     avifCount += 1;
+
+    // WebP 不划算（不小于原图）时，若 AVIF 更小则回退使用 AVIF 替换引用，
+    // 保证构建产物中的图片只保留优化格式，避免未优化的栅格引用被校验拒绝。
+    if (!replacements.has(`/${relativePath}`)) {
+      const avifStats = await stat(avifPath);
+      if (avifStats.size < sourceStats.size) {
+        const avifRelativePath = toPosixPath(relative(outputDirectory, avifPath));
+        sourceBytes += sourceStats.size;
+        optimizedBytes += avifStats.size;
+        convertedCount += 1;
+        replacements.set(`/${relativePath}`, `/${avifRelativePath}`);
+      }
+    }
   }
 
   const textFiles = allFiles.filter((path) => textExtensions.has(extname(path).toLowerCase()));

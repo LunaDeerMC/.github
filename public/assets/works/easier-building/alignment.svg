@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1040 400">
+  <rect width="1040" height="400" rx="20" fill="#f7f5ef"/>
+
+  <g transform="translate(20 0)">
+    <rect x="0" y="20" width="480" height="360" rx="16" fill="#fffdf8" stroke="#e3ddd2" stroke-width="2"/>
+    <rect x="90" y="45" width="300" height="300" fill="#f2eee6"/>
+    <rect x="165" y="120" width="75" height="75" fill="#e6e0d6"/>
+    <path d="M90 45H390V345H90Z M165 45V345M240 45V345M315 45V345M90 120H390M90 195H390M90 270H390" fill="none" stroke="#aaa49a" stroke-width="2"/>
+    <path d="M90 45H390V345H90Z" fill="none" stroke="#242420" stroke-width="3"/>
+    <circle cx="202.5" cy="157.5" r="10" fill="#d95d39" stroke="#fffdf8" stroke-width="4"/>
+  </g>
+
+  <path d="M520 55V345" fill="none" stroke="#e0d9cf" stroke-width="2"/>
+
+  <g transform="translate(540 0)">
+    <rect x="0" y="20" width="480" height="360" rx="16" fill="#fffdf8" stroke="#e3ddd2" stroke-width="2"/>
+    <rect x="90" y="45" width="300" height="300" fill="#f2eee6"/>
+    <rect x="165" y="120" width="75" height="75" fill="#e6e0d6"/>
+    <path d="M90 45H390V345H90Z M165 45V345M240 45V345M315 45V345M90 120H390M90 195H390M90 270H390" fill="none" stroke="#aaa49a" stroke-width="2"/>
+    <path d="M90 45H390V345H90Z" fill="none" stroke="#242420" stroke-width="3"/>
+    <circle cx="240" cy="120" r="10" fill="#d95d39" stroke="#fffdf8" stroke-width="4"/>
+  </g>
+</svg>

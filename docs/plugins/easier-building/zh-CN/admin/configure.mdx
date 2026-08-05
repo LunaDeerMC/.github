@@ -1,8 +1,245 @@
 ---
 title: 配置文件
-description: 关于 EasierBuilding 配置文件的说明
-icon: 
+description: config.yml 全部键的说明与默认值，以及语言与 GUI 文件。
+icon: Settings
 link: /docs/plugins/easier-building/admin/configure
 sidebar:
   order: 3020
 ---
+
+## 文件位置
+
+插件启动后会在 `plugins/EasierBuilding/` 下生成：
+
+```text
+plugins/EasierBuilding/
+├── config.yml           # 主配置
+├── messages/
+│   ├── zh_cn.yml        # 中文文案
+│   └── en_us.yml        # 英文文案
+├── gui/
+│   ├── zh_cn.yml
+│   └── en_us.yml
+└── player-data/         # 玩家偏好与用量记录
+```
+
+修改后执行 `/eb reload` 即可热重载（语言、GUI 与已打开的菜单会同步刷新）。结构升级时旧配置会自动备份为 `config.yml.v<旧版本>.<时间戳>.bak`，非法值会被重置并重写文件。
+
+## 根级配置
+
+```yaml
+version: 1
+language: zh_cn
+```
+
+- `version`：配置结构版本，**不要改**；
+- `language`：插件显示语言，对应 `messages/` 与 `gui/` 下的语言文件名。
+
+## performance：性能
+
+```yaml
+performance:
+  blocks-per-tick-per-player: 2
+  max-blocks-per-tick-global: 512
+  max-blocks-per-operation: 10000
+  max-nanos-per-tick-global: 2000000
+  max-running-tasks-per-player: 1
+  max-paused-tasks-per-player: 3
+```
+
+| 键 | 默认 | 说明 |
+| :--- | :---: | :--- |
+| `blocks-per-tick-per-player` | 2 | 每玩家每刻的基础方块额度，也是无附魔工具的基准速度 |
+| `max-blocks-per-tick-global` | 512 | 全服每刻最多处理的方块总数 |
+| `max-blocks-per-operation` | 10000 | 单次操作允许的最大方块数，超限拒绝 |
+| `max-nanos-per-tick-global` | 2000000 | 全局每刻用于任务队列的时间预算（纳秒，2ms） |
+| `max-running-tasks-per-player` | 1 | 每玩家同时运行的任务数 |
+| `max-paused-tasks-per-player` | 3 | 每玩家最多保留的暂停任务数，超出直接取消 |
+
+> 调高 `blocks-per-tick-per-player` 与 `max-blocks-per-tick-global` 能加快大任务，但会占用更多服务器 tick；配置值请结合服务器负载实测。
+
+## preview：预览
+
+```yaml
+preview:
+  update-interval-ticks: 5
+  max-displays-per-player: 2048
+  hard-max-displays-per-player: 4096
+  too-large-mode: BORDER_ONLY
+  placement-scale: 0.5
+  breaking-block: RED_STAINED_GLASS
+  breaking-scale: 1.04
+```
+
+| 键 | 默认 | 说明 |
+| :--- | :---: | :--- |
+| `update-interval-ticks` | 5 | 预览刷新间隔（tick） |
+| `max-displays-per-player` | 2048 | 每玩家软上限，超过后降级预览质量 |
+| `hard-max-displays-per-player` | 4096 | 每玩家硬上限，超过后裁剪 / 拒绝预览 |
+| `too-large-mode` | `BORDER_ONLY` | 超限处理：`BORDER_ONLY`（只显示轮廓）/ `SAMPLE`（抽样）/ `DENY`（拒绝） |
+| `placement-scale` | 0.5 | 放置预览幽灵方块的缩放 |
+| `breaking-block` | `RED_STAINED_GLASS` | 破坏预览使用的方块材质 |
+| `breaking-scale` | 1.04 | 破坏预览方块的缩放 |
+
+## placement：放置
+
+```yaml
+placement:
+  ignore-distance: true
+  block-whitelist: []
+```
+
+| 键 | 默认 | 说明 |
+| :--- | :---: | :--- |
+| `ignore-distance` | true | 队列放置时忽略原版玩家触及距离检查 |
+| `block-whitelist` | `[]` | 允许队列放置的材质列表；留空表示不启用白名单限制 |
+
+## breaking：拆除与安全
+
+```yaml
+breaking:
+  drop-items: false
+  drop-exp: false
+  consume-tool-durability: true
+  allow-tile-entity-breaking: false
+  block-blacklist:
+    - COAL_ORE
+    - DEEPSLATE_COAL_ORE
+    - COPPER_ORE
+    - DEEPSLATE_COPPER_ORE
+    - IRON_ORE
+    - DEEPSLATE_IRON_ORE
+    - GOLD_ORE
+    - DEEPSLATE_GOLD_ORE
+    - REDSTONE_ORE
+    - DEEPSLATE_REDSTONE_ORE
+    - EMERALD_ORE
+    - DEEPSLATE_EMERALD_ORE
+    - LAPIS_ORE
+    - DEEPSLATE_LAPIS_ORE
+    - DIAMOND_ORE
+    - DEEPSLATE_DIAMOND_ORE
+    - NETHER_GOLD_ORE
+    - NETHER_QUARTZ_ORE
+    - ANCIENT_DEBRIS
+```
+
+| 键 | 默认 | 说明 |
+| :--- | :---: | :--- |
+| `drop-items` | false | 批量拆除是否掉落方块物品 |
+| `drop-exp` | false | 批量拆除是否掉落经验 |
+| `consume-tool-durability` | true | 生存模式拆除消耗主手工具耐久 |
+| `allow-tile-entity-breaking` | false | 是否允许批量破坏箱子、熔炉等带方块实体的方块 |
+| `block-blacklist` | 19 种矿物 | 永远不可批量破坏的材质，默认保护全部常见矿石与远古残骸 |
+
+> 掉落物品同时受权限 `easierbuilding.break.drops`（默认不授予）限制，双重保险杜绝刷物品。
+
+### breaking.tool-affinity：工具亲和性
+
+```yaml
+breaking:
+  tool-affinity:
+    enable: true
+    bare-hand-speed-multiplier: 0.0
+    allowed-tool-materials:
+      - WOODEN_PICKAXE
+      - STONE_PICKAXE
+      - IRON_PICKAXE
+      - GOLDEN_PICKAXE
+      - DIAMOND_PICKAXE
+      - NETHERITE_PICKAXE
+      # ... 镐、斧、铲、锄各 6 种 + SHEARS，共 25 种
+    enchantment-speed-multipliers:
+      minecraft:efficiency:
+        "1": 1.25
+        "2": 1.50
+        "3": 1.75
+        "4": 2.00
+        "5": 2.25
+```
+
+| 键 | 默认 | 说明 |
+| :--- | :---: | :--- |
+| `enable` | true | 是否启用工具亲和性；关闭后所有主手状态使用基础速度 |
+| `bare-hand-speed-multiplier` | 0.0 | 空手 / 非允许工具的倍率（0.0–1.0），0 表示跳过 |
+| `allowed-tool-materials` | 25 种 | 允许批量拆除的主手材质完整列表 |
+| `enchantment-speed-multipliers` | 效率 1–5 级 1.25–2.25 | 速度附魔倍率；多附魔相乘，超等级取最高配置 |
+
+## survival：生存模式
+
+```yaml
+survival:
+  consume-materials: true
+  pause-when-missing-material: true
+  auto-resume-when-material-added: false
+  cancel-task-when-player-offline: false
+```
+
+| 键 | 默认 | 说明 |
+| :--- | :---: | :--- |
+| `consume-materials` | true | 生存模式放置时消耗背包材料 |
+| `pause-when-missing-material` | true | 材料不足时暂停任务而不是失败 |
+| `auto-resume-when-material-added` | false | 补充材料后是否自动恢复暂停的任务（当前版本未实现自动恢复，请手动继续） |
+| `cancel-task-when-player-offline` | false | 任务所有者离线时是否直接取消任务（false 时暂停，上线后可继续） |
+
+## folia：Folia 区域安全
+
+```yaml
+folia:
+  strict-region-safety: true
+  pause-when-cross-region-player-context-required: true
+```
+
+| 键 | 默认 | 说明 |
+| :--- | :---: | :--- |
+| `strict-region-safety` | true | 执行玩家上下文任务前强制检查区域归属 |
+| `pause-when-cross-region-player-context-required` | true | 需要跨区域玩家上下文的任务暂停，而不是不安全地执行 |
+
+## fair-use-quota：公平用量
+
+```yaml
+fair-use-quota:
+  enabled: false
+  quota-plan:
+    - name: Default
+      permission-group: group.default
+      weight: 0
+      roolling-window-minute: 300
+      roolling-window-quota: 5000
+      period-limit-hour: 168
+      period-limit-quota: 50000
+```
+
+| 键 | 默认 | 说明 |
+| :--- | :---: | :--- |
+| `enabled` | false | 总开关；关闭后不检查、不扣除、不显示额度条 |
+| `quota-plan` | 1 个默认计划 | 额度计划列表，可配置多个 |
+
+计划字段：
+
+| 字段 | 说明 |
+| :--- | :--- |
+| `name` | 计划名称（显示在 BossBar） |
+| `permission-group` | 绑定的权限组（通常为 LuckPerms 暴露的 `group.default` 等） |
+| `weight` | 玩家命中多个计划时取 weight 最高者 |
+| `roolling-window-minute` | 滚动窗口时长（分钟） |
+| `roolling-window-quota` | 滚动窗口额度，`-1` 表示不限 |
+| `period-limit-hour` | 周期窗口时长（小时） |
+| `period-limit-quota` | 周期窗口额度，`-1` 表示不限 |
+
+约束：`roolling-window-minute` 必须小于 `period-limit-hour` 换算后的分钟数；两个窗口都有限制时滚动配额应小于周期配额。完整说明见[公平用量](../features/fair-usage)。
+
+## 语言与 GUI 文件
+
+- `messages/<language>.yml` 与 `gui/<language>.yml` 使用 **MiniMessage 格式**，占位符为 `<占位符>` 形式（如 `<mode>`、`<point_index>`）；
+- 内置 `zh_cn` 与 `en_us` 两种语言；语言文件缺失时按中文默认值生成，因此 `en_us.yml` 初始内容也是中文，需要自行翻译；
+- 界面文案渲染失败时会降级为去标签纯文本，并在控制台告警；
+- 每条文案都可以改：改颜色、改措辞，甚至改成其他语言，自由度完全交给服主。
+
+## 重载
+
+```text
+/eb reload
+```
+
+需要权限 `easierbuilding.reload` 或 `easierbuilding.admin.reload`。重载会刷新配置、语言文件与已打开的 GUI，并刷新所有在线玩家的 HUD。

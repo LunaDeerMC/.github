@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 360">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0 0L10 5L0 10Z" fill="#d95d39"/>
+    </marker>
+  </defs>
+  <rect width="1080" height="360" rx="20" fill="#f7f5ef"/>
+  <path d="M258 180H274M266 171L275 180L266 189M528 180H544M536 171L545 180L536 189M798 180H814M806 171L815 180L806 189" fill="none" stroke="#d95d39" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  <g transform="translate(10 0)">
+    <rect width="250" height="324" y="18" rx="16" fill="#fffdf8" stroke="#e3ddd2" stroke-width="2"/>
+    <path d="M10 240L125 300L240 240L125 180Z" fill="#f2eee6" stroke="#d3cdc2" stroke-width="2"/>
+    <circle cx="35" cy="250" r="11" fill="#d95d39" stroke="#fffdf8" stroke-width="5"/>
+  </g>
+  <g transform="translate(280 0)">
+    <rect width="250" height="324" y="18" rx="16" fill="#fffdf8" stroke="#e3ddd2" stroke-width="2"/>
+    <path d="M10 240L125 300L240 240L125 180Z" fill="#f2eee6" stroke="#d3cdc2" stroke-width="2"/>
+    <path d="M35 250L95 278" fill="none" stroke="#d95d39" stroke-width="3" stroke-dasharray="7 8" stroke-linecap="round" marker-end="url(#arrow)"/>
+    <circle cx="35" cy="250" r="9" fill="#fffdf8" stroke="#57554e" stroke-width="3"/>
+    <circle cx="95" cy="278" r="11" fill="#d95d39" stroke="#fffdf8" stroke-width="5"/>
+  </g>
+  <g transform="translate(550 0)">
+    <rect width="250" height="324" y="18" rx="16" fill="#fffdf8" stroke="#e3ddd2" stroke-width="2"/>
+    <path d="M10 240L125 300L240 240L125 180Z" fill="#f2eee6" stroke="#d3cdc2" stroke-width="2"/>
+    <path d="M35 250L95 278L220 225L160 197Z" fill="none" stroke="#bcb6ab" stroke-width="2" stroke-dasharray="5 8"/>
+    <circle cx="35" cy="250" r="9" fill="#fffdf8" stroke="#57554e" stroke-width="3"/>
+    <circle cx="95" cy="278" r="9" fill="#fffdf8" stroke="#57554e" stroke-width="3"/>
+    <circle cx="220" cy="225" r="11" fill="#d95d39" stroke="#fffdf8" stroke-width="5"/>
+    <path d="M95 278L220 225" fill="none" stroke="#d95d39" stroke-width="3" stroke-dasharray="7 8" stroke-linecap="round" marker-end="url(#arrow)"/>
+  </g>
+  <g transform="translate(820 0)">
+    <rect width="250" height="324" y="18" rx="16" fill="#fffdf8" stroke="#e3ddd2" stroke-width="2"/>
+    <path d="M10 240L125 300L240 240L125 180Z" fill="#f2eee6" stroke="#d3cdc2" stroke-width="2"/>
+    <polygon points="35,250 95,278 220,225 160,197" fill="#f3efe7" stroke="#242420" stroke-width="3"/>
+    <polygon points="160,197 220,225 220,125 160,97" fill="#e9e5dc" stroke="#242420" stroke-width="3"/>
+    <polygon points="35,250 95,278 220,125 160,97" fill="#f0ece4" stroke="#242420" stroke-width="3"/>
+    <path d="M220 225V125M95 278L220 225" fill="none" stroke="#242420" stroke-width="3"/>
+    <circle cx="35" cy="250" r="9" fill="#fffdf8" stroke="#242420" stroke-width="3"/>
+    <circle cx="95" cy="278" r="9" fill="#fffdf8" stroke="#242420" stroke-width="3"/>
+    <circle cx="220" cy="225" r="9" fill="#fffdf8" stroke="#242420" stroke-width="3"/>
+    <circle cx="220" cy="125" r="9" fill="#d95d39" stroke="#fffdf8" stroke-width="5"/>
+  </g>
+</svg>

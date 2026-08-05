@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 360">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0 0L10 5L0 10Z" fill="#d95d39"/>
+    </marker>
+  </defs>
+  <rect width="1080" height="360" rx="20" fill="#f7f5ef"/>
+  <path d="M322 180H360M352 171L361 180L352 189M692 180H730M722 171L731 180L722 189" fill="none" stroke="#d95d39" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  <g transform="translate(20 0)">
+    <rect width="280" height="324" y="18" rx="16" fill="#fffdf8" stroke="#e3ddd2" stroke-width="2"/>
+    <path d="M20 260L140 320L260 260L140 200Z" fill="#f2eee6" stroke="#d3cdc2" stroke-width="2"/>
+    <circle cx="140" cy="220" r="12" fill="#d95d39" stroke="#fffdf8" stroke-width="5"/>
+  </g>
+  <g transform="translate(390 0)">
+    <rect width="280" height="324" y="18" rx="16" fill="#fffdf8" stroke="#e3ddd2" stroke-width="2"/>
+    <path d="M20 260L140 320L260 260L140 200Z" fill="#f2eee6" stroke="#d3cdc2" stroke-width="2"/>
+    <ellipse cx="140" cy="220" rx="92" ry="38" fill="none" stroke="#bcb6ab" stroke-width="2" stroke-dasharray="6 8" transform="rotate(-15 140 220)"/>
+    <path d="M140 220L230 196" fill="none" stroke="#d95d39" stroke-width="3" stroke-dasharray="7 8" stroke-linecap="round" marker-end="url(#arrow)"/>
+    <circle cx="140" cy="220" r="9" fill="#fffdf8" stroke="#57554e" stroke-width="3"/>
+    <circle cx="230" cy="196" r="11" fill="#d95d39" stroke="#fffdf8" stroke-width="5"/>
+  </g>
+  <g transform="translate(760 0)">
+    <rect width="280" height="324" y="18" rx="16" fill="#fffdf8" stroke="#e3ddd2" stroke-width="2"/>
+    <path d="M20 260L140 320L260 260L140 200Z" fill="#f2eee6" stroke="#d3cdc2" stroke-width="2"/>
+    <ellipse cx="140" cy="220" rx="98" ry="55" fill="#f0ece4" stroke="#242420" stroke-width="3" transform="rotate(-15 140 220)"/>
+    <path d="M47 245L233 195M154 167L126 273" fill="none" stroke="#aaa59b" stroke-width="2" stroke-dasharray="6 8"/>
+    <circle cx="140" cy="220" r="9" fill="#fffdf8" stroke="#242420" stroke-width="3"/>
+    <circle cx="230" cy="196" r="9" fill="#fffdf8" stroke="#242420" stroke-width="3"/>
+    <circle cx="126" cy="167" r="9" fill="#d95d39" stroke="#fffdf8" stroke-width="5"/>
+  </g>
+</svg>
