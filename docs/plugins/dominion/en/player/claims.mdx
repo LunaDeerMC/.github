@@ -1,0 +1,155 @@
+---
+title: Player docs · Claim workflow
+description: Select areas, create claims, maintain boundaries, set teleport points, and handle sub-claims.
+icon: Compass
+link: /docs/plugins/dominion/player/claims
+sidebar:
+  label: Claim workflow
+  order: 11
+---
+
+## Selection tool and coordinates
+
+The default selection tool is `ARROW`; an administrator can change it to another valid item with the `select-tool` key in `config.yml`. When using the selection tool on blocks:
+
+1. Left-click a block to record the first corner point;
+2. Right-click another block to record the second corner point;
+3. Both points must be in the same world;
+4. Watch the boundary hints the plugin shows and confirm the X, Y, Z ranges are not flipped or beyond the limits;
+5. Then run the create command.
+
+The selection is a 3D cuboid, not a 2D rectangle covering only the ground. The X, Y, and Z of both points take the minimum and maximum values respectively, and the final range can be double-checked with the size and height output of `/dominion info`.
+
+## Creating claims
+
+### Manual creation
+
+```text
+/dominion create <name>
+```
+
+For example:
+
+```text
+/dominion create home
+```
+
+The plugin creates a root claim from the current selection. When creation fails, it is usually one of: incomplete selection, points in different worlds, size below the limit, overlap with another claim, too close to spawn, failing the minimum distance, or insufficient economy balance.
+
+### Automatic creation
+
+```text
+/dominion auto_create <name>
+```
+
+This command generates a selection centered on the player's current position using the server's `auto-create-radius`. It is suitable for quickly protecting a house near spawn, but not for precisely fitting irregular buildings; use manual selection when you need exact boundaries.
+
+### Creating sub-claims
+
+Sub-claims must be inside the parent claim, and are suitable for giving public areas, storage, farms, or rented areas separate permissions:
+
+```text
+/dominion create_sub <name> <parent>
+/dominion auto_create_sub <name> <parent>
+```
+
+For example:
+
+```text
+/dominion create_sub storage home
+```
+
+The number of sub-claims, maximum nesting depth, size limits, and whether administrators bypass limits are controlled by the corresponding `limitations/*.yml` files. When deleting a parent claim, note that its sub-claims may also be handled.
+
+## Inspecting and maintaining
+
+### Inspect the current position
+
+```text
+/dominion info
+```
+
+The output includes the current claim name, owner, length/width/height, and height range. It does not change any configuration and is suitable for confirming which claim a player actually stands in before permission tests.
+
+### Expand or contract
+
+Operate on a named claim:
+
+```text
+/dominion resize <name> <expand|contract> <size> [north|east|south|west|up|down]
+```
+
+Operate on the claim at your current position:
+
+```text
+/dominion expand <size> [direction]
+/dominion contract <size> [direction]
+```
+
+When the direction is omitted, the plugin infers it from the player's facing; to avoid accidentally expanding into a road or a neighbor's claim, production servers should explicitly write `north`, `east`, `south`, `west`, `up`, or `down`. Resizing is still subject to maximum size, minimum size, sub-claim, and overlap checks.
+
+### Teleport point and teleporting
+
+Stand where you want to arrive and run:
+
+```text
+/dominion set_tp <name>
+```
+
+Then:
+
+```text
+/dominion tp <name>
+```
+
+Administrators can configure a cooldown and delay for teleportation. Moving after the teleport starts, being restricted, or failing the target conditions can cancel the teleport.
+
+### Name, messages, and map color
+
+```text
+/dominion rename <name> <newName>
+/dominion set_msg <name> enter <message>
+/dominion set_msg <name> leave <message>
+/dominion set_map_color <name> <color>
+```
+
+The map color uses a color value such as `#FF5733`. Enter/leave messages support the text format in the language files. `{OWNER}` and `{DOM}` in the default messages are replaced with the owner and the claim name.
+
+### Transfer and delete
+
+Transfer a root claim:
+
+```text
+/dominion give <name> <player_name>
+/dominion give <name> <player_name> force
+```
+
+The first run may only show a confirmation prompt. With `force`, the transfer executes after confirmation. The plugin does not allow transferring a sub-claim directly into an independent ownership. Handle the parent/child structure first.
+
+Delete a claim:
+
+```text
+/dominion delete <name>
+/dominion delete <name> force
+```
+
+Deletion cannot be undone and may involve sub-claims; before executing, confirm the target with `/dominion info`, the ownership page in the UI, and an administrator backup.
+
+## A typical workflow example
+
+```text
+# 1. Create a root claim after selecting two corner points
+/dominion create home
+
+# 2. Create a storage sub-claim inside home for friends only
+/dominion create_sub storage home
+
+# 3. Set the teleport point and welcome message for home
+/dominion set_tp home
+/dominion set_msg home enter &aWelcome to {DOM}!
+
+# 4. Inspect the current boundary
+/dominion info
+```
+
+If any step reports a limitation error, do not repeatedly rename the claim; first check the corresponding size, amount, distance, and economy rules in the [administrator limitation files](../admin/configuration/limitations).

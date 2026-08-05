@@ -1,0 +1,69 @@
+---
+title: Admin docs · Troubleshooting
+description: Troubleshoot Dominion problems by startup, permission, configuration, UI, database, and event symptoms.
+icon: CircleHelp
+sidebar:
+  label: Troubleshooting
+  order: 34
+---
+
+## Troubleshooting principles
+
+Record the runtime environment, account, position, command, and logs before changing configuration. Change one variable at a time and re-test with a regular account. Do not attribute every result to Dominion being permissive while testing with an OP account.
+
+## The plugin does not load
+
+**Symptom:** `/dominion` does not exist, or there is no `Plugin Enabled!` at startup.
+
+**Check:**
+
+1. Confirm the JAR is in the target server's `plugins/` and only one Dominion JAR is in the directory;
+2. Confirm Java, the server core, and Dominion can run together;
+3. Check the console for missing dependencies, missing NMS implementations, class loading, or YAML parse errors;
+4. Confirm no development build, source directory, or wrong-platform build artifact is in `plugins/`.
+
+## Dialog will not open or falls back automatically
+
+**Symptom:** After `/dominion ui dialog`, ChestUI still shows, or the Dialog page errors.
+
+**Check:** Look at the startup log and confirm the Dialog/NMS backend has loaded. Confirm the client and server match. Use `/dominion ui default` to re-verify the default UI.
+
+## Players cannot create claims
+
+Confirm in order:
+
+- The selection points are in the same world, and the selection tool matches the `select-tool` configuration;
+- Check the claim amount, world amount, and size limits;
+- Check the spawn protection radius, minimum claim distance, and conflicts with existing claims;
+- Confirm the permissions plugin has not revoked `dominion.default`;
+- Check economy fees and the player's balance;
+- Check the `auto-create-radius` value;
+- Check the Y-axis range against `no-lower-than`/`no-higher-than`.
+
+## Can enter the claim but cannot operate
+
+First confirm whether the current player is a guest, member, or group member, then check the flag for the target action. Opening chests uses `container`, placing/breaking uses `place`/`break`, and redstone components and doors/buttons have their own finer flags. After a member joins a group, the group flags apply; only changing guest flags does not automatically override existing members.
+
+## Explosions, pistons, or hoppers still cross boundaries
+
+Environment events usually have multiple sources. Check `tnt_explode`, `tnt_damage_entity`, `creeper_explode`, `block_explode`, `piston_outside`, `hopper_outside`, and related `*_damage_entity` flags separately. Also confirm no other plugin rewrites or cancels events at a higher event priority. Reproducing in a test world with only Dominion installed helps distinguish plugin conflicts.
+
+## No change after modifying configuration
+
+Confirm you edited the running instance's `plugins/Dominion/`, not the source project or another server; confirm the YAML indentation and key names; run `/dominion reload config` and watch the console; if you changed caches, the JAR, the database connection, or NMS, restart instead. Configuration defaults only affect new data; existing claims/members/groups need individual edits.
+
+## Database connection failure
+
+Check the type spelling, host, port, database name, account permissions, and network; for external databases confirm the service is running and allows the server IP to connect. SQLite does not support multi-server mode. If the problem occurs after switching databases, stop the server, restore the backup, and confirm the import/export flow; do not repeatedly try unknown SQL against the original database.
+
+## Multi-server data anomalies
+
+Confirm all instances connect to the expected same database, `server-id` is unique and was not changed after data existed, `server-name` matches the proxy, and all instances use the same plugin files and configuration schema. First close the multi-server entry, keep the logs and database backup, then restore and verify server by server. Do not delete server fields directly to "clear" anomalies. The complete check matrix is in [multi-server features](./multi-server).
+
+## The import command warns about risk
+
+This is the expected protection. `/dominion import db` without `confirm` does not execute; with `confirm`, use it only for migration or backup restoration, and it cannot merge two non-empty databases. Before executing, confirm the backup is readable, the maintenance window has started, and the rollback path is ready.
+
+## When the cause cannot be located
+
+Provide the runtime environment information, the Dominion section of the startup log, relevant configuration (passwords removed), player permissions, reproduction steps, and a reproducible claim boundary. If Vault, PlaceholderAPI, WorldGuard, Residence, or a permissions plugin is installed, list those dependencies too. Full context is more useful than a single error line.

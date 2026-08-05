@@ -1,0 +1,153 @@
+---
+title: Admin docs · Multi-server features
+description: Configure Dominion's shared database, cross-server claim management, cache sync, and cross-server teleportation.
+icon: Workflow
+sidebar:
+  label: Multi-server
+  order: 32
+---
+
+## Multi-server features
+
+Dominion's multi-server feature connects multiple backend servers behind a proxy to the same external database. Players can view and manage claims on other servers, and teleport cross-server when the target has a teleport point and permissions allow it. Verify in a maintenance window and on a test server first, then use it in production.
+
+Multi-server is not "copy one SQLite file". It depends on a shared database, proxy routing, stable server identity, and target worlds; any mismatch can make data invisible or break teleportation.
+
+## Prerequisites
+
+- Multiple Minecraft backends are already connected through a BungeeCord or Velocity proxy, and the proxy's server names can be used by the backends;
+- All backends install the same Dominion JAR and keep the flag, language, and limitation files consistent;
+- Prepare an external database such as MySQL, MariaDB, or PostgreSQL; SQLite does not support multi-server mode;
+- All backends can connect to the same database, and the account has at least the table creation, read/write, and index permissions Dominion needs;
+- Each backend has a unique, stable, positive-integer `server-id`;
+- `server-name` matches the backend name in the proxy configuration exactly;
+- The target backend for cross-server teleportation has the corresponding world and can load the target coordinates in the claim record.
+
+## Core configuration
+
+All backends' database information must point to the same database; `server-name` and `server-id` must be set separately per backend:
+
+```yaml
+database:
+  type: mysql
+  host: db.example.internal
+  port: '3306'
+  database: dominion
+  username: dominion
+  password: change-this
+  connection-pool-size: 10
+
+multi-server:
+  enable: true
+  server-name: survival
+  server-id: 1
+```
+
+A second backend can be:
+
+```yaml
+multi-server:
+  enable: true
+  server-name: resource
+  server-id: 2
+```
+
+### What the three keys mean
+
+| Key | Requirement |
+| --- | --- |
+| `multi-server.enable` | Set to `true` to enable the shared server cache and cross-server capabilities |
+| `multi-server.server-name` | Matches the backend name in BungeeCord/Velocity, used for cross-server connections |
+| `multi-server.server-id` | A positive integer, unique among all backends sharing the database; do not change it after data exists |
+
+If `database.type` is `sqlite`, or `server-id` is less than or equal to `0`, the plugin logs an error and automatically disables multi-server mode. This automatic disable is a protective measure, not proof that the configuration is correct.
+
+## Recommended deployment order
+
+### A new group server
+
+1. First create an external database and dedicated account in a test environment, restricting the database account to only the database Dominion uses;
+2. Fill in the same database connection information on each backend, confirming the database name, account, password, and port match;
+3. Assign a unique `server-id` to each backend, and write `server-name` as the actual name in the proxy;
+4. Do not let players in yet; check proxy routing, backend ports, and each server's core;
+5. After confirming all backend files are saved, start them in turn and watch Dominion's database connection, multi-server initialization, and plugin enable logs;
+6. Log in a test account from each backend and verify the claim list, member relationships, permissions, teleport points, and cross-server teleportation;
+7. After confirming stability, open to players and set up regular database backups.
+
+### An existing single server using SQLite
+
+With existing data, keep the original server's `server-id` (usually `1` by default); do not change it arbitrarily for the migration:
+
+1. Stop the server and fully back up `plugins/Dominion/`;
+2. Export the current database data with `/dominion export db`;
+3. Prepare a clean MySQL/MariaDB/PostgreSQL database;
+4. In a maintenance window, configure the external database, first confirming the target database is empty and the connection succeeds;
+5. Use `/dominion import db confirm` per the confirmation flow in [admin commands](./commands) to restore/migrate the data;
+6. Verify the claim count, owners, parent/child relationships, members, permission groups, teleport points, and server IDs;
+7. After confirming single-server data is normal, add other backends and assign them new IDs.
+
+The import command is for migration or restoration, not for directly merging two databases that already produced their own data. The project currently has no safe automatic merge for multiple independent old databases; in that case keep backups and design a manual migration plan first.
+
+## Cross-server data sync
+
+### Data ownership
+
+Every claim, member, and group record is associated with the `server-id` that created/manages it. After Dominion starts multi-server mode, it loads other servers' caches from the shared database and notifies other instances to refresh data through the update log in the database.
+
+### Update delay
+
+The current cross-server cache polling interval is about 5 seconds, and the update log is cleaned after consumption or after the retention period expires. Therefore, when server A just modified a member or claim, server B's UI may still briefly show old data; that is not direct evidence of a database write failure. Wait for a sync cycle and recheck, and look at both servers' logs at the same time.
+
+### What must stay consistent
+
+Claims, members, groups, and teleport points in the database are shared data; `config.yml`, `flags.yml`, `limitations/`, `world-wide/`, and language files remain per-backend local configuration. To give players a consistent experience across servers, keep these files' policy consistent yourself, especially the teleport switch, available flags, size limits, and UI defaults.
+
+## Cross-server teleportation flow
+
+When a player teleports to a claim on the same backend, the plugin teleports them directly to a safe location on this server; when the target claim belongs to another backend, the flow is roughly:
+
+1. First check the player's teleportation limits, cooldown, delay, and the target claim's `teleport` flag;
+2. Write the pending player and target claim records into the shared data;
+3. Request the proxy to connect the player to the backend corresponding to `server-name` through the `BungeeCord` plugin message;
+4. After the player joins the target backend, the target server reads the pending teleport record and safely teleports the player to the claim teleport point.
+
+So "seeing a remote claim in the list" does not equal "cross-server teleportation will succeed". Check the proxy routing, backend name, target world, teleport point, permissions, and the pending teleport record in the database together.
+
+## Post-launch verification matrix
+
+| Test | Expected result |
+| --- | --- |
+| Server A creates a claim, server B opens My Dominions | After the sync wait, server A's claim is visible |
+| Server A adds/removes a member, server B reads permissions | Shows the new membership state after about one sync cycle |
+| A regular player teleports to a claim on another server | Controlled by the target claim's `teleport`, player limits, cooldown, and delay together |
+| An administrator views/manages cross-server | Only passes when `dominion.admin` or the claim permissions actually allow it |
+| The target server has no corresponding world | The teleport should fail with a diagnosable log, not be treated as a normal teleport |
+| One server stops temporarily | Other servers should not share its real-time cache; observe sync and database connection after recovery |
+
+Use one regular account and one administrator account to test separately, to avoid `admin-bypass: true` making an administrator think regular players can operate cross-server too.
+
+## Common problems
+
+### Multi-server is auto-disabled after startup
+
+Check that `database.type` is an external database type and `server-id` is a positive integer. Restart fully after fixing. Do not only change UI defaults or run a cache reload.
+
+### Cannot see other servers' claims
+
+Confirm all backends connect to the same database, the database account does not connect to another environment, `multi-server.enable` is on, all backends use the same Dominion JAR, and server IDs do not conflict. Wait for a sync cycle, then reopen the UI. If still abnormal, check the database connection and Dominion logs.
+
+### Cross-server teleport stays on the origin server or fails to connect
+
+Check in order: `server-name` matches the proxy exactly, the proxy allows backend connections, the BungeeCord/Velocity configuration has been reloaded, the target server is online, the target world exists, and the player has teleport permission. When the target server name is misspelled, the database data may be normal, but the proxy cannot complete the jump.
+
+### Another server still shows old permissions after changes
+
+First wait for a sync cycle, then reopen the page with a regular account. If the data still has not updated, confirm both servers can read/write the shared database, the update log table has no anomalies, and local configuration has not disabled the target flag.
+
+### Changing server-id
+
+Do not change it directly. Existing claim records are associated with the old ID; changing it may make existing data unfindable. If a change is truly needed, stop the server, back up the database, design the data migration first, and verify in a test environment; do not treat changing the ID as a routine rename operation.
+
+## Maintenance and rollback
+
+After multi-server goes live, back up the database and each backend's `plugins/Dominion/` at the same time. Schedule maintenance windows when changing the database connection, server ID, proxy name, or multi-server switch. When data anomalies occur, stop the server first and keep the logs and database scene; do not delete server records or restart repeatedly to overwrite the problem, then perform recovery per the [migration and backup strategy](./upgrade).

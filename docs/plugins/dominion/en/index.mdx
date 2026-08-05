@@ -1,6 +1,6 @@
 ---
 title: Dominion
-description: Installation, configuration, and land-management guide for Dominion.
+description: A guide to using, configuring, and maintaining Dominion.
 icon: Shield
 link: /docs/plugins/dominion
 documentSet:
@@ -10,19 +10,44 @@ documentSet:
 
 ## Start here
 
-Install Dominion first. Use the files generated in `plugins/Dominion/` and the server log as the source of truth for commands and settings.
+Players: read the [player docs](./player) to learn about point selection, claim creation, member collaboration, permissions, and the UIs.
+Administrators: read the [admin docs](./admin) for installation, database, configuration, limitations, migration, backup, and troubleshooting.
+If you need to use it immediately, start with the [player overview](./player). When deploying a server, start with the [admin overview](./admin) and [installation and upgrades](./admin/installation).
 
-## Recommended order
+## Core features
 
-1. Complete [installation](./installation) and confirm that the server has enabled the plugin.
-2. Create your first claim with the [claim workflow](./claims), then open access with [permissions and members](./permissions).
-3. Read [configuration](./configuration), the [command index](./commands), and [integrations and migration](./integrations) as your server needs them.
+Dominion splits a Minecraft claim into four objects that can be managed separately:
 
-Players can open the UI with `/dominion`. From the console, the command prints help.
+| Object | Role | Typical location |
+| --- | --- | --- |
+| Claim boundary | Stores the world, 3D coordinates, parent/child hierarchy, and teleport point | In-game UI or `/dominion` commands |
+| Environment rules | Control mobs, explosions, fire, fluids, and redstone-related environment behavior | `flags.yml` + claim environment flags |
+| Member permissions | Control what guests, members, and permission groups can do with blocks, containers, interactions, movement, and combat | Claim UI, members, permission groups, templates |
+| Server policy | Controls the database, creation limits, economy, world-wide rules, and UI defaults | `config.yml`, `limitations/`, `world-wide/` |
 
-## Features
+This separation means that "can a player open a chest" and "can mobs spawn inside the claim" are two different kinds of settings. Before changing permissions, first determine whether the problem belongs to the claim boundary, membership, a permission flag, or a server limit. That avoids repeatedly trying the wrong configuration file.
 
-- Bukkit, Spigot, Paper, and Folia server platforms.
-- Claims, sub-claims, members, groups, permission templates, and environment rules.
-- SQLite, MySQL, MariaDB, and PostgreSQL, plus optional Vault, PlaceholderAPI, and WorldGuard integrations.
-- Backups before migration, database export/import, and sponsorship information.
+## Pages
+
+| Task | Page |
+| --- | --- |
+| Create your first claim, expand it, and set a teleport point | [Player: claim workflow](./player/claims) |
+| Choose ChestUI or Dialog | [Player: the two UIs](./player/ui) |
+| Give friends chest, button, or build access | [Player: members and permissions](./player/permissions) |
+| Look up complete command syntax | [Player: command reference](./player/commands) or [Admin: commands and operations](./admin/commands) |
+| Install the plugin and confirm it loads | [Admin: installation and upgrades](./admin/installation) |
+| Change the database, default UI, messages, and border display | [Admin: config.yml](./admin/configuration/config-yml) |
+| Tune every available flag | [Admin: flags.yml and flag design](./admin/configuration/flags) |
+| Limit claims per player, sizes, and teleport cooldowns | [Admin: limitations](./admin/configuration/limitations) |
+| Set default rules for unclaimed areas | [Admin: world-wide](./admin/configuration/world-wide) |
+| Errors, permissions not applying, or Dialog unavailable | [Admin: troubleshooting](./admin/troubleshooting) |
+
+## Important safety boundaries
+
+Claim deletion, ownership transfer, database import, and configuration migration can be irreversible or have wide-ranging effects. Before performing these operations, export the database or copy `plugins/Dominion/`, and do not copy limits verified on a test server directly to production. The confirmation prompts for `/dominion delete` and `/dominion give` are not decoration; they prevent accidental operations.
+
+`dominion.admin`, which administrators hold, can bypass claim limits and part of the permission checks by default, but that is not the same as "regular players have every permission". If an administrator needs to test guest behavior, use a test account without OP or `dominion.admin`, or let an administrator configure the server and have a regular account verify the result.
+
+## Sponsorship
+
+Dominion is a continuously maintained open-source project. If you would like to support the project, visit the [sponsorship page](https://ifdian.net/item/3ce530688c3411f192975254001e7c00). Sponsorship benefits and implementation boundaries are described in [Sponsorship](./admin/sponsorship).

@@ -1,0 +1,108 @@
+---
+title: Admin docs · Command reference
+description: Dominion reload, backup, import/export, migration, and daily administrator commands.
+icon: Terminal
+sidebar:
+  label: Commands
+  order: 28
+---
+
+## Prerequisites
+
+The commands below use `/dominion` as the root command, and can also use the registered `dom` alias. Admin commands usually require `dominion.admin`; claim owners or members with the claim `admin` flag can still only manage within the claims they have permission for, which does not replace global administrator permission.
+
+## Configuration and cache
+
+```text
+/dominion reload config
+/dominion reload cache
+/dominion reload all
+```
+
+- `config` reloads the global configuration, flags, limitations, and world-wide rules.
+- `cache` reloads the claim, member, and group caches; not recommended to run frequently.
+- `all` runs config and cache reloads in sequence, suitable for a maintenance window after changing multiple runtime configurations at once.
+
+If YAML parsing fails, restore the file first and then reload. `reload` cannot load a new plugin JAR, nor does it replace a restart after changing Java, the server core, database connection method, or multi-server topology.
+
+## Export and import
+
+```text
+/dominion export db
+/dominion export mca
+/dominion import db
+/dominion import db confirm
+```
+
+### `export db`
+
+The plugin invokes the database backup function. Create a backup before upgrades, migrations, or high-risk configuration changes. The backup location and filename follow the console output.
+
+### `export mca`
+
+Exports the list of MCA files to watch for each world based on the areas covered by current claims, into `plugins/Dominion/exported-mca-list/`. It is an area list, not a full world backup; use a server-level or world-level backup solution when restoring a world.
+
+### `import db confirm`
+
+Database import is only for migration or backup restoration, not for merging two databases. When the target database is not empty, errors, data overwrites, or corruption can occur. The plugin requires the explicit `confirm` argument to prevent mistakes. Stop the server or schedule a maintenance window before executing, and confirm the backup can be restored. Entering only `/dominion import db` does not perform the import.
+
+## Language files
+
+```text
+/dominion update_language
+/dominion update_language confirm
+```
+
+Without `confirm`, the plugin only warns about the risk. With `confirm`, it regenerates language files from the plugin's internal language resources, which may overwrite existing modifications. Back up `plugins/Dominion/languages/` before executing. When translating only a small amount of text, save your own diff first.
+
+## Residence migration
+
+```text
+/dominion migrate <residence_name>
+/dominion migrate_all
+```
+
+First enable `residence-migration: true` in `config.yml`, then migrate a single Residence on a test server and confirm the boundary, world, owner, and flag mapping; after confirming, run `migrate_all` as needed. After migration, disable the switch and keep independent backups of the original Residence data and Dominion data. Do not treat the migration command as a real-time two-way sync.
+
+## Proxy, lookup, and general administration
+
+Administrators often use these when handling player requests:
+
+```text
+/dominion info
+/dominion tp <dominion_name>
+/dominion give <dominion_name> <player_name> [force]
+/dominion delete <dominion_name> [force]
+/dominion rename <dominion_name> <new_name>
+/dominion set_env <dominion_name> <env_flag_name> <true|false>
+/dominion set_guest <dominion_name> <guest_flag_name> <true|false>
+```
+
+`give` and deletion or transfer with `force` are high-risk operations. Confirm the name, target player, and database backup before executing. `set_env` changes environment rules and `set_guest` changes guest permissions. When the target claim has sub-claims, also check the sub-claims' override settings.
+
+## Bulk copy and organization management
+
+```text
+/dominion copy_env <source> <target>
+/dominion copy_guest <source> <target>
+/dominion copy_member <source> <target>
+/dominion copy_group <source> <target>
+/dominion group_create <dominion_name> <group_name>
+/dominion group_delete <dominion_name> <group_name>
+/dominion group_rename <dominion_name> <old_name> <new_name>
+/dominion group_set_flag <dominion_name> <group_name> <flag> <true|false>
+/dominion group_add_member <dominion_name> <group_name> <player>
+/dominion group_remove_member <dominion_name> <group_name> <player>
+```
+
+Copy commands suit building similar claim policies within the same server. Confirm the order of the source and target claims before executing. Group flags override group members' personal settings. After bulk changes, verify with at least one guest, one regular member, and one group member.
+
+## Admin command safety checklist
+
+Before deletion, import, full migration, or language overwrite, confirm:
+
+1. A readable backup exists, and it is not on the same vulnerable disk;
+2. The claim name, player name, and file path in the command have been double-checked;
+3. Players have been notified of the maintenance window;
+4. A rollback plan is ready;
+5. Keep the console output and result counts after executing.

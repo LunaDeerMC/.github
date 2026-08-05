@@ -1,0 +1,59 @@
+---
+title: Admin docs · Installation and upgrades
+description: Deploy Dominion and confirm a successful installation with logs and a test claim.
+icon: Download
+sidebar:
+  label: Installation
+  order: 22
+---
+
+## New server installation
+
+1. Start the target server core once by itself so that `eula.txt`, the worlds, and the `plugins/` directory are generated. Confirm the Java runtime satisfies the core's requirements.
+2. Put the Dominion JAR into the server's `plugins/` directory. Keep only one Dominion JAR there. Do not put the source project or development dependencies into `plugins/`.
+3. Start the server and wait for the plugin's first generation of `plugins/Dominion/`. Do not overwrite the generated files immediately on first start; save a copy of the original configuration as a reference.
+4. Confirm the plugin has finished enabling. The startup log should contain the database connection and enable success messages:
+
+```text
+[Dominion] Database connected successfully.
+[Dominion] Plugin Enabled!
+```
+
+5. Stop the server, back up the whole `plugins/Dominion/`, then change policy according to the [configuration overview](./configuration).
+6. After starting, create a small test claim with a regular player account, and verify guest, member, permission group, and environment flags in turn. Do not judge permissions only with an OP account.
+
+## The generated directory
+
+The plugin generates the following structure on first start:
+
+```text
+plugins/Dominion/
+├── config.yml
+├── flags.yml
+├── limitations/
+│   └── default.yml
+├── world-wide/
+├── languages/
+├── dominion.db                 # when using SQLite
+└── logs/                       # if the release enables separate logging
+```
+
+The database filename and accompanying files follow what the server actually generates. Do not edit the database directly with a text editor. For backup, migration, or repair, prefer the plugin's export, import, and migration commands.
+
+## Upgrade order
+
+Record the runtime environment, database type, and configuration changes before upgrading. The operation order is:
+
+1. Stop the server and fully back up `plugins/Dominion/` and the server logs; also make a database-level backup for external databases.
+2. Read the release notes and confirm changes to the database, configuration `version`, flag schema, and NMS settings.
+3. Replace the plugin JAR and keep the data directory; do not delete the old database without a backup.
+4. Start once and check the configuration migration, database connection, and NMS load logs.
+5. First inspect existing claims in a read-only way, then use a test account for creation, boundary adjustments, member additions, and UI opening.
+6. Open to players only after confirming stability; if something abnormal happens, stop the server and keep the logs, and do not restart repeatedly over the scene.
+
+## Common installation mistakes
+
+- Treating the `api-version` declaration as complete feature verification. A plugin loading does not mean all UIs or events have been verified.
+- Directly copying an old `config.yml` over the new file can miss new keys or bring in an old schema. A safer approach is to compare the differences and migrate your own changes.
+- Reloading only `cache` after changing configuration, while expecting database or language file changes; configuration policy should use `/dominion reload config`, and database operations should follow the command instructions.
+- Testing with an OP account and concluding that "all players can use it". When the admin bypass is enabled, OP results do not represent regular players.

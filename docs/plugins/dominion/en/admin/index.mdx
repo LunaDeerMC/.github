@@ -1,0 +1,74 @@
+---
+title: Admin docs · Overview
+description: The entry point for server owners and operators to deploy, configure, back up, and troubleshoot Dominion.
+icon: Server
+link: /docs/plugins/dominion/admin
+sidebar:
+  label: Overview
+  order: 20
+---
+
+## Admin responsibilities
+
+Administrators do not need to manage every claim for players, but must keep the plugin running within a stable, explainable boundary:
+
+- Choose the server core and Java runtime;
+- Safeguard the database and configuration under `plugins/Dominion/`;
+- Define default flags, player limits, and unclaimed-area rules;
+- Decide between SQLite and an external database, and set the multi-server switch;
+- Back up before upgrades, migrations, and imports;
+- Verify guest behavior with a regular account instead of only testing with OP.
+
+## A complete deployment sequence
+
+1. Start the server and confirm the Java runtime and server core are stable;
+2. Put the Dominion release JAR into `plugins/`, and start once so the plugin generates its files;
+3. Check the database connection and `Plugin Enabled!` in the startup log;
+4. Stop the server, back up `plugins/Dominion/`, then edit `config.yml`, `flags.yml`, `limitations/`, and `world-wide/`;
+5. Reload with `/dominion reload config`, or restart in a maintenance window;
+6. Create a test claim with a regular player account, and verify guest, member, permission group, and environment flags in turn;
+7. Confirm there is no hidden regression through the [troubleshooting](./troubleshooting) page and the logs, then open the server to all players.
+
+## Configuration file map
+
+| File | What it manages | How to change it |
+| --- | --- | --- |
+| `config.yml` | Database, language, UI, automatic creation, messages, border display, multi-server, and integration switches | Editable; do not change `version` |
+| `flags.yml` | Flag enablement, defaults, and UI icon items | Editable; changes affect options and database fields |
+| `languages/*.yml` | Prompts, menu text, and flag name descriptions | Editable; can also be regenerated with `update_language` |
+| `limitations/*.yml` | Claim counts, sizes, economy, teleportation, and vertical range | Add files per player group |
+| `world-wide/*.yml` | Environment and guest rules for unclaimed areas | Add files per world |
+| `dominion.db` or external database | Claims, members, groups, templates, and player preferences | Do not edit tables by hand; back up first and use plugin commands |
+
+## A minimal production security baseline
+
+```yaml
+database:
+  type: sqlite
+ui:
+  default: CHEST
+auto-create-radius: 10
+server-spawn-protection-radius: 10
+admin-bypass: true
+check-update: true
+```
+
+This is the generated configuration default baseline, not a final policy for every server. Production servers should first verify `container`, `place`, `break`, explosions, and teleportation rules with a regular account before opening more permissions.
+
+## Admin documentation navigation
+
+- [Feature overview](./features): current capabilities grouped by player, claim, permission, environment, and operations.
+- [Installation and upgrades](./installation): installation, file generation, log confirmation, upgrades, and backup order.
+- [Configuration overview](./configuration): the change order and the relationship between the four configuration categories.
+- [config.yml reference](./configuration/config-yml): explanations of all current keys in the main configuration.
+- [flags.yml reference](./configuration/flags): environment flags, privilege flags, and the configuration format.
+- [limitations reference](./configuration/limitations): amounts, sizes, economy, teleportation, and per-player-group limits.
+- [world-wide reference](./configuration/world-wide): world rules for unclaimed areas.
+- [Admin commands](./commands): reload, backup, import/export, migration, and general admin commands.
+- [Permission nodes and permission model](./permissions): the roles of `dominion.default`, `dominion.admin`, and flags.
+- [Integration overview](./integrations): database, Vault, WorldGuard, Residence, and server platform integrations.
+- [PlaceholderAPI](./placeholderapi): full placeholder reference, display examples, and troubleshooting.
+- [Multi-server features](./multi-server): shared database, server IDs, cache sync, and cross-server teleportation.
+- [Extensions and API](./addons): API, events, and extension development notes.
+- [Troubleshooting](./troubleshooting): locate configuration, startup, or permission problems by symptom.
+- [Sponsorship](./sponsorship): sponsorship benefits and implementation boundaries.

@@ -1,0 +1,58 @@
+---
+title: Admin docs · Integration overview
+description: Understand the integration boundaries of Dominion's database, economy, WorldGuard, Residence, and server platforms.
+icon: Workflow
+sidebar:
+  label: Integrations
+  order: 30
+---
+
+## Integration responsibilities
+
+Dominion's external capabilities split into several independent layers: the database saves data, Vault provides economy services, WorldGuard handles region conflict collaboration, Residence migration handles one-time import, PlaceholderAPI provides display data to other plugins, and the multi-server features handle shared databases, cross-server caches, and cross-server teleportation.
+
+For the specific configuration, read:
+
+- [PlaceholderAPI](./placeholderapi): the complete placeholder list, parameter forms, display examples, and troubleshooting.
+- [Multi-server features](./multi-server): proxies, shared databases, server IDs, cache sync, cross-server teleportation, and migration order.
+
+## Database
+
+`config.yml` supports `sqlite`, `mysql`, `mariadb`, and `pgsql`.
+
+- SQLite is maintenance-free and suits a single server; do not share one SQLite file across multiple server instances.
+- External databases suit deployments that need independent backups, monitoring, or multi-server shared data; first verify account permissions, network, and the connection pool.
+- Before changing the database type, use `/dominion export db` and keep the original database; `/dominion import db confirm` is only for migration or restoration, not for merging two databases.
+- Database passwords are sensitive information; do not put them in public repositories, issue screenshots, or public logs.
+
+A successful database connection only means the plugin can access data, not that the server policy is correct. Before launch, still verify claim boundaries, members, flags, teleport points, and sub-claim relationships with a regular account.
+
+## Vault and economy plugins
+
+After enabling `economy.enable` in `limitations/*.yml`, Vault (or a compatible VaultUnlock) and a working economy plugin are needed. Fees follow the matched limitation file: charge per block, count only the horizontal area, set a refund rate for contraction/deletion, and set free creation for sub-claims.
+
+If the console reports that Vault or the economy service is not found, first confirm the dependency load order, that the economy plugin has registered its service, that the player's balance is sufficient, and then check the limitation file matched to the current player. The economy switch only affects fees; it does not replace claim amount or size validation.
+
+## WorldGuard
+
+WorldGuard is an optional soft dependency. Both it and Dominion may listen to block, entity, or region events; when the two plugins have different judgments on the same event, reproduce the issue with a minimal plugin set and a regular account, and check the event priority and cancellation source.
+
+Do not assume that "claims can be created" means all rules of both plugins are automatically merged. Production servers should clearly decide which plugin is responsible for spawn, building permissions, explosions, and region overlap, then verify conflicting behavior through a small test area.
+
+## Residence migration
+
+Residence migration requires enabling `residence-migration` in `config.yml` and using `migrate` or `migrate_all`. First migrate a small test area and verify the world, X/Y/Z boundaries, owner, sub-claims, and key flags; migration is not a real-time sync, so keep the original plugin's data until confirmation completes.
+
+For detailed commands and rollback order, see [admin commands](./commands) and [migration and backup strategy](./upgrade).
+
+## Server platforms
+
+After switching the server core, check the NMS backend in the startup log. When UI fallback or event anomalies appear, first confirm the backend has loaded, then rule out other plugins. Open the server after completing creation, permission, event, and teleportation tests.
+
+## Common troubleshooting order for integration issues
+
+1. Record runtime environment information such as Dominion, the server core, Java, and optional dependencies;
+2. Confirm the plugin completes enabling in the startup log and that dependencies load at the correct time;
+3. Reproduce with a regular account in an isolated test claim;
+4. Temporarily remove unrelated plugins to determine whether it is a Dominion rule or an event conflict;
+5. Keep the complete log and sanitized relevant configuration before submitting an issue report.

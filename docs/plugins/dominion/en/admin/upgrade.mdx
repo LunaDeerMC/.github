@@ -1,0 +1,35 @@
+---
+title: Admin docs · Migration and backup strategy
+description: Establish a recoverable operating flow before changing plugins, switching databases, or migrating old claim data.
+icon: Layers3
+sidebar:
+  label: Backup & migration
+  order: 35
+---
+
+## Record before changes
+
+At minimum record: the runtime environment, database type, multi-server switch, `limitations` file names, `world-wide` file names, language file changes, and player-customized UI/claim counts. Keep this information with the configuration backups in the same maintenance record to locate policy changes.
+
+## Recommended backup layers
+
+1. After stopping the server, back up the whole `plugins/Dominion/`, including the SQLite database, YAML, language files, and export directory;
+2. For external databases, perform a database-level backup and confirm it can be read on another instance;
+3. Make an independent backup of the server worlds; Dominion's `export mca` is only a list of protected chunks, not a world backup;
+4. Record backup checksums, or at least file size, time, and restore test results.
+
+## Plugin upgrades
+
+Stop, back up, replace the JAR, start, check logs, and test with a regular account form the minimal loop. When the plugin generates new configuration, do not overwrite the new file with an old `config.yml` directly. Migrate the needed changes into the new file item by item. For `flags.yml` and `world-wide`, check for flag schema changes.
+
+## Database type migration
+
+First generate a traceable backup with `/dominion export db`, then migrate on a test server according to the target database configuration and import instructions. The import command is only for migration or restoration, not for merging two existing databases. The test server should verify claim counts, worlds, boundaries, parent/child relationships, owners, members, groups, templates, and teleport points.
+
+## Residence migration
+
+Enable `residence-migration`, migrate a single Residence first, confirm the mapping result, then run `migrate_all`. Migration is not a two-way sync. Do not delete the original Residence data before business confirmation. After migration completes, disable the switch to avoid administrators running the migration repeatedly.
+
+## Rollback principles
+
+When data anomalies occur, stop the server first and keep the scene logs; do not restart repeatedly while the plugin keeps writing. Roll back in the order of "restore the plugin directory and database → restore the corresponding world → start with the plugin files matching the backup → verify data → then handle the upgrade". Any manual database fix should be done on a copyable backup and leave an operation record.

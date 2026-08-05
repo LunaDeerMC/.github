@@ -1,0 +1,92 @@
+---
+title: Player docs · Overview
+description: From the first point selection to member collaboration, a complete guide to Dominion's player workflow.
+icon: User
+link: /docs/plugins/dominion/player
+sidebar:
+  label: Overview
+  order: 10
+---
+
+## Core workflow
+
+Dominion provides a claim workflow covering area selection, member collaboration, and environment protection:
+
+1. Select two corner points to create a 3D claim;
+2. Check the boundary, size, world, and owner to confirm the selection is not offset;
+3. Let guests only visit, or add trusted players as members;
+4. Use permission groups to assign permissions to different members in bulk;
+5. Control mobs, explosions, fire, and other world behavior with environment flags;
+6. Set a teleport point, enter/leave messages, a map color, and sub-claims when needed.
+
+## Five-minute quick start
+
+### 1. Open the UI
+
+Run in game:
+
+```text
+/dominion
+```
+
+The plugin provides two UIs: ChestUI and Dialog. On first use, choose a UI with these commands:
+
+```text
+/dominion ui chest
+/dominion ui dialog
+/dominion ui default
+```
+
+`default` restores the `ui.default` value in `plugins/Dominion/config.yml`. If Dialog is unavailable, the plugin falls back to ChestUI. This is not a permission failure.
+
+### 2. Create a claim
+
+The safest workflow is to hold the selection tool and left-click and right-click two blocks in the same world, then run:
+
+```text
+/dominion create home
+```
+
+If you only want to protect a small area around your current position, use automatic creation:
+
+```text
+/dominion auto_create home
+```
+
+The automatic creation radius is set by the administrator's `auto-create-radius`; set it to `-1` to disable the feature.
+
+### 3. Check the result
+
+Stand inside the claim and run:
+
+```text
+/dominion info
+```
+
+It shows the claim name, owner, X/Y/Z size, and height range. After confirming, continue with the [claim workflow](./claims).
+
+## The four identities in Dominion
+
+| Identity | Capability | Permission source |
+| --- | --- | --- |
+| Guest | Bound by the claim's guest flags; suitable for public visits or default-denied operations | Claim guest permissions |
+| Member | A player added to the claim; can have individual member flags | Member configuration, or the member's permission group |
+| Group member | A member added to a group; the group flags become the member's effective permissions | Permission group configuration |
+| Claim owner/admin | Manages the boundary, members, permissions, and claim settings | Ownership, the `admin` flag, or `dominion.admin` |
+
+When a member is added, the guest permissions at that time become the initial base; later changes to guest permissions do not automatically overwrite existing members' personal settings. Once a member joins a permission group, the group's flags take effect instead of the flags saved on the member page, so it is recommended that each member use one main management method.
+
+## Recommended reading order
+
+1. Read the [claim workflow](./claims) and settle the boundary and size first;
+2. Read [members and permissions](./permissions) and only open the operations you need;
+3. Read [the two UIs](./ui) to understand the ChestUI and Dialog entry points;
+4. Use the [player command reference](./commands) when you need to look up commands.
+
+## Common player-side conventions
+
+- Claim names must be unique within the current parent scope; sub-claim names may repeat across different parent claims.
+- Points must be selected in the same world; size, minimum height, and maximum height are set by the administrator's limitation files.
+- `/dominion info` only queries the claim at your current position; standing in an unclaimed area returns "no claim".
+- Teleportation may have a cooldown or delay; moving, canceling, or limitation files can all interrupt a teleport.
+- When you encounter "cannot operate", first confirm whether the current identity is a guest, member, or group member, then check the corresponding flag. Do not judge based only on location.

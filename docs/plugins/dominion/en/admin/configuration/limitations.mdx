@@ -1,0 +1,98 @@
+---
+title: Admin docs · limitations reference
+description: Configure claim counts, sizes, economy, teleportation, sub-claims, and world-range limits.
+icon: List
+sidebar:
+  label: Limitations
+  order: 26
+---
+
+## Files and matching
+
+Each YAML file in `plugins/Dominion/limitations/` represents one set of limits. `default.yml` must exist; it is the fallback for players who do not match any other limitation. File names participate in permission matching: for example, `vip.yml` can be granted to players with `group.vip` or `dominion.limitation.vip`.
+
+```text
+plugins/Dominion/limitations/
+├── default.yml
+├── vip.yml
+└── builder.yml
+```
+
+When a player has multiple sets of limits, the plugin uses the one with the higher `priority` value. When no custom file matches, the plugin uses `default`. Do not copy only a few lines for a custom file. Start from the server-generated `default.yml`, modify it as needed, and keep `version: 2`.
+
+## Current defaults
+
+```yaml
+version: 2
+priority: 0
+economy:
+  enable: false
+  price-per-block: 10.0
+  square-only: false
+  refund-rate: 0.85
+  free-for-subs: false
+teleportation:
+  enable: true
+  cooldown: 10
+  delay: 5
+amount-all-over-the-world: 10
+do-not-count-subs: false
+world-limitations:
+  default:
+    amount: 5
+    max-sub-dominion-depth: 3
+    no-higher-than: 320
+    no-lower-than: -64
+    size-max-x: 128
+    size-max-y: 64
+    size-max-z: 128
+    size-min-x: 4
+    size-min-y: 4
+    size-min-z: 4
+    auto-include-vertical: false
+```
+
+## Top-level limits
+
+| Key | Purpose |
+| --- | --- |
+| `priority` | Priority when multiple limits match; the higher the number, the earlier it is used |
+| `amount-all-over-the-world` | Total claims a player can own across all worlds; `-1` means unlimited, though other rules may still apply |
+| `do-not-count-subs` | When `true`, sub-claims do not count toward the claim amount limit |
+| `economy.enable` | Whether economy fees are enabled; requires Vault and a usable economy plugin |
+| `economy.price-per-block` | The creation price per block; the plugin corrects negative values |
+| `economy.square-only` | Charges by horizontal area only, without counting height into the fee |
+| `economy.refund-rate` | The refund ratio when contracting or deleting claims; the range is clamped to `0–1` |
+| `economy.free-for-subs` | Whether sub-claims are created for free |
+| `teleportation.enable` | Whether claim teleportation is enabled |
+| `teleportation.cooldown` | Teleport cooldown in seconds; `0` means no cooldown |
+| `teleportation.delay` | Wait time in seconds before teleporting; `0` means no delay |
+
+## Per-world limits
+
+Under `world-limitations`, you can write world names such as `dominion-demo` or `resource`. Worlds not listed use `default`:
+
+| Key | Purpose |
+| --- | --- |
+| `amount` | The number of claims creatable in this world; `-1` means this world has no separate limit, though the total limit still applies |
+| `max-sub-dominion-depth` | Sub-claim nesting depth; `0` forbids sub-claims, `-1` means unlimited |
+| `no-higher-than` / `no-lower-than` | The claim's upper/lower boundaries; the plugin requires the upper bound to be greater than the lower bound |
+| `size-max-x/y/z` | Maximum size in the X, Y, and Z directions; `-1` means no limit in that direction |
+| `size-min-x/y/z` | Minimum size in the X, Y, and Z directions; must be greater than 0 |
+| `auto-include-vertical` | Automatically expand the Y range to the world limit's upper/lower boundaries when creating a selection |
+
+X is the east-west direction, Z is the north-south direction, and Y is height. The player's selection boundary, maximum size, and fee calculation are affected by both the matched player limitation and the current world settings; after changes, re-select points in the target world to verify.
+
+## Example limit strategies
+
+### Regular players and VIP
+
+Keep `default.yml` for regular players, then create `vip.yml`: raise `priority`, claim counts, and maximum sizes, and grant `group.vip` through a permissions plugin. Do not give VIP `dominion.admin` directly, or they get the administrator bypass instead of just a larger quota.
+
+### Resource worlds
+
+In `world-limitations.resource`, lower `amount`, reduce `size-max-*`, or set `max-sub-dominion-depth` to `0`. This only affects creation/adjustment limits; it is not the same as unclaimed-area rules, which need [`world-wide`](./world-wide).
+
+## Checks after changes
+
+Run `/dominion reload config` and check the console. Confirm every limitation file has loaded. Then test creation counts and boundaries separately with an account without custom permissions, an account with `group.vip`, and an account with two groups. Confirm the file with the highest `priority` takes effect. Do not delete `default`, and do not change `version` to the plugin version number.

@@ -1,0 +1,59 @@
+---
+title: Admin docs · Configuration overview
+description: Understand the responsibilities of Dominion's four configuration file categories, the change order, reload methods, and backup boundaries.
+icon: Settings
+sidebar:
+  label: Overview
+  order: 23
+---
+
+## Configuration layers
+
+Dominion's configuration is not one "big switch file"; four layers of rules together determine the final behavior:
+
+1. `config.yml` decides the database, language, UI, automatic creation, global messages, border display, integrations, and operations switches;
+2. `flags.yml` decides which environment/privilege flags are available, their defaults, and the items shown in the UI;
+3. `limitations/*.yml` decides claim counts, sizes, fees, teleportation, and height boundaries for different player groups;
+4. `world-wide/*.yml` decides the world-level environment and interaction rules for unclaimed areas.
+
+Claims, members, groups, templates, and player preferences are stored in the database. They are not YAML configuration; you cannot replace command or UI operations by editing configuration files.
+
+## Configuration file map
+
+| Path | What it affects | Typical change scenario |
+| --- | --- | --- |
+| `plugins/Dominion/config.yml` | Global plugin behavior | Switch UI, database, language, messages, and border display |
+| `plugins/Dominion/flags.yml` | Available flags and defaults | Disable capabilities you do not want players to configure; adjust the default protection policy |
+| `plugins/Dominion/languages/*.yml` | Text, menus, and flag descriptions | Translate or customize prompts |
+| `plugins/Dominion/limitations/*.yml` | Player/permission-group quotas | Different limits for VIP, regular players, and admin groups |
+| `plugins/Dominion/world-wide/*.yml` | Unclaimed areas per world | Default rules for spawn, resource worlds, or lobbies |
+| Database file/external database | Runtime data | Backup, migration, import/export; do not edit tables by hand |
+
+## Recommended change flow
+
+1. Stop the server or copy the data directory on a test server first; production servers should not edit directly during peak hours.
+2. Back up the files to be changed and record the time before and after.
+3. Change only one related group of configuration at a time, keeping YAML indentation and key names; especially do not modify the plugin-managed `version` or schema fields.
+4. Start the server, or run the corresponding `/dominion reload config`. Watch the console's YAML parse results.
+5. Verify one allowed path and one denied path with a regular account, then confirm the flag names and descriptions in the UI are not mismatched.
+
+## Per-file references
+
+- [config.yml reference](./config-yml): database, multi-server, language, UI, automatic creation, messages, border display, and integration switches.
+- [flags.yml reference](./flags): current environment flags, privilege flags, defaults, and resolution order.
+- [limitations reference](./limitations): amounts, sizes, economy, teleportation, vertical range, and permission-group matching.
+- [world-wide reference](./world-wide): world-level rules for unclaimed areas and per-world files.
+
+## Reload and restart
+
+After modifying `config.yml`, `flags.yml`, `limitations`, or `world-wide`, you can first use:
+
+```text
+/dominion reload config
+```
+
+If you only need to clear the runtime cache, you can use `/dominion reload cache`. `/dominion reload all` handles configuration and cache at the same time. When changes involve the plugin JAR, NMS backend, Java, server core, database connection method, or multi-server topology, schedule a full restart instead of relying on reload.
+
+## Handling YAML errors
+
+If startup or reload reports a parse failure on some line, restore the most recent usable backup first, then compare indentation, colons, quotes, and list formats line by line. Do not repeatedly reload in an error state, and do not delete the entire configuration file to "make it start"; after restoring, reapply the changes in small steps.

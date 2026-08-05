@@ -1,0 +1,54 @@
+---
+title: Admin docs · Permission nodes and permission model
+description: Explain Dominion's Bukkit permissions, admin bypass, limitation file permissions, and in-claim flags.
+icon: KeyRound
+sidebar:
+  label: Permissions
+  order: 29
+---
+
+## Bukkit permissions registered by the plugin
+
+Dominion registers two main permission nodes in `plugin.yml`:
+
+| Node | Default | Purpose |
+| --- | --- | --- |
+| `dominion.default` | `true` | The default permission for regular players to use Dominion's basic features |
+| `dominion.admin` | `op` | Use global administrator commands, and bypass part of the limits when `admin-bypass: true` |
+
+`dominion.admin` defaults to OP, but production environments should explicitly grant it to a trusted operations group through a permissions plugin, instead of treating OP as the only permission management scheme.
+
+## Do not confuse the three permission layers
+
+### Global Bukkit permissions
+
+`dominion.admin` is a server permission node that controls administrator commands such as reload, import/export, and migration. It does not mean the player has a normal member setting of some specific flag in every claim.
+
+### Claim member flags
+
+In-claim permissions such as `admin`, `resize`, and `member` are assigned by the claim owner or a member with management permission, and control operations in the current claim/sub-claim. The `admin` flag lets a member manage regular members and groups, but is not equal to the global `dominion.admin`.
+
+### Limitation file permissions
+
+Each `limitations/<name>.yml` registers two matching nodes:
+
+```text
+group.<name>
+dominion.limitation.<name>
+```
+
+For example, `vip.yml` corresponds to `group.vip` and `dominion.limitation.vip`. When a player matches multiple files, the limitation with the higher `priority` value is used. It only decides claim amounts, sizes, economy, and teleportation limits, and does not automatically grant `dominion.admin`.
+
+## Resolution order
+
+Inside a claimed area, the plugin processes the admin bypass first; regular players then select the corresponding flag by "group member → regular member → guest". Sub-claims have their own boundary and settings; just because a player is a member of the parent claim does not mean they can perform every action in a sub-claim.
+
+When a member is added, the guest permissions at that time are copied as the starting point; later guest permission changes do not automatically reset old members. Once a member joins a group, the group flags become the primary effective source, so modify them on the group page instead of only the individual member page.
+
+## Suggestions for working with permissions plugins
+
+- Keep `dominion.default` for regular players, and only grant `dominion.admin` to the operations group.
+- Grant `group.vip` or `dominion.limitation.vip` to VIP/Builder players; do not grant administrator permission just to raise limits.
+- After changing permissions, have players re-login or reload the permissions plugin to rule out permission cache illusions.
+- Use the permissions plugin's own query commands, such as `/lp user <player> permission check dominion.admin`, to confirm nodes; the specific command depends on the permissions plugin in use.
+- Use a regular account to verify the deny path; OP, console, and accounts with the administrator node are not suitable for verifying limits.

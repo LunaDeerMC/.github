@@ -1,0 +1,179 @@
+---
+title: Admin docs · PlaceholderAPI
+description: Detailed Dominion PlaceholderAPI expansion installation, placeholders, parameter forms, display examples, and troubleshooting.
+icon: Code2
+sidebar:
+  label: PlaceholderAPI
+  order: 31
+---
+
+## PlaceholderAPI integration
+
+PlaceholderAPI can provide Dominion's current claim, member, permission group, selection point, and teleport point information to scoreboards, TAB, chat, menus, or other plugins that support PlaceholderAPI.
+
+The expansion identifier registered by Dominion itself is `dominion`. After installing PlaceholderAPI, you do not need to download a same-name expansion from the PlaceholderAPI cloud; Dominion registers this set of placeholders when its own plugin loads. The prerequisite is that both PlaceholderAPI and Dominion load normally on the same server.
+
+## Installation and confirmation
+
+1. Put PlaceholderAPI into `plugins/`;
+2. Put Dominion on the same server, start, and confirm the console shows both plugins enabled;
+3. Verify a simple placeholder in game with PlaceholderAPI's parse command:
+
+```text
+/papi parse me %dominion_current_dominion%
+```
+
+If the player stands inside a claim named `showcase`, the result should be that claim name. An empty value while standing in an unclaimed area is a normal result. Diagnostic commands may differ slightly; follow the help provided with your installation.
+
+## The three placeholder contexts
+
+### The current claim
+
+Forms without a claim name read the current position of the player performing the parse:
+
+```text
+%dominion_current_dominion%
+%dominion_is_member%
+%dominion_members%
+%dominion_member_count%
+%dominion_group%
+%dominion_groups%
+%dominion_group_count%
+```
+
+These placeholders suit showing the current position and membership state. When the player is not in a claim, name, member, and group information is empty. `is_member` returns the string `true` or `false` inside a valid claim.
+
+### A named claim
+
+Appending `<dominion_name>` after the parameter queries the specified claim:
+
+```text
+%dominion_is_member_<dominion_name>%
+%dominion_members_<dominion_name>%
+%dominion_member_count_<dominion_name>%
+%dominion_group_<dominion_name>%
+%dominion_groups_<dominion_name>%
+```
+
+For example, when testing a claim named `showcase`:
+
+```text
+%dominion_member_count_showcase%
+%dominion_members_showcase%
+```
+
+When the named claim does not exist, the related placeholders usually resolve to empty. A named claim query is a data read; it does not perform permission judgment for you. Do not unconditionally display results containing member lists or management information to all players.
+
+### The player's current selection points
+
+After a player uses the selection tool, you can read the full coordinates or individual fields of the two selection points:
+
+```text
+%dominion_selected_point_1%
+%dominion_selected_point_2%
+%dominion_selected_point_1_world%
+%dominion_selected_point_1_x%
+%dominion_selected_point_1_y%
+%dominion_selected_point_1_z%
+%dominion_selected_point_2_world%
+%dominion_selected_point_2_x%
+%dominion_selected_point_2_y%
+%dominion_selected_point_2_z%
+```
+
+The full form returns `world,x,y,z`. When the player has not selected the corresponding point, it returns empty; selection points are the current player's runtime state and should not be treated as permanent claim boundaries in the database.
+
+## Full placeholder reference
+
+### Group title and current position
+
+| Placeholder | Returns |
+| --- | --- |
+| `%dominion_group_title%` | The group title the player is currently using; empty when no title is selected |
+| `%dominion_current_dominion%` | The claim name at the player's current position; empty when not in a claim |
+
+### Members and permission groups
+
+| Placeholder | Returns |
+| --- | --- |
+| `%dominion_is_member%` | The player's membership state at the current position |
+| `%dominion_is_member_<dominion_name>%` | The player's membership state in the named claim |
+| `%dominion_members%` | The current claim's member names, comma-separated |
+| `%dominion_members_<dominion_name>%` | The named claim's member names, comma-separated |
+| `%dominion_member_count%` | The current claim's member count |
+| `%dominion_member_count_<dominion_name>%` | The named claim's member count |
+| `%dominion_group%` | The permission group the player belongs to in the current claim |
+| `%dominion_group_<dominion_name>%` | The permission group the player belongs to in the named claim |
+| `%dominion_groups%` | The current claim's permission group names, comma-separated |
+| `%dominion_groups_<dominion_name>%` | The named claim's permission group names, comma-separated |
+| `%dominion_group_count%` | The current claim's permission group count |
+
+Group names and titles use Dominion's Bukkit color format. The target display plugin may keep or strip these colors.
+
+### Teleport points
+
+```text
+%dominion_tp_loc_x_<dominion_name>%
+%dominion_tp_loc_y_<dominion_name>%
+%dominion_tp_loc_z_<dominion_name>%
+%dominion_tp_loc_Y_<dominion_name>%
+%dominion_tp_loc_P_<dominion_name>%
+```
+
+Lowercase `x`, `y`, and `z` return the teleport point's block coordinates; uppercase `Y` returns yaw and uppercase `P` returns pitch. `Y`/`P` are case-sensitive parameters in the current implementation and must not be written in lowercase. When the claim has no teleport point or does not exist, the result is empty.
+
+### Currently effective flags
+
+```text
+%dominion_pri_flag_<flag>%
+%dominion_env_flag_<flag>%
+```
+
+Replace `<flag>` with a name from the current `flags.yml`, for example:
+
+```text
+%dominion_pri_flag_container%
+%dominion_pri_flag_place%
+%dominion_env_flag_monster_spawn%
+%dominion_env_flag_show_border%
+```
+
+`pri_flag` returns the current player's privilege flag result at the current position; `env_flag` returns the environment flag result at the current position. Both return the strings `true` or `false`; when the flag name does not exist, they are empty. They are not a simple read of the YAML `default`; they are the current judgment based on the current position, guest/member/group identity, and the admin bypass rules.
+
+## Practical examples
+
+### Scoreboard or TAB
+
+```text
+Current claim: %dominion_current_dominion%
+Claim members: %dominion_member_count%
+Current group: %dominion_group%
+```
+
+### Claim status in a menu
+
+```text
+Name: %dominion_current_dominion%
+Can open chests: %dominion_pri_flag_container%
+Monster spawn: %dominion_env_flag_monster_spawn%
+```
+
+Display plugins usually only support their own YAML formats; the content above is placeholder strings, not a complete configuration that every plugin can paste directly. First confirm the target plugin supports PlaceholderAPI, then put the strings into its text, condition, or variable nodes in its format.
+
+## Troubleshooting checklist
+
+### Placeholders display literally
+
+Check that PlaceholderAPI has loaded, the target plugin actually calls PlaceholderAPI, the `%` on both sides of the placeholder are complete, and the expansion is `dominion`. If only Dominion is unresolved, check the soft-dependency and expansion registration errors in Dominion's startup log.
+
+### Empty results
+
+First confirm the context. The player may not be in a claim, may not have finished selecting points, the claim may have no teleport point, the named claim may not exist, or the specified flag may have been deleted. For current-position placeholders, re-parse while a regular player stands inside a test claim.
+
+### Results are not up to date
+
+Confirm the claim settings have been saved and the target display plugin is not caching old text. When [multi-server features](./multi-server) are enabled, remote claim and member caches update on the background sync cycle; after cross-server changes, allow a short delay, then check the shared database and server logs.
+
+### Member/permission display inconsistent with in-game behavior
+
+`is_member` only judges the member record. The privilege flag result is also affected by guest, member, permission group, sub-claim, and admin bypass. To check actual behavior such as "open a chest", use the corresponding `pri_flag` and re-test with a regular account.

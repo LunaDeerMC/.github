@@ -1,0 +1,70 @@
+---
+title: Admin docs · flags.yml reference
+description: Understand the purpose, defaults, availability switches, and resolution order of environment and privilege flags.
+icon: Shield
+sidebar:
+  label: flags.yml
+  order: 25
+---
+
+## File structure
+
+`flags.yml` is divided into two top-level sections: `environment` and `privilege`. Each flag looks roughly like:
+
+```yaml
+privilege:
+  container:
+    default: false
+    enable: true
+    material: CHEST
+```
+
+- `default` is the initial value set when creating a new claim or member; it is not a "forced value for all current claims".
+- `enable` controls the flag's availability and its display state in the UI and configuration. When disabled, players cannot select the flag.
+- `material` is the item material used to represent the flag in the UI; it must be a Bukkit Material name supported by the target server.
+
+After changes, use `/dominion reload config`. Because new members copy the guest permissions at that time, changing defaults does not automatically rewrite all existing claims, members, or groups; existing data needs explicit adjustment in the UI or commands.
+
+## Environment flags
+
+Environment flags control world events and behavior at the claim's external boundary. The available environment flags include:
+
+| Category | Flags |
+| --- | --- |
+| Animals | `animal_spawn`, `animal_breed`, `animal_spawner`, `animal_spawn_egg`, `animal_move`, `villager_spawn`, `villager_breed`, `villager_spawner`, `villager_spawn_egg` |
+| Monsters | `monster_spawn`, `monster_spawner`, `monster_spawn_egg`, `monster_move`, `monster_damage` |
+| Endermen and explosions | `ender_man`, `ender_man_spawn`, `ender_man_teleport`, `tnt_explode`, `tnt_damage_entity`, `wither_spawn`, `wither_explode`, `wither_break_block` |
+| Entity/projectile explosions | `creeper_explode`, `creeper_damage_entity`, `wither_skull_explode`, `wither_skull_damage_entity`, `ender_crystal_explode`, `ender_crystal_damage_entity`, `fireball_explode`, `fireball_damage_entity`, `block_explode`, `dragon_break_block` |
+| Fire, liquids, and blocks | `fire_spread`, `burn_block`, `burn_entity`, `flow_in_protection`, `gravity_block`, `ice_melt`, `ice_form`, `snow_accumulation`, `snow_melt` |
+| Crops and nature | `trample`, `mob_trample`, `decay` |
+| Cross-boundary and display | `hopper_outside`, `piston_outside`, `trig_pressure_proj`, `trig_pressure_mob`, `trig_pressure_drop`, `item_frame_proj_damage`, `mob_drop_item`, `show_border` |
+
+Similarly named flags may only control part of an event. For example, `tnt_explode` controls TNT explosions, `tnt_damage_entity` controls the damage explosions deal to entities and hanging entities; the scope of `creeper_explode` covers many non-TNT explosion sources. When explosions still happen, check each event source item by item instead of only changing one "master explosion switch".
+
+## Privilege flags
+
+Privilege flags control a player's or member's ability to perform actions inside a claim. The available privilege flags include:
+
+| Category | Flags |
+| --- | --- |
+| Manage claims | `admin`, `resize`, `rename`, `create_sub`, `delete_sub`, `resize_sub`, `rename_sub` |
+| Movement and teleportation | `move`, `teleport`, `fly`, `riding`, `ender_pearl`, `raid` |
+| Blocks and entities | `place`, `place_liquid`, `place_entity`, `break`, `break_liquid`, `break_entity`, `ignite` |
+| Items and redstone | `pick_up`, `drop_item`, `door`, `button`, `lever`, `pressure`, `red_stone_powder`, `repeater`, `comparer`, `note_block` |
+| Containers and workstations | `container`, `armor_stand_interactive`, `item_frame_content`, `hopper`, `craft`, `crafter`, `anvil`, `enchant`, `brew`, `beacon`, `jukebox`, `lectern`, `bookshelf`, `dragon_egg`, `item_frame_interactive` |
+| Life and entities | `edit_sign`, `bed`, `anchor`, `vehicle_spawn`, `vehicle_destroy`, `harvest`, `sowing`, `fertilizer`, `plant_tree`, `feed`, `shear`, `leash`, `dye`, `honey`, `cake`, `trade` |
+| Combat | `shoot`, `trident`, `fireball`, `wind_charge`, `egg`, `hook`, `pvp`, `monster_killing`, `animal_killing`, `villager_killing` |
+
+For example, to let members open chests but not place or break blocks, configure `container: true`, `place: false`, and `break: false` separately. `admin` is not Bukkit's global administrator permission; it is a management flag at the claim member level. It lets a member manage regular members and groups, and cannot replace `dominion.admin`.
+
+## Resolution order and troubleshooting
+
+For regular players inside a claim, the judgment order is: group members use group flags, regular members use member flags, and non-members use guest flags. When the admin bypass is enabled and the player has `dominion.admin`, the admin bypass logic is handled first. Sub-claims have independent rules within their own boundary; the parent claim's settings cannot simply be treated as the sub-claim's current values.
+
+When troubleshooting "a player still cannot operate", the following order saves the most time:
+
+1. Confirm which claim or sub-claim the player's position belongs to;
+2. Confirm whether the player is a guest, member, or group member;
+3. Confirm the flag name for the target behavior. Do not guess from the UI item only;
+4. Check that the flag's value in `flags.yml` is `enable: true`;
+5. Retry with a regular account, and check other plugins for early event cancellation.

@@ -1,0 +1,100 @@
+---
+title: Player docs · Command reference
+description: Dominion commands, arguments, and usage examples for players.
+icon: Terminal
+link: /docs/plugins/dominion/player/commands
+sidebar:
+  label: Command reference
+  order: 14
+---
+
+## Syntax notes
+
+- `<name>` is a required argument; `[direction]` is optional.
+- Commands use the full root command `/dominion`, or the plugin's short alias `/dom`.
+- Commands with `force` confirm dangerous operations; they do not skip all limits. Administrator, economy, and parent/child claim checks may still apply.
+- Claim, member, group, and template arguments provide completion; the completions are determined by the objects the current player can manage.
+
+## Opening the UI and queries
+
+| Command | Purpose |
+| --- | --- |
+| `/dominion` | Opens the UI chosen by the current player; shows help on senders that do not support a player UI |
+| `/dominion ui chest` | Selects ChestUI and opens it |
+| `/dominion ui dialog` | Selects Dialog and opens it; falls back to ChestUI when unavailable |
+| `/dominion ui default` | Restores the server default UI |
+| `/dominion info` | Shows the claim, owner, size, and height at the current position |
+
+## Creating and maintaining claims
+
+```text
+/dominion create <name>
+/dominion auto_create <name>
+/dominion create_sub <name> <dominion_name>
+/dominion auto_create_sub <name> <dominion_name>
+/dominion resize <dominion_name> <expand|contract> <size> [north|east|south|west|up|down]
+/dominion expand <size> [direction]
+/dominion contract <size> [direction]
+```
+
+Automatic creation uses the administrator's `auto-create-radius`. `resize` uses the full direction names: `north`, `east`, `south`, `west`, `up`, and `down`.
+
+```text
+/dominion set_tp <dominion_name>
+/dominion tp <dominion_name>
+/dominion rename <dominion_name> <newName>
+/dominion set_map_color <dominion_name> <color>
+/dominion set_msg <dominion_name> <enter|leave> <message>
+```
+
+## Members, groups, and templates
+
+```text
+/dominion member_add <dominion_name> <player_name>
+/dominion member_set_pri <dominion_name> <member_name> <pri_flag_name> <true|false>
+/dominion member_remove <dominion_name> <member_name>
+
+/dominion group_create <dominion_name> <group_name>
+/dominion group_rename <dominion_name> <group_name> <new_group_name>
+/dominion group_set_flag <dominion_name> <group_name> <pri_flag_name> <true|false>
+/dominion group_add_member <dominion_name> <group_name> <member_name>
+/dominion group_remove_member <dominion_name> <group_name> <member_name>
+/dominion group_delete <dominion_name> <group_name>
+
+/dominion template_create <template_name>
+/dominion template_rename <template_name> <new_name>
+/dominion template_set_flag <template_name> <pri_flag_name> <true|false>
+/dominion member_apply_template <dominion_name> <member_name> <template_name>
+/dominion template_delete <template_name>
+/dominion title_use <title_id>
+```
+
+## Claim flags
+
+```text
+/dominion set_env <dominion_name> <env_flag_name> <true|false>
+/dominion set_guest <dominion_name> <guest_flag_name> <true|false>
+```
+
+`set_env` changes the claim's environment rules. `set_guest` changes guest permissions. Command completion only shows flags with `enable: true` in `flags.yml`. Member and group permissions use `member_set_pri` and `group_set_flag` from the previous section.
+
+## Copying and ownership
+
+```text
+/dominion copy_env <from> <to>
+/dominion copy_guest <from> <to>
+/dominion copy_member <from> <to>
+/dominion copy_group <from> <to>
+/dominion give <dominion_name> <player_name> [force]
+/dominion delete <dominion_name> [force]
+```
+
+Copy commands copy the environment, guest, member, or group data of existing claims; they do not copy the boundary itself. Confirm the source and target are not swapped before executing; back up before ownership transfer or deletion.
+
+## Troubleshooting order for common command errors
+
+1. Check the command spelling and argument order;
+2. Confirm you are inside the target claim, or have management permission for it;
+3. Confirm the flag is enabled in `flags.yml`;
+4. Check the amount, size, sub-claim, and teleport limits in `limitations/`;
+5. If the problem persists, record the full error message, runtime environment information, and the triggering command. Do not only capture the last line.

@@ -1,0 +1,124 @@
+---
+title: Player docs · Members and permissions
+description: Understand the differences between guests, members, permission groups, and permission templates, and open your claim on the principle of least privilege.
+icon: Users
+link: /docs/plugins/dominion/player/permissions
+sidebar:
+  label: Members & permissions
+  order: 12
+---
+
+## Understand the permission resolution order first
+
+For a player inside a claim, normal interaction permissions are resolved in the following order:
+
+1. `dominion.admin` administrator bypass (if the administrator configuration allows bypassing);
+2. Check the player's member record in the claim;
+3. Check the member's permission group. When the member belongs to a group, the group flags are used; otherwise the member's own flags;
+4. When there is no member record, use the claim's guest flags;
+5. Unclaimed areas may use the world-wide rules in `world-wide/<world>.yml`.
+
+Environment flags do not distinguish players; they are controlled directly by the claim or world-wide rules. When `enable` in `flags.yml` is `false`, that flag does not participate in interception. You cannot judge the result only by the UI toggle state.
+
+## Four management modes
+
+### Guests
+
+Guests are players without a member record. The claim owner can directly adjust the claim's guest permissions, for example allowing guests to open doors but not break blocks. Guest rules suit public claims, but do not leave `break`, `container`, or `place` open for a long time just for "convenient testing".
+
+### Members
+
+After adding a player to the claim, you can set flags for that player individually:
+
+```text
+/dominion member_add <dominion_name> <player_name>
+/dominion member_set_pri <dominion_name> <member_name> <pri_flag_name> <true|false>
+/dominion member_remove <dominion_name> <member_name>
+```
+
+For example:
+
+```text
+/dominion member_add home Alex
+/dominion member_set_pri home Alex container true
+/dominion member_set_pri home Alex place true
+/dominion member_remove home Alex
+```
+
+A new member copies an initial value from the guest permissions at that time. Later guest permission changes do not automatically reset the flags already saved for this member.
+
+### Permission groups
+
+Permission groups suit multi-player servers. First create a group, then add members to it, then set permissions on the group:
+
+```text
+/dominion group_create <dominion_name> <group_name>
+/dominion group_add_member <dominion_name> <group_name> <member_name>
+/dominion group_set_flag <dominion_name> <group_name> <pri_flag_name> <true|false>
+```
+
+Maintain groups:
+
+```text
+/dominion group_remove_member <dominion_name> <group_name> <member_name>
+/dominion group_rename <dominion_name> <group_name> <new_group_name>
+/dominion group_delete <dominion_name> <group_name>
+```
+
+Once a member joins a group, the group flags become the member's actual permission source; the flags separately saved on the member page no longer serve as the primary basis. To give the same person exception permissions, remove them from the group and maintain the member flags directly, or create a more suitable group.
+
+### Permission templates
+
+Templates save a reusable set of member permissions, suitable for repeated configurations such as a "builder group", "storage group", or "guest group":
+
+```text
+/dominion template_create <template_name>
+/dominion template_set_flag <template_name> <pri_flag_name> <true|false>
+/dominion member_apply_template <dominion_name> <member_name> <template_name>
+```
+
+Edit and delete templates:
+
+```text
+/dominion template_rename <template_name> <new_name>
+/dominion template_delete <template_name>
+```
+
+Applying a template writes the template's available privilege flags into the member; it is not a live inheritance relationship. Later template changes do not retroactively update members who already had the template applied. For continuous bulk maintenance, prefer permission groups.
+
+## Common flags
+
+A typical builder group can start with these flags:
+
+| Need | Common flags |
+| --- | --- |
+| Build and break | `place`, `break` |
+| Place/break liquids or entities | `place_liquid`, `break_liquid`, `place_entity`, `break_entity` |
+| Containers and automation | `container`, `hopper`, `craft`, `anvil`, `enchant`, `brew` |
+| Doors, buttons, redstone | `door`, `button`, `lever`, `pressure`, `red_stone_powder`, `repeater`, `comparer` |
+| Farming | `harvest`, `sowing`, `fertilizer`, `plant_tree`, `feed`, `shear`, `leash` |
+| Vehicles and movement | `vehicle_spawn`, `vehicle_destroy`, `riding`, `teleport`, `fly` |
+| Combat | `pvp`, `monster_killing`, `animal_killing`, `villager_killing`, `shoot`, `trident` |
+
+The final available flag names depend on what the administrator enables in `flags.yml`. Command completion only lists enabled flags. Do not put environment flags (such as `creeper_explode`) into `member_set_pri`.
+
+## Recommended steps for opening a storage to friends
+
+1. Run `member_add` first; do not open `container` to everyone through the guest flags;
+2. Create a `storage` group and set necessary permissions such as `container`, `hopper`, and `craft`;
+3. Add trusted players to the `storage` group;
+4. Use another regular test account to actually try opening chests, breaking blocks, and using buttons;
+5. Remove members or revoke group permissions when no longer needed.
+
+If a member cannot operate, check their permission group first. After joining a group, check the group flags; do not keep modifying member flags.
+
+## Group titles
+
+After group titles are enabled and configured, players can view the titles available to them and use:
+
+```text
+/dominion title_use <title_id>
+/dominion title_use -1
+```
+
+`-1` clears the current title. Title display depends on the administrator's `group-title` setting and the language files, and does not change actual permissions.

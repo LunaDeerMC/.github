@@ -1,0 +1,61 @@
+---
+title: Admin docs · Feature overview
+description: From claim boundaries to the database and multi-server, understand Dominion's capabilities by responsibility.
+icon: LayoutGrid
+sidebar:
+  label: Feature overview
+  order: 21
+---
+
+## Feature overview
+
+Dominion centrally manages behavior in 3D areas. Claim boundaries, guest permissions, member permissions, permission groups, environment rules, and database data are related but belong to different configuration layers. Plan server rules by the layers below, then decide which buttons and flags to open to players.
+
+| Capability | Role | Main entry |
+| --- | --- | --- |
+| Claim boundary | Create, expand, contract, delete, rename, set teleport points and map colors | Player commands, ChestUI, Dialog |
+| Sub-claims | Carve out areas with different permissions inside a parent claim | `create_sub`, UI |
+| Player permissions | Distinguish guests, members, and group members for placing, breaking, interacting, and teleporting | `flags.yml`, UI |
+| Environment rules | Control mob spawning, explosions, fire, liquid flow, pistons, crops, and other world behavior | `flags.yml`, UI |
+| Groups and templates | Save and apply a set of flags in bulk for multi-player servers | group/template commands, UI |
+| Economy and limits | Control amounts, sizes, costs, teleportation, and height per permission group | `limitations/*.yml` |
+| World-wide rules | Set default environment and interaction behavior for unclaimed areas | `world-wide/*.yml` |
+| Data storage | Store claim data with SQLite, MySQL, MariaDB, or PostgreSQL | `config.yml` |
+| Operations tools | Reload config, export, import, language update, and Residence migration | Admin commands |
+| External integrations | Integrate Vault, PlaceholderAPI, WorldGuard, and multi-server data | Optional dependencies and configuration |
+
+## Boundaries and the claim lifecycle
+
+Players can create claims by selecting points or by using automatic creation. A claim is a 3D cuboid with world information; besides the horizontal X/Z range, it also records the Y-axis upper and lower bounds. Administrators can limit minimum and maximum sizes, maximum height, deepest sub-claim level, and the number of claims per player or world.
+
+After creation, a claim can continue to be adjusted: resize, set a teleport point, change enter/leave messages, rename, set a map color, or delete it after confirming there is no data requirement. Root claims and sub-claims have different command permissions: sub-claim operations are constrained by flags such as `create_sub`, `resize_sub`, `rename_sub`, and `delete_sub`.
+
+## Permissions and environment are two separate rule sets
+
+### Privilege flags
+
+Privilege flags describe a player's permission to perform an action inside a claim, such as `place`, `break`, `container`, `door`, `craft`, `pvp`, and `animal_killing`. They usually affect the operation judgment of the current player.
+
+### Environment flags
+
+Environment flags describe world events that are allowed to happen, such as `tnt_explode`, `fire_spread`, `monster_spawn`, `hopper_outside`, `piston_outside`, and `show_border`. They usually affect events or chunk behavior rather than one player's button operation.
+
+### Resolution order
+
+Inside a claim, the plugin first checks the current player's administrator status. When the admin bypass is enabled, it passes through directly. Group members use group flags, regular members use member flags, and guests use guest flags. When a member is added, the guest permissions at that time create the initial settings. Later guest permission changes do not automatically overwrite saved member settings.
+
+## UI and database
+
+The plugin provides both ChestUI and Dialog. Players can switch with `/dominion ui chest`, `/dominion ui dialog`, or `/dominion ui default`. The UI is a visual entry point for commands. Permission limits, size limits, and database validation are still enforced uniformly by server logic. After switching the server core, check the startup log and test the Dialog, events, permissions, creation, and teleportation flows.
+
+## Data and operations capabilities
+
+- SQLite suits single servers and lightweight deployments; MySQL, MariaDB, and PostgreSQL suit scenarios that need external database management or multi-server shared data.
+- Multi-server mode requires every instance to have a unique and stable `server-id` and `server-name`; SQLite does not support multi-server mode.
+- Administrators can export MCA or database backups, and import a database after explicit confirmation.
+- Residence migration is a one-time migration tool. After enabling the migration switch, run the commands, then disable the switch and verify claim counts and boundaries when finished.
+- PlaceholderAPI can provide the current claim, member, group, and flag information to scoreboards, chat, or other plugins.
+
+## Boundaries to communicate to players
+
+Dominion only handles the events it can recognize and take over. If other plugins cancel events earlier, modify blocks directly, or act as an administrator, the final result may differ from testing Dominion alone. When a conflict occurs, reproduce it with a regular account, an isolated test claim, and a minimal plugin set, and keep the startup log and configuration snapshots.

@@ -1,0 +1,67 @@
+---
+title: Admin docs · world-wide reference
+description: Configure per-world environment and interaction rules for unclaimed areas.
+icon: Compass
+sidebar:
+  label: World-wide
+  order: 27
+---
+
+## What world-wide does
+
+Claim flags only take effect inside claimed areas; `world-wide` sets a set of world-level default rules for unclaimed areas. For example, an administrator can forbid placing and breaking in a lobby world's unclaimed areas, or open up some mob or explosion behavior in a resource world.
+
+Files are located in `plugins/Dominion/world-wide/`, and file names usually correspond to world names:
+
+```text
+plugins/Dominion/world-wide/
+├── default.yml
+├── world.yml
+└── resource.yml
+```
+
+Worlds not listed use `default.yml`. The admin bypass logic takes priority over world-wide rules, so verify the final result with a regular account.
+
+## File format
+
+```yaml
+enabled: false
+flag-schema-version: 2
+environment:
+  monster_spawn: false
+  tnt_explode: false
+  show_border: true
+privilege:
+  move: true
+  pick_up: true
+  drop_item: true
+  place: false
+  break: false
+  container: false
+```
+
+`flag-schema-version` is `2` and is used by the plugin to migrate old flag names or structures. Do not modify it manually. The key names in `environment` and `privilege` come from [`flags.yml`](./flags). Only fill in flags that exist in that file.
+
+## Differences from in-claim rules
+
+When a player enters a claimed area, the plugin first uses that claim/sub-claim's guest, member, or group settings; world-wide is not a parent claim, and it does not "inherit" unclaimed-area settings into newly created claims. The default values of new claims still come from `flags.yml` and the plugin's claim data logic.
+
+Therefore, use the following test matrix to confirm configuration:
+
+| Position | Account | Rules to check |
+| --- | --- | --- |
+| Unclaimed area | Regular player | `world-wide.privilege` and `environment` |
+| Claimed root claim | Guest | Claim guest flags |
+| Claimed root claim | Member/group member | member or group flags |
+| Claimed sub-claim | Regular player | The sub-claim's own rules and the parent claim boundary |
+| Any position | Administrator | The actual result of `admin-bypass` |
+
+## Usage steps
+
+1. First copy the server-generated `default.yml`; do not hand-assemble flags from other files.
+2. Create or modify the corresponding YAML file with the world name.
+3. Only adjust the flags you need, keeping `enabled` and `flag-schema-version` present.
+4. Run `/dominion reload config` and check the console load results.
+5. Test placing, breaking, containers, movement, and the target environment events in an unclaimed area with a regular player.
+
+If the world-level rules are not taking effect, confirm in order that the player is standing in an unclaimed area, the file name matches the world name, and `enabled: true`. Then check administrator permissions and other plugins' bypass behavior. Deleting `default.yml` loses the fallback configuration. Keep that file.

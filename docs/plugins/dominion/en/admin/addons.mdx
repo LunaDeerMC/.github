@@ -1,0 +1,34 @@
+---
+title: Admin docs · Extensions and API
+description: The Dominion API, events, and extension development entry point for developers and server owners.
+icon: Puzzle
+sidebar:
+  label: Extensions & API
+  order: 33
+---
+
+## Extension boundaries
+
+Dominion's database, caches, UI, and event handling are all maintained internally by the plugin. When other plugins need to read or integrate with claims, prefer the public API, events, or PlaceholderAPI. Do not read `dominion.db` directly, and do not depend on internal cache classes or NMS classes.
+
+Dominion provides an API module and exposes data access capabilities for claim DTOs, members, groups, flags, and positions. Extension developers should treat Dominion as an optional dependency. When the server has no Dominion, an extension should not block core startup.
+
+## Recommended extension approaches
+
+- Use the Dominion API to query the current position's claim, owner, members, and boundary;
+- Listen to the events the project provides to respond to claim creation, deletion, boundary changes, or permission changes;
+- Use PlaceholderAPI to integrate the current claim information into scoreboards, chat, TAB, or menus;
+- Let server administrators decide integration behavior through configuration, instead of hard-coding rules into the extension;
+- Verify event threads, async tasks, and teleportation behavior on the target Paper, Spigot, or Folia server.
+
+## PlaceholderAPI boundaries
+
+PlaceholderAPI installation, the full placeholder list, and display troubleshooting are organized separately in the [PlaceholderAPI docs](./placeholderapi). Extensions usually do not need to query the database themselves to use those placeholders; if a placeholder needs a claim name argument and the name contains special characters, follow the parameter rules of PlaceholderAPI and the target plugin, and do not concatenate unvalidated player input directly.
+
+## API usage boundaries
+
+Dominion includes NMS implementations. Extensions that use NMS directly reduce portability. Prefer the Dominion API and Bukkit/Paper abstractions. After updating Dominion, re-check API signatures, event cancellation timing, and async callbacks.
+
+## Collecting error information
+
+When reporting issues to an extension author or the Dominion maintainers, provide: runtime environment information, relevant configuration (with passwords hidden), the full exception stack trace, reproduction commands, the player identity type, and installed optional dependencies such as WorldGuard, Vault, and PlaceholderAPI. Do not provide only a "doesn't work" screenshot.

@@ -1,0 +1,127 @@
+---
+title: Admin docs · config.yml reference
+description: Dominion config.yml keys, defaults, and change boundaries explained item by item.
+icon: FileText
+sidebar:
+  label: config.yml
+  order: 24
+---
+
+## File header and database
+
+`version` is the internal version the plugin uses to recognize the configuration format; it is currently `4`. It is not the plugin version, nor a value for administrators to fill in; do not modify it manually.
+
+```yaml
+version: 4
+database:
+  type: sqlite                 # sqlite, mysql, mariadb, pgsql
+  host: localhost
+  port: '3306'
+  database: dominion
+  username: dominion
+  password: dominion
+  connection-pool-size: 10
+```
+
+SQLite does not need a remote host, account, or password, but these keys remain in the generated file. When using an external database, create the database and account first, then fill in the connection information, and confirm charset, network, permissions, and connection pool capacity on a test server. Passwords are sensitive; do not commit configuration containing real passwords to public repositories or screenshots.
+
+## Multi-server mode
+
+```yaml
+multi-server:
+  enable: false
+  server-name: server
+  server-id: 1
+```
+
+When enabled, `server-name` should match the server name in a BungeeCord/Velocity proxy; `server-id` must be a positive integer, unique among all servers sharing the database. Once data has been written to the database, do not change `server-id` arbitrarily, or data ownership can become confused. SQLite does not support multi-server mode; the plugin automatically disables multi-server mode and logs an error when it detects this combination. For the full deployment order, see [multi-server features](../multi-server).
+
+## Language and UI
+
+```yaml
+language: en_us
+ui:
+  default: CHEST
+```
+
+`language` corresponds to the language file names in `plugins/Dominion/languages/`. The language directory usually contains files such as `en_us` and `zh_cn`. `ui.default` only accepts `CHEST` or `DIALOG`; it decides which UI players without a personal UI preference use. A player's own choice can be overridden with `/dominion ui chest` or `/dominion ui dialog`. `/dominion ui default` restores the default.
+
+## Creation, cleanup, and distance
+
+```yaml
+auto-create-radius: 10
+auto-clean-after-days: 180
+server-spawn-protection-radius: 10
+minimum-dominion-distance: 0
+select-tool: ARROW
+info-tool: STRING
+```
+
+- `auto-create-radius` is the radius used by `/dominion auto_create`; `-1` disables automatic creation.
+- `auto-clean-after-days` is for cleaning claims of players who have not logged in for a long time; `-1` disables automatic cleanup. Before enabling, confirm the server's player activity cycle and backup strategy.
+- `server-spawn-protection-radius` prevents players from creating claims near spawn.
+- `minimum-dominion-distance` controls the minimum distance between claims; `0` means no extra spacing requirement.
+- `select-tool` is the selection tool, default `ARROW`; `info-tool` is the tool used to click a claim and show information, default `STRING`. They must be valid Bukkit Material names; otherwise the plugin falls back to defaults and logs a warning.
+
+## Message display
+
+```yaml
+plugin-message:
+  default-enter-message: '&3{OWNER}: Welcome to {DOM}!'
+  default-leave-message: '&3{OWNER}: Leaving {DOM}...'
+  no-permission-display-place: ACTION_BAR
+  enter-leave-display-place: ACTION_BAR
+```
+
+`{OWNER}` is replaced with the claim owner, and `{DOM}` with the claim name. The two display positions support `BOSS_BAR`, `ACTION_BAR`, `TITLE`, `SUBTITLE`, `CHAT`. Color codes follow the server's message format; after changing, test both "allowed" and "denied" messages with a regular player, not only the enter/leave notices.
+
+## Border display
+
+```yaml
+border-display:
+  border-block-material: WHITE_STAINED_GLASS
+  crossing-particle-type: END_ROD
+  boundary-particles-per-edge-block: 4.0
+```
+
+When editing or creating a claim, `border-block-material` is used for the temporary border display; `crossing-particle-type` produces a hint when crossing the boundary. `boundary-particles-per-edge-block` is the particle density per block per edge; the current default is `4.0`, and it is recommended to observe client performance on a small test claim before raising or lowering it gradually. Material and particle names must come from Bukkit types supported by the target server.
+
+## Migration, admin bypass, and group titles
+
+```yaml
+residence-migration: false
+admin-bypass: true
+group-title:
+  enable: false
+  prefix: '['
+  suffix: ']'
+```
+
+- `residence-migration` controls the Residence data migration capability. After migration completes, disable the switch and verify the results per [admin commands](../commands).
+- When `admin-bypass` is `true`, players with `dominion.admin` usually bypass claim limits and rule checks. Therefore, OP accounts cannot represent regular players for permission testing. After disabling it, administrators are also affected by normal rules.
+- When `group-title.enable` is on, players can show the group name as a title; `prefix` and `suffix` define the wrapping text. This feature only affects display; it is not the `priority` in a permissions group file.
+
+## External links, flight, and debugging
+
+```yaml
+external-links:
+  command-help: ''
+  documentation: https://dominion.lunadeer.cn/notes/doc/player/
+fly-permission-nodes:
+- essentials.fly
+- cmi.command.fly
+- domfly.use
+check-update: true
+debug: false
+timer: false
+```
+
+`external-links` is for command help and documentation jumps. It does not change the actual values of the plugin's built-in links. Players with permission nodes in `fly-permission-nodes` are not affected by Dominion's flight restrictions; adjust them to the flight plugin actually used on the server. `check-update` controls the online update check. You can temporarily enable `debug` when troubleshooting. `timer` is a performance recorder and is not recommended for daily production use.
+
+## How changes take effect
+
+```text
+/dominion reload config
+```
+
+Watch the console after reloading. Confirm there are no configuration parse, database, or flag loading errors. When changing the plugin JAR, Java, server core, database type, or multi-server topology, restart fully. Do not use configuration reload to replace these operations.
