@@ -11,6 +11,10 @@ declare global {
       summary: string;
       status?: string;
     }>;
+    __lunadeerRouteLoadingController?: AbortController;
+    __lunadeerRouteLoading?: {
+      init: () => void;
+    };
   }
 }
 

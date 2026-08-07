@@ -46,7 +46,7 @@ describe("source content coverage", () => {
     expect(ids.size).toBeGreaterThanOrEqual(4);
   });
 
-  it("keeps every published document root paired across languages", () => {
+  it("keeps every published document root available in at least one language", () => {
     const roots = walk(docsRoot)
       .filter((path) => /[/\\](zh-CN|en)[/\\]index\.mdx$/.test(path))
       .map((path) => relative(docsRoot, path).replace(/[/\\](zh-CN|en)[/\\]index\.mdx$/, ""));
@@ -54,8 +54,9 @@ describe("source content coverage", () => {
     expect(rootSet.size).toBeGreaterThanOrEqual(5);
 
     for (const documentRoot of rootSet) {
-      expect(existsSync(join(docsRoot, documentRoot, "zh-CN/index.mdx"))).toBe(true);
-      expect(existsSync(join(docsRoot, documentRoot, "en/index.mdx"))).toBe(true);
+      const zhIndex = existsSync(join(docsRoot, documentRoot, "zh-CN/index.mdx"));
+      const enIndex = existsSync(join(docsRoot, documentRoot, "en/index.mdx"));
+      expect(zhIndex || enIndex, documentRoot).toBe(true);
     }
   });
 

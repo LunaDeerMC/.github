@@ -23,17 +23,17 @@ const alternatePath = withLocale(alternateLocale, basePath);
 <header class:list={["site-header", { "site-header--brand": brandPage }]} data-header data-brand={brandPage ? "true" : "false"}>
   <nav class="site-nav page-grid" aria-label={locale === "en" ? "Primary navigation" : "主导航"}>
     <div class="nav-group nav-group--brand">
-      <a class="brand-lockup" href={withLocale(locale, "/")} aria-label={locale === "en" ? "LunaDeerMC home" : "LunaDeerMC 首页"}>
+      <a class="brand-lockup" href={withLocale(locale, "/")} aria-label={locale === "en" ? "LunaDeerMC home" : "LunaDeerMC 首页"} data-astro-prefetch="viewport">
         <img src={site.logo} alt="" width="34" height="34" loading="lazy" decoding="async" />
         <span>LunaDeerMC</span>
       </a>
-      <a class:list={["nav-link", "nav-link--organization", { "is-active": isActive("/support") }]} href={withLocale(locale, "/support")} aria-current={isActive("/support") ? "page" : undefined}>{copy.nav.support}</a>
-      <a class:list={["nav-link", "nav-link--organization", { "is-active": isActive("/about") }]} href={withLocale(locale, "/about")} aria-current={isActive("/about") ? "page" : undefined}>{copy.nav.about}</a>
+      <a class:list={["nav-link", "nav-link--organization", { "is-active": isActive("/support") }]} href={withLocale(locale, "/support")} aria-current={isActive("/support") ? "page" : undefined} data-astro-prefetch="viewport">{copy.nav.support}</a>
+      <a class:list={["nav-link", "nav-link--organization", { "is-active": isActive("/about") }]} href={withLocale(locale, "/about")} aria-current={isActive("/about") ? "page" : undefined} data-astro-prefetch="viewport">{copy.nav.about}</a>
     </div>
 
     <div class="nav-group nav-group--actions">
-      <a class:list={["nav-link", "nav-link--content", { "is-active": isActive("/works") }]} href={withLocale(locale, "/works")} aria-current={isActive("/works") ? "page" : undefined}>{copy.nav.works}</a>
-      <a class:list={["nav-link", "nav-link--content", { "is-active": isActive("/docs") }]} href={withLocale(locale, "/docs")} aria-current={isActive("/docs") ? "page" : undefined}>{copy.nav.docs}</a>
+      <a class:list={["nav-link", "nav-link--content", { "is-active": isActive("/works") }]} href={withLocale(locale, "/works")} aria-current={isActive("/works") ? "page" : undefined} data-astro-prefetch="viewport">{copy.nav.works}</a>
+      <a class:list={["nav-link", "nav-link--content", { "is-active": isActive("/docs") }]} href={withLocale(locale, "/docs")} aria-current={isActive("/docs") ? "page" : undefined} data-astro-prefetch="viewport">{copy.nav.docs}</a>
       <button class="menu-button" type="button" data-menu-trigger aria-expanded="false" aria-haspopup="true" aria-controls="utility-menu" aria-label={copy.nav.openMenu}>
         <LunaIcon name="Menu" size={20} />
       </button>

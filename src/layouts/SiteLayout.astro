@@ -4,9 +4,11 @@ import { getSearchIndex } from "../lib/content/search";
 import type { SearchRecord } from "../lib/content/types";
 import { avifAssetPath, loadSiteConfig } from "../lib/site";
 import { ClientRouter } from "astro:transitions";
+import RouteSkeletons from "../components/shared/RouteSkeletons.astro";
 import SiteFooter from "../components/site/SiteFooter.astro";
 import SiteHeader from "../components/site/SiteHeader.astro";
 import "../styles/global.css";
+import "../styles/route-loading.css";
 
 interface Props {
   title: string;
@@ -71,6 +73,7 @@ const alternateEn = new URL(withLocale("en", canonicalPath), site.url).toString(
   </head>
   <body class:list={[{ "brand-page": brandPage, "content-page": contentPage }]}>
     <a class="skip-link" href="#main-content">{locale === "en" ? "Skip to content" : "跳转到主要内容"}</a>
+    <RouteSkeletons />
     <SiteHeader locale={locale} currentPath={currentPath} brandPage={brandPage} site={site} searchIndex={searchIndex} />
     <main id="main-content" class="site-main"><slot /></main>
     <SiteFooter locale={locale} site={site} contentPage={contentPage} />
@@ -320,6 +323,14 @@ const alternateEn = new URL(withLocale("en", canonicalPath), site.url).toString(
 
         revealItems.forEach((item) => observer.observe(item));
       })();
+    </script>
+    <script>
+      import { initRouteLoading } from "../scripts/route-loading";
+      window.__lunadeerRouteLoading = { init: initRouteLoading };
+      initRouteLoading();
+    </script>
+    <script is:inline data-astro-rerun>
+      window.__lunadeerRouteLoading?.init();
     </script>
   </body>
 </html>

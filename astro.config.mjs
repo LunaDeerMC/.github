@@ -8,6 +8,10 @@ export default defineConfig({
   site: "https://mc.lunadeer.cn",
   output: "static",
   integrations: [mdx(), react(), sitemap(), optimizeImages()],
+  prefetch: {
+    prefetchAll: true,
+    defaultStrategy: "hover",
+  },
   markdown: {
     shikiConfig: {
       theme: "github-dark-default",

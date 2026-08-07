@@ -11,7 +11,7 @@ test("homepage exposes bilingual navigation, theme controls, and search", async 
   await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
   await page.getByRole("button", { name: "搜索站内内容 ⌘ K" }).click();
   const searchbox = page.getByRole("searchbox", { name: "ESC" });
-  await searchbox.fill("LunaCore");
+  await searchbox.fill("TimeManager");
   await expect(page.locator('[data-search-results] [data-search-result-index="0"]')).toBeVisible();
 });
 
@@ -25,16 +25,16 @@ test("homepage hero keeps a real four-depth scroll relationship", async ({ page 
   await expect(layers.nth(3)).toHaveAttribute("data-depth", "1");
   const layerSources = await layers.evaluateAll((items) => items.map((item) => getComputedStyle(item).backgroundImage));
   expect(layerSources).toEqual([
-    expect.stringContaining("/assets/scenes/light/sky.webp"),
-    expect.stringContaining("/assets/scenes/light/distance.webp"),
-    expect.stringContaining("/assets/scenes/light/settlement.webp"),
-    expect.stringContaining("/assets/scenes/light/foreground.webp"),
+    expect.stringContaining("/assets/scenes/light/sky.avif"),
+    expect.stringContaining("/assets/scenes/light/distance.avif"),
+    expect.stringContaining("/assets/scenes/light/settlement.avif"),
+    expect.stringContaining("/assets/scenes/light/foreground.avif"),
   ]);
   expect(await page.locator("[data-parallax-hero] .home-hero__viewport").evaluate((element) => getComputedStyle(element).position)).toBe("sticky");
 
   const before = await layers.evaluateAll((items) => items.map((item) => getComputedStyle(item).transform));
-  await page.evaluate(() => window.scrollTo(0, 320));
-  await page.waitForTimeout(80);
+  await page.evaluate(() => window.scrollTo({ top: 960, behavior: "instant" }));
+  await page.waitForTimeout(100);
   const after = await layers.evaluateAll((items) => items.map((item) => getComputedStyle(item).transform));
 
   expect(after).not.toEqual(before);
@@ -50,19 +50,19 @@ test("homepage hero keeps a real four-depth scroll relationship", async ({ page 
 test("works and both language routes render", async ({ page }) => {
   await page.goto("/works");
   await expect(page.getByRole("heading", { name: "作品", level: 1 })).toBeVisible();
-  await expect(page.getByRole("link", { name: /LunaCore/ })).toHaveAttribute("href", "/works/luna-core");
+  await expect(page.getByRole("link", { name: /Dominion/ })).toHaveAttribute("href", "/works/dominion");
 
   await page.goto("/works?category=core");
-  await expect(page.locator("[data-result-count]")).toHaveText("1 件作品");
+  await expect(page.locator("[data-result-count]")).toHaveText("2 件作品");
 
-  await page.goto("/en/works/luna-core");
+  await page.goto("/en/works/dominion");
   await expect(page.locator("html")).toHaveAttribute("lang", "en");
-  await expect(page.getByRole("heading", { name: "Give complex foundations a clear core.", level: 1 })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Dominion", level: 1 })).toBeVisible();
 });
 
 test("full search restores the query from the URL", async ({ page }) => {
-  await page.goto("/search?q=LunaCore");
-  await expect(page.locator('input[name="q"]')).toHaveValue("LunaCore");
+  await page.goto("/search?q=TimeManager");
+  await expect(page.locator('input[name="q"]')).toHaveValue("TimeManager");
   await expect(page.locator("[data-full-search-results] .full-search-result")).toHaveCount(3);
   await page.locator('[data-full-scope="works"]').click();
   await expect(page.locator("[data-full-search-results] .full-search-result")).toHaveCount(1);
@@ -90,9 +90,9 @@ test("homepage keeps a stable navigation fallback without JavaScript", async ({ 
 });
 
 test("documentation keeps navigation inside the current document set", async ({ page }) => {
-  await page.goto("/docs/cores/luna-core");
-  await expect(page.getByRole("heading", { name: "LunaCore", level: 1 })).toBeVisible();
-  await expect(page.getByRole("navigation", { name: "文档集导航" }).getByRole("link", { name: "安装与启动", exact: true })).toHaveAttribute("href", "/docs/cores/luna-core/setup");
+  await page.goto("/docs/cores/deerfolia");
+  await expect(page.getByRole("heading", { name: "DeerFolia", level: 1 })).toBeVisible();
+  await expect(page.getByRole("navigation", { name: "文档集导航" }).getByRole("link", { name: "安装与首次启动", exact: true })).toHaveAttribute("href", "/docs/cores/deerfolia/installation");
 
   await page.setViewportSize({ width: 390, height: 844 });
   await page.reload();
