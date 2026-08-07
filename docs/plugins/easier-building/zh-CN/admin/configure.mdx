@@ -20,6 +20,9 @@ plugins/EasierBuilding/
 ├── gui/
 │   ├── zh_cn.yml
 │   └── en_us.yml
+├── clipboards/
+│   └── <玩家UUID>/
+│       └── <剪贴板UUID>.ebclip  # 持久化剪贴板
 └── player-data/         # 玩家偏好与用量记录
 ```
 
@@ -228,6 +231,31 @@ fair-use-quota:
 | `period-limit-quota` | 周期窗口额度，`-1` 表示不限 |
 
 约束：`roolling-window-minute` 必须小于 `period-limit-hour` 换算后的分钟数；两个窗口都有限制时滚动配额应小于周期配额。完整说明见[公平用量](../features/fair-usage)。
+
+## structure-operations：结构操作
+
+```yaml
+structure-operations:
+  max-clipboard-count: 10
+  max-persistent-clipboard-count: 5
+  large-preview-threshold: 2048
+  selection-padding: 0.05
+  selection-glass: YELLOW_STAINED_GLASS
+  target-glass: GREEN_STAINED_GLASS
+  direction-glass: RED_STAINED_GLASS
+```
+
+| 键 | 默认 | 说明 |
+| :--- | :---: | :--- |
+| `max-clipboard-count` | 10 | 每玩家内存中的剪贴板最大数量；持久化剪贴板也计入此上限 |
+| `max-persistent-clipboard-count` | 5 | 每玩家允许持久化的剪贴板最大数量 |
+| `large-preview-threshold` | 2048 | 待放置方块数超过此值时，使用单个拉伸玻璃实体预览目标范围 |
+| `selection-padding` | 0.05 | 选区与目标预览玻璃相对方块边界向外扩展的距离 |
+| `selection-glass` | `YELLOW_STAINED_GLASS` | 移动 / 复制选区的黄色玻璃框材质 |
+| `target-glass` | `GREEN_STAINED_GLASS` | 大范围放置预览的绿色玻璃框材质 |
+| `direction-glass` | `RED_STAINED_GLASS` | 选区和放置方向箭头的材质 |
+
+持久化剪贴板保存在 `clipboards/<玩家UUID>/<剪贴板UUID>.ebclip`，由插件管理的 gzip NBT 文件，不建议手工编辑；删除文件即失去对应剪贴板。结构操作的玩家使用说明见[结构操作](../structure)。
 
 ## 语言与 GUI 文件
 
