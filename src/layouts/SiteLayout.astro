@@ -325,8 +325,8 @@ const alternateEn = new URL(withLocale("en", canonicalPath), site.url).toString(
       })();
     </script>
     <script>
-      import { initRouteLoading } from "../scripts/route-loading";
-      window.__lunadeerRouteLoading = { init: initRouteLoading };
+      import { hideRouteLoading, initRouteLoading, showRouteLoading } from "../scripts/route-loading";
+      window.__lunadeerRouteLoading = { init: initRouteLoading, show: showRouteLoading, hide: hideRouteLoading };
       initRouteLoading();
     </script>
     <script is:inline data-astro-rerun>

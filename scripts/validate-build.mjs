@@ -84,6 +84,22 @@ for (const route of routes) {
   if (/^\/(?:en\/)?docs\//.test(route)) assert(html.includes("data-pagefind-body"), `Document route is not searchable: ${route}`);
 }
 
+const docsChunkFiles = [
+  ...walk(join(dist, "docs")),
+  ...walk(join(dist, "en/docs")),
+].filter((file) => file.endsWith(".html"));
+
+for (const file of docsChunkFiles) {
+  const html = readFileSync(file, "utf8");
+  if (!html.includes("data-pagefind-body")) continue;
+  const rel = relative(dist, file).split(/[\\/]/).join("/");
+  const chunkFile = join(dist, "_docs-chunks", rel.replace(/\/index\.html$/, ".json"));
+  assert(existsSync(chunkFile), `Missing docs content chunk for ${relative(dist, file)}`);
+  const chunk = JSON.parse(readFileSync(chunkFile, "utf8"));
+  assert(typeof chunk.articleHtml === "string" && chunk.articleHtml.length > 0, `Empty article chunk for ${relative(dist, file)}`);
+  assert(typeof chunk.tocHtml === "string" && chunk.tocHtml.length > 0, `Empty TOC chunk for ${relative(dist, file)}`);
+}
+
 for (const file of walk(dist).filter((path) => path.endsWith(".html"))) {
   const html = readFileSync(file, "utf8");
   assert(!html.includes("undefined"), `Unexpected undefined value in ${relative(dist, file)}`);

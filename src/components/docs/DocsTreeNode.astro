@@ -26,7 +26,7 @@ const isTopLevelFolder = node.path.split("/").length === 1;
       <span>{node.label}</span>
     </summary>
     <div class="docs-tree__children">
-      {page && href && <a class:list={["docs-tree__link", { "is-current": isCurrent }]} href={href} aria-current={isCurrent ? "page" : undefined}>
+      {page && href && <a class:list={["docs-tree__link", { "is-current": isCurrent }]} href={href} aria-current={isCurrent ? "page" : undefined} data-astro-prefetch="false">
         <LunaIcon name={page.icon ?? "FileText"} class="docs-tree__file-icon" size={14} strokeWidth={1.8} />
         <span>{pageLabel}</span>
       </a>}
@@ -34,7 +34,7 @@ const isTopLevelFolder = node.path.split("/").length === 1;
     </div>
   </details>
 ) : page && href ? (
-  <a class:list={["docs-tree__link", { "is-current": isCurrent }]} href={href} aria-current={isCurrent ? "page" : undefined}>
+  <a class:list={["docs-tree__link", { "is-current": isCurrent }]} href={href} aria-current={isCurrent ? "page" : undefined} data-astro-prefetch="false">
     <LunaIcon name={page.icon ?? "FileText"} class="docs-tree__file-icon" size={14} strokeWidth={1.8} />
     <span>{node.label}</span>
   </a>

@@ -563,8 +563,26 @@
   }
 }
 
+/* Docs reader content fade */
+.docs-article {
+  transition: opacity 180ms var(--ease-out), transform 220ms var(--ease-out);
+}
+
+.docs-reader.is-docs-switching .docs-article,
+.docs-article--entering {
+  opacity: 0;
+  transform: translateY(6px);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .route-loading__block::after {
     animation: none;
+  }
+
+  .docs-reader.is-docs-switching .docs-article,
+  .docs-article--entering {
+    opacity: 1;
+    transform: none;
+    transition: none;
   }
 }
