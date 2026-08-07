@@ -1,4 +1,5 @@
 import { readdir, readFile, stat, unlink, writeFile } from "node:fs/promises";
+import { availableParallelism } from "node:os";
 import { extname, join, relative, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -7,6 +8,7 @@ import sharp from "sharp";
 const sourceImageExtensions = new Set([".jpeg", ".jpg", ".png", ".webp"]);
 const textExtensions = new Set([".css", ".html", ".js", ".json", ".map", ".txt", ".webmanifest", ".xml"]);
 const preservedFiles = new Set(["assets/lunadeermc-brand-logo.png"]);
+const workerCount = Math.max(1, Math.min(availableParallelism() || 1, 8));
 
 async function walk(directory) {
   const entries = await readdir(directory, { withFileTypes: true });
@@ -19,6 +21,19 @@ async function walk(directory) {
   }
 
   return files;
+}
+
+async function runWithConcurrency(items, limit, task) {
+  let nextIndex = 0;
+  const results = new Array(items.length);
+  const workers = Array.from({ length: Math.min(limit, items.length) }, async () => {
+    while (nextIndex < items.length) {
+      const index = nextIndex++;
+      results[index] = await task(items[index], index);
+    }
+  });
+  await Promise.all(workers);
+  return results;
 }
 
 function toPosixPath(path) {
@@ -45,78 +60,140 @@ function addAsyncImageAttributes(source) {
   });
 }
 
-async function optimizeImages(outputDirectory, logger) {
+function escapeRegExp(value) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function findReferencedAvifSources(documents, imageFiles, outputDirectory) {
+  const imagePathByUrl = new Map();
+  for (const imagePath of imageFiles) {
+    imagePathByUrl.set(`/${toPosixPath(relative(outputDirectory, imagePath))}`, imagePath);
+  }
+
+  const neededSources = new Set();
+  const avifReferencePattern = /\/assets\/[^"'#? )]+\.avif/g;
+
+  for (const { content } of documents) {
+    for (const match of content.matchAll(avifReferencePattern)) {
+      const baseUrl = match[0].slice(0, -".avif".length);
+      for (const extension of sourceImageExtensions) {
+        const sourcePath = imagePathByUrl.get(`${baseUrl}${extension}`);
+        if (sourcePath) {
+          neededSources.add(sourcePath);
+          break;
+        }
+      }
+    }
+  }
+
+  return neededSources;
+}
+
+export async function optimizeImages(outputDirectory, logger) {
+  sharp.concurrency(workerCount);
+
   const assetsDirectory = join(outputDirectory, "assets");
   const allFiles = await walk(outputDirectory);
   const assetFiles = allFiles.filter((path) => path === assetsDirectory || path.startsWith(`${assetsDirectory}${sep}`));
   const imageFiles = assetFiles.filter((path) => sourceImageExtensions.has(extname(path).toLowerCase()));
-  const replacements = new Map();
-  let sourceBytes = 0;
-  let optimizedBytes = 0;
-  let convertedCount = 0;
-  let avifCount = 0;
+  const textFiles = allFiles.filter((path) => textExtensions.has(extname(path).toLowerCase()));
 
+  const textDocuments = await runWithConcurrency(textFiles, workerCount, async (path) => ({
+    path,
+    content: await readFile(path, "utf8"),
+  }));
+
+  const referencedAvifSources = findReferencedAvifSources(textDocuments, imageFiles, outputDirectory);
+
+  const webpJobs = [];
   for (const sourcePath of imageFiles) {
     const relativePath = toPosixPath(relative(outputDirectory, sourcePath));
     if (preservedFiles.has(relativePath)) continue;
+    if (extname(sourcePath).toLowerCase() === ".webp") continue;
+    webpJobs.push({ sourcePath, relativePath });
+  }
 
+  const webpResults = await runWithConcurrency(webpJobs, workerCount, async ({ sourcePath, relativePath }) => {
     const sourceStats = await stat(sourcePath);
-    const sourceExtension = extname(sourcePath);
+    const webpPath = sourcePath.slice(0, -extname(sourcePath).length) + ".webp";
+    const webpRelativePath = toPosixPath(relative(outputDirectory, webpPath));
+    await sharp(sourcePath, { failOn: "none" })
+      .webp({ quality: 82, effort: 5, smartSubsample: true })
+      .toFile(webpPath);
+    const webpBytes = (await stat(webpPath)).size;
 
-    if (sourceExtension.toLowerCase() !== ".webp") {
-      const webpPath = sourcePath.slice(0, -sourceExtension.length) + ".webp";
-      const webpRelativePath = toPosixPath(relative(outputDirectory, webpPath));
-      await sharp(sourcePath, { failOn: "none" })
-        .webp({ quality: 82, effort: 5, smartSubsample: true })
-        .toFile(webpPath);
-
-      const webpStats = await stat(webpPath);
-      if (webpStats.size < sourceStats.size) {
-        sourceBytes += sourceStats.size;
-        optimizedBytes += webpStats.size;
-        convertedCount += 1;
-        replacements.set(`/${relativePath}`, `/${webpRelativePath}`);
-      } else {
-        await unlink(webpPath);
-      }
+    if (webpBytes < sourceStats.size) {
+      return { sourcePath, relativePath, webpRelativePath, webpBytes, sourceStats, webpReplacesSource: true };
     }
+    await unlink(webpPath);
+    return { sourcePath, relativePath, webpRelativePath: null, webpBytes: null, sourceStats, webpReplacesSource: false };
+  });
 
-    const avifPath = sourcePath.slice(0, -sourceExtension.length) + ".avif";
+  const replacements = new Map();
+  const fallbackAvifSources = new Set();
+  let sourceBytes = 0;
+  let optimizedBytes = 0;
+  let convertedCount = 0;
+
+  for (const result of webpResults) {
+    const sourceUrl = `/${result.relativePath}`;
+    if (result.webpReplacesSource) {
+      replacements.set(sourceUrl, `/${result.webpRelativePath}`);
+      sourceBytes += result.sourceStats.size;
+      optimizedBytes += result.webpBytes;
+      convertedCount += 1;
+    } else {
+      fallbackAvifSources.add(result.sourcePath);
+    }
+  }
+
+  const avifSources = new Set();
+  for (const sourcePath of referencedAvifSources) {
+    const relativePath = toPosixPath(relative(outputDirectory, sourcePath));
+    if (!preservedFiles.has(relativePath)) avifSources.add(sourcePath);
+  }
+  for (const sourcePath of fallbackAvifSources) {
+    const relativePath = toPosixPath(relative(outputDirectory, sourcePath));
+    if (!preservedFiles.has(relativePath)) avifSources.add(sourcePath);
+  }
+
+  const avifResults = await runWithConcurrency([...avifSources], workerCount, async (sourcePath) => {
+    const sourceStats = await stat(sourcePath);
+    const avifPath = sourcePath.slice(0, -extname(sourcePath).length) + ".avif";
+    const avifRelativePath = toPosixPath(relative(outputDirectory, avifPath));
     await sharp(sourcePath, { failOn: "none" })
       .avif({ quality: 55, effort: 6 })
       .toFile(avifPath);
-    avifCount += 1;
+    const avifBytes = (await stat(avifPath)).size;
+    return { sourcePath, avifRelativePath, avifBytes, sourceStats };
+  });
 
-    // WebP 不划算（不小于原图）时，若 AVIF 更小则回退使用 AVIF 替换引用，
-    // 保证构建产物中的图片只保留优化格式，避免未优化的栅格引用被校验拒绝。
-    if (!replacements.has(`/${relativePath}`)) {
-      const avifStats = await stat(avifPath);
-      if (avifStats.size < sourceStats.size) {
-        const avifRelativePath = toPosixPath(relative(outputDirectory, avifPath));
-        sourceBytes += sourceStats.size;
-        optimizedBytes += avifStats.size;
-        convertedCount += 1;
-        replacements.set(`/${relativePath}`, `/${avifRelativePath}`);
-      }
+  for (const result of avifResults) {
+    const sourceUrl = `/${toPosixPath(relative(outputDirectory, result.sourcePath))}`;
+    if (!replacements.has(sourceUrl) && result.avifBytes < result.sourceStats.size) {
+      replacements.set(sourceUrl, `/${result.avifRelativePath}`);
+      sourceBytes += result.sourceStats.size;
+      optimizedBytes += result.avifBytes;
+      convertedCount += 1;
     }
   }
 
-  const textFiles = allFiles.filter((path) => textExtensions.has(extname(path).toLowerCase()));
-  const orderedReplacements = [...replacements.entries()].sort(([a], [b]) => b.length - a.length);
+  const keys = [...replacements.keys()].sort((a, b) => b.length - a.length);
+  const replacementPattern =
+    keys.length > 0 ? new RegExp(keys.map((key) => escapeRegExp(key)).join("|"), "g") : null;
 
-  for (const textPath of textFiles) {
-    const source = await readFile(textPath, "utf8");
-    let rewritten = orderedReplacements.reduce(
-      (content, [from, to]) => content.split(from).join(to),
-      source,
-    );
-    if (extname(textPath).toLowerCase() === ".html") rewritten = addAsyncImageAttributes(rewritten);
-    if (rewritten !== source) await writeFile(textPath, rewritten);
-  }
+  await runWithConcurrency(textDocuments, workerCount, async ({ path, content }) => {
+    let rewritten = content;
+    if (replacementPattern && content.includes("/assets")) {
+      rewritten = content.replace(replacementPattern, (match) => replacements.get(match));
+    }
+    if (extname(path).toLowerCase() === ".html") rewritten = addAsyncImageAttributes(rewritten);
+    if (rewritten !== content) await writeFile(path, rewritten);
+  });
 
   logBuildMessage(
     logger,
-    `generated ${convertedCount} WebP and ${avifCount} AVIF variants; WebP references reduced by ${formatBytes(sourceBytes - optimizedBytes)}`,
+    `generated ${convertedCount} WebP/AVIF replacements and ${avifResults.length} AVIF variants; references reduced by ${formatBytes(sourceBytes - optimizedBytes)}`,
   );
 }
 
