@@ -32,16 +32,16 @@ const galleryItems = page.gallery.map((item) => ({
   </header>
 
   <div class="work-tabs" role="tablist" aria-label={locale === "en" ? "Work sections" : "作品区块"}>
-    <button class="is-active" role="tab" aria-selected="true" data-work-tab="intro">{locale === "en" ? "Introduction" : "介绍"}</button>
-    {page.gallery.length > 0 && <button role="tab" aria-selected="false" data-work-tab="gallery">{locale === "en" ? "Gallery" : "图库"}</button>}
-    {page.github && <button role="tab" aria-selected="false" data-work-tab="releases">{locale === "en" ? "Versions & updates" : "版本与更新"}</button>}
-    {page.acquisition.length > 0 && <button role="tab" aria-selected="false" data-work-tab="acquisition">{locale === "en" ? "Get the work" : "获取方式"}</button>}
+    <button class="is-active" id="work-tab-intro" role="tab" aria-selected="true" aria-controls="work-panel-intro" data-work-tab="intro">{locale === "en" ? "Introduction" : "介绍"}</button>
+    {page.gallery.length > 0 && <button id="work-tab-gallery" role="tab" aria-selected="false" aria-controls="work-panel-gallery" data-work-tab="gallery">{locale === "en" ? "Gallery" : "图库"}</button>}
+    {page.github && <button id="work-tab-releases" role="tab" aria-selected="false" aria-controls="work-panel-releases" data-work-tab="releases">{locale === "en" ? "Versions & updates" : "版本与更新"}</button>}
+    {page.acquisition.length > 0 && <button id="work-tab-acquisition" role="tab" aria-selected="false" aria-controls="work-panel-acquisition" data-work-tab="acquisition">{locale === "en" ? "Get the work" : "获取方式"}</button>}
   </div>
 
   <div class="work-page__layout">
     <div class="work-page__main">
-      <section class="work-panel is-active" data-work-panel="intro" role="tabpanel"><div class="markdown-body"><Content /></div></section>
-      {galleryItems.length > 0 && <section class="work-panel" data-work-panel="gallery" role="tabpanel" hidden>
+      <section class="work-panel is-active" id="work-panel-intro" data-work-panel="intro" role="tabpanel" aria-labelledby="work-tab-intro"><div class="markdown-body"><Content /></div></section>
+      {galleryItems.length > 0 && <section class="work-panel" id="work-panel-gallery" data-work-panel="gallery" role="tabpanel" aria-labelledby="work-tab-gallery" hidden>
         <div class="gallery-grid">
           {galleryItems.map((item) => <figure class="gallery-item">
             <button
@@ -70,10 +70,19 @@ const galleryItems = page.gallery.map((item) => ({
           </div>
         </dialog>
       </section>}
-      {page.github && <section class="work-panel" data-work-panel="releases" role="tabpanel" hidden data-releases data-github={page.github}><div class="releases-loading">{locale === "en" ? "Loading public releases…" : "正在加载公开版本……"}</div><noscript><a class="text-link" href={`${page.github}/releases`}>{locale === "en" ? "Open GitHub releases" : "打开 GitHub Releases"}<ExternalLink size={15} /></a></noscript></section>}
-      {page.acquisition.length > 0 && <section class="work-panel" data-work-panel="acquisition" role="tabpanel" hidden><div class="acquisition-list">{page.acquisition.map((option) => <article class:list={["acquisition-option", { "is-recommended": option.recommended }]}><div class="acquisition-option__top"><div><p class="eyebrow">{option.access === "paid" ? copy.status.paid : copy.status.free}</p><h2>{localize(option.name, locale)}</h2></div>{option.priceText && <strong class="acquisition-option__price">{localize(option.priceText, locale)}</strong>}</div><p>{localize(option.description, locale)}</p>{option.benefits && <ul>{option.benefits.map((benefit) => <li><Check size={15} />{localize(benefit, locale)}</li>)}</ul>}<div class="acquisition-option__channels">{option.channels.map((channel) => { const href = channel.url.startsWith("/") ? withLocale(locale, channel.url) : channel.url; return <a class="button button--outline" href={href} target={href.startsWith("http") ? "_blank" : undefined} rel={href.startsWith("http") ? "noreferrer" : undefined}>{channel.actionLabel ? localize(channel.actionLabel, locale) : option.access === "paid" ? (locale === "en" ? "Get access" : "获取授权") : (locale === "en" ? "Download" : "前往下载")}<ArrowUpRight size={15} /></a>; })}</div></article>)}</div></section>}
+      {page.github && <section class="work-panel" id="work-panel-releases" data-work-panel="releases" role="tabpanel" aria-labelledby="work-tab-releases" hidden data-releases data-github={page.github}><div class="releases-loading">{locale === "en" ? "Loading public releases…" : "正在加载公开版本……"}</div><noscript><a class="text-link" href={`${page.github}/releases`}>{locale === "en" ? "Open GitHub releases" : "打开 GitHub Releases"}<ExternalLink size={15} /></a></noscript></section>}
+      {page.acquisition.length > 0 && <section class="work-panel" id="work-panel-acquisition" data-work-panel="acquisition" role="tabpanel" aria-labelledby="work-tab-acquisition" hidden><div class="acquisition-list">{page.acquisition.map((option) => <article class:list={["acquisition-option", { "is-recommended": option.recommended }]}><div class="acquisition-option__top"><div><p class="eyebrow">{option.access === "paid" ? copy.status.paid : copy.status.free}</p><h2>{localize(option.name, locale)}</h2></div>{option.priceText && <strong class="acquisition-option__price">{localize(option.priceText, locale)}</strong>}</div><p>{localize(option.description, locale)}</p>{option.benefits && <ul>{option.benefits.map((benefit) => <li><Check size={15} />{localize(benefit, locale)}</li>)}</ul>}<div class="acquisition-option__channels">{option.channels.map((channel) => { const href = channel.url.startsWith("/") ? withLocale(locale, channel.url) : channel.url; return <a class="button button--outline" href={href} target={href.startsWith("http") ? "_blank" : undefined} rel={href.startsWith("http") ? "noreferrer" : undefined}>{channel.actionLabel ? localize(channel.actionLabel, locale) : option.access === "paid" ? (locale === "en" ? "Get access" : "获取授权") : (locale === "en" ? "Download" : "前往下载")}<ArrowUpRight size={15} /></a>; })}</div></article>)}</div></section>}
     </div>
     <aside class="work-page__aside">
+      <div class="work-page__mini-header" data-work-mini-header hidden aria-hidden="true">
+        <div class="work-page__mini-copy">
+          <p class="eyebrow">{copy.types[work.type]}</p>
+          <h2>{work.name}</h2>
+          <p class="work-page__mini-summary">{localize(work.summary, locale)}</p>
+          <div class="work-page__mini-badges"><span>{lifecycle}</span><span>{access}</span></div>
+          {docsUrl && <a class="work-page__mini-docs" href={docsUrl}>{copy.actions.viewDocs}<ArrowRight size={14} /></a>}
+        </div>
+      </div>
       <section class="compatibility-section"><p class="eyebrow">{locale === "en" ? "Compatibility" : "兼容性"}</p>
         {work.compatibility?.minecraft && <div class="compatibility-group"><strong class="compatibility-group__label">{locale === "en" ? "Supported versions" : "适配版本"}</strong><div class="compatibility-group__values">{work.compatibility.minecraft.map((item) => <span>{item}</span>)}</div></div>}
         {work.compatibility?.platforms && <div class="compatibility-group"><strong class="compatibility-group__label">{locale === "en" ? "Platforms" : "平台"}</strong><div class="compatibility-group__values">{work.compatibility.platforms.map((item) => <span>{item}</span>)}</div></div>}
@@ -88,9 +97,96 @@ const galleryItems = page.gallery.map((item) => ({
   (() => {
     const root = document.querySelector('[data-work-page]');
     if (!root) return;
+    const controller = new AbortController();
+    document.addEventListener('astro:before-swap', () => controller.abort(), { once: true });
+    const on = (target, type, handler, options = {}) => target?.addEventListener(type, handler, { ...options, signal: controller.signal });
     const buttons = [...root.querySelectorAll('[data-work-tab]')];
     const panels = [...root.querySelectorAll('[data-work-panel]')];
-    buttons.forEach((button) => button.addEventListener('click', () => { const tab = button.dataset.workTab; buttons.forEach((item) => { const active = item === button; item.classList.toggle('is-active', active); item.setAttribute('aria-selected', String(active)); }); panels.forEach((panel) => { const active = panel.dataset.workPanel === tab; panel.hidden = !active; panel.classList.toggle('is-active', active); }); }));
+    const header = root.querySelector('.work-page__header');
+    const miniHeader = root.querySelector('[data-work-mini-header]');
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+    let headerCollapsed = false;
+    let headerFrame = null;
+    const getNavHeight = () => parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--nav-height')) || 72;
+    const updateHeaderCollapse = () => {
+      if (!header || !miniHeader) return;
+      const mobile = window.matchMedia('(max-width: 760px)').matches;
+      const collapsed = !mobile && header.getBoundingClientRect().bottom <= getNavHeight() + 12;
+      if (collapsed === headerCollapsed) return;
+      headerCollapsed = collapsed;
+      root.classList.toggle('is-header-collapsed', collapsed);
+      miniHeader.setAttribute('aria-hidden', String(!collapsed));
+      header.inert = collapsed;
+    };
+    if (miniHeader) {
+      miniHeader.hidden = false;
+      updateHeaderCollapse();
+      on(window, 'scroll', () => {
+        if (headerFrame) return;
+        headerFrame = window.requestAnimationFrame(() => {
+          headerFrame = null;
+          updateHeaderCollapse();
+        });
+      }, { passive: true });
+      on(window, 'resize', updateHeaderCollapse);
+    }
+
+    let isSwitching = false;
+    const selectTab = (button, focus = false) => {
+      if (!button || isSwitching) return;
+      const tab = button.dataset.workTab;
+      const activeButton = buttons.find((item) => item.getAttribute('aria-selected') === 'true');
+      const activePanel = panels.find((panel) => !panel.hidden);
+      const nextPanel = panels.find((panel) => panel.dataset.workPanel === tab);
+      if (!nextPanel || button === activeButton) {
+        if (focus) button.focus();
+        return;
+      }
+      isSwitching = true;
+      const finish = () => {
+        buttons.forEach((item) => {
+          const active = item === button;
+          item.classList.toggle('is-active', active);
+          item.setAttribute('aria-selected', String(active));
+          item.tabIndex = active ? 0 : -1;
+        });
+        panels.forEach((panel) => {
+          if (panel === nextPanel) {
+            panel.hidden = false;
+            panel.classList.remove('is-active', 'is-leaving');
+            void panel.offsetWidth;
+            panel.classList.add('is-active');
+          } else {
+            panel.hidden = true;
+            panel.classList.remove('is-active', 'is-leaving');
+          }
+        });
+        isSwitching = false;
+      };
+      if (activePanel && activePanel !== nextPanel && !reducedMotion.matches) {
+        activePanel.classList.add('is-leaving');
+        window.setTimeout(finish, 150);
+      } else {
+        finish();
+      }
+      if (focus) button.focus();
+    };
+
+    buttons.forEach((button, index) => {
+      button.tabIndex = button.classList.contains('is-active') ? 0 : -1;
+      on(button, 'click', () => selectTab(button));
+      on(button, 'keydown', (event) => {
+        if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+        event.preventDefault();
+        let nextIndex = index;
+        if (event.key === 'ArrowRight') nextIndex = (index + 1) % buttons.length;
+        if (event.key === 'ArrowLeft') nextIndex = (index - 1 + buttons.length) % buttons.length;
+        if (event.key === 'Home') nextIndex = 0;
+        if (event.key === 'End') nextIndex = buttons.length - 1;
+        selectTab(buttons[nextIndex], true);
+      });
+    });
     const lightbox = root.querySelector('[data-gallery-lightbox]');
     const galleryTriggers = [...root.querySelectorAll('[data-gallery-trigger]')];
     if (lightbox && galleryTriggers.length) {
