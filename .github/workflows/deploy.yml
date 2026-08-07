@@ -39,3 +39,14 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v5
+
+      - name: Refresh Tencent EdgeOne CDN cache
+        env:
+          EO_SECRETID: ${{ secrets.EO_SECRETID }}
+          EO_SECRETKEY: ${{ secrets.EO_SECRETKEY }}
+          EO_PURGE_DOMAIN: mc.lunadeer.cn
+          # Optional: set as a repository variable to skip zone auto-discovery.
+          EO_ZONE_ID: ${{ vars.EO_ZONE_ID }}
+          # Optional: "invalidate" (default) or "delete".
+          EO_PURGE_METHOD: ${{ vars.EO_PURGE_METHOD }}
+        run: node scripts/refresh-edgeone-cache.mjs
