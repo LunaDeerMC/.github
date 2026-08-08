@@ -10,14 +10,14 @@ sidebar:
 
 ## 本节内容
 
-除了[编辑模式功能](../editor)中的建筑工具，EasierBuilding 还包含一组系统级特性，它们决定了拆除速度、安全保护、用量限制、材料来源和显示反馈：
+除了[编辑模式功能](/docs/plugins/easier-building/editor)中的建筑工具，EasierBuilding 还包含一组系统级特性，它们决定了拆除速度、安全保护、用量限制、材料来源和显示反馈：
 
 | 特性 | 说明 | 适用人群 |
 | :--- | :--- | :--- |
-| [工具亲和性](./tool-affinity) | 工具分工、效率附魔提速、矿石与危险方块保护 | 所有玩家 |
-| [公平用量](./fair-usage) | 额度计划、滚动窗口 + 周期上限、超额暂停 | 管理员与玩家 |
-| [从潜影盒消耗材料](./shulker-consume) | 背包材料不足时，从背包内的潜影盒继续消耗 | 所有玩家 |
-| [实时预览与 HUD](./preview) | 幻影预览、BossBar / ActionBar 引导、预览降级规则 | 所有玩家 |
+| [工具亲和性](/docs/plugins/easier-building/features/tool-affinity) | 工具分工、效率附魔提速、矿石与危险方块保护 | 所有玩家 |
+| [公平用量](/docs/plugins/easier-building/features/fair-usage) | 额度计划、滚动窗口 + 周期上限、超额暂停 | 管理员与玩家 |
+| [从潜影盒消耗材料](/docs/plugins/easier-building/features/shulker-consume) | 背包材料不足时，从背包内的潜影盒继续消耗 | 所有玩家 |
+| [实时预览与 HUD](/docs/plugins/easier-building/features/preview) | 幻影预览、BossBar / ActionBar 引导、预览降级规则 | 所有玩家 |
 
 ## 个人设置
 
@@ -25,10 +25,10 @@ sidebar:
 
 | 设置 | 默认 | 说明 |
 | :--- | :---: | :--- |
-| 消耗潜影盒方块 | 关 | 普通背包材料不足时，从背包内潜影盒继续消耗同类方块，详见[从潜影盒消耗材料](./shulker-consume) |
+| 消耗潜影盒方块 | 关 | 普通背包材料不足时，从背包内潜影盒继续消耗同类方块，详见[从潜影盒消耗材料](/docs/plugins/easier-building/features/shulker-consume) |
 | Quota BossBar | 开 | 编辑模式下是否显示公平用量的额度条 |
 
 ## 共同边界
 
 - 工具亲和性、公平用量和预览降级都**不影响任务的正确性**：跳过的方块会如实计入「跳过」，额度不足会暂停而不是失败；
-- 以上特性均可在 `config.yml` 中整体开关，详见[管理员手册：配置文件](../admin/configure)。
+- 以上特性均可在 `config.yml` 中整体开关，详见[管理员手册：配置文件](/docs/plugins/easier-building/admin/configure)。
