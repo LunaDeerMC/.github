@@ -10,10 +10,10 @@ publishedAt: "2026-08-05"
 icon: Wrench
 iconSrc: /assets/works/easier-building/easierbuilding-logo.png
 cover:
-  src: /assets/works/easier-building/easierbuilding-cover.png
+  src: /assets/works/easier-building/gallery/1.png
   alt:
-    zh-CN: EasierBuilding 封面：Minecraft 工作台上铺着一张城市规划设计蓝图
-    en: "EasierBuilding cover: a city-planning blueprint spread across a Minecraft crafting table"
+    zh-CN: EasierBuilding 封面
+    en: "EasierBuilding cover"
 compatibility:
   minecraft:
     - "1.20+"
