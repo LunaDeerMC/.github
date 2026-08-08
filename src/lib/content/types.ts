@@ -31,10 +31,9 @@ export interface WorkPageRecord {
   github?: string;
   license?: { name: string; url?: string };
   links: Array<{
-    type: "source" | "issues" | "support" | "community" | "other";
+    text: LocalizedText;
+    icon: string;
     url: string;
-    label?: LocalizedText;
-    icon?: string;
   }>;
   gallery: Array<{
     src: string;

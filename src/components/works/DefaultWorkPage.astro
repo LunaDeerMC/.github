@@ -16,7 +16,6 @@ const copy = commonCopy[locale];
 const lifecycle = copy.status[work.lifecycle === "early-access" ? "earlyAccess" : work.lifecycle === "archived" ? "archived" : "active"];
 const access = copy.status[work.accessModel];
 const docsUrl = work.docs ? withLocale(locale, `/docs/${work.docs.root}`) : "";
-const linkLabels = { source: locale === "en" ? "Source" : "源码", issues: locale === "en" ? "Issues" : "问题反馈", support: locale === "en" ? "Support" : "支持", community: locale === "en" ? "Community" : "社区", other: "" };
 const galleryItems = page.gallery.map((item) => ({
   ...item,
   alt: localize(item.alt, locale),
@@ -28,7 +27,10 @@ const galleryItems = page.gallery.map((item) => ({
 <div class="work-page page-grid" data-work-page>
   <header class="work-page__header">
     <div class="work-page__identity"><div class="work-page__icon">{work.iconSrc ? <img class="work-icon-image" src={work.iconSrc} alt="" loading="lazy" decoding="async" aria-hidden="true" /> : <LunaIcon name={work.icon} size={31} strokeWidth={1.5} />}</div><div><p class="eyebrow">{copy.types[work.type]}</p><h1>{work.name}</h1><p class="work-page__summary">{localize(work.summary, locale)}</p><div class="work-page__badges"><span>{lifecycle}</span><span>{access}</span></div></div></div>
-    {docsUrl && <a class="button button--primary" href={docsUrl}>{copy.actions.viewDocs}<ArrowRight size={17} /></a>}
+    <div class="work-page__actions">
+      {docsUrl && <a class:list={["button", page.acquisition.length > 0 ? "button--outline" : "button--primary"]} href={docsUrl}>{copy.actions.viewDocs}<ArrowRight size={17} /></a>}
+      {page.acquisition.length > 0 && <button class="button button--primary" type="button" data-work-acquisition aria-controls="work-panel-acquisition">{locale === "en" ? "Get it now" : "立即获取"}<ArrowRight size={17} /></button>}
+    </div>
   </header>
 
   <div class="work-tabs" role="tablist" aria-label={locale === "en" ? "Work sections" : "作品区块"}>
@@ -80,14 +82,17 @@ const galleryItems = page.gallery.map((item) => ({
           <h2>{work.name}</h2>
           <p class="work-page__mini-summary">{localize(work.summary, locale)}</p>
           <div class="work-page__mini-badges"><span>{lifecycle}</span><span>{access}</span></div>
-          {docsUrl && <a class="work-page__mini-docs" href={docsUrl}>{copy.actions.viewDocs}<ArrowRight size={14} /></a>}
+          <div class="work-page__mini-actions">
+            {docsUrl && <a class="work-page__mini-docs" href={docsUrl}>{copy.actions.viewDocs}<ArrowRight size={14} /></a>}
+            {page.acquisition.length > 0 && <button class="work-page__mini-docs" type="button" data-work-acquisition aria-controls="work-panel-acquisition">{locale === "en" ? "Get it now" : "立即获取"}<ArrowRight size={14} /></button>}
+          </div>
         </div>
       </div>
       <section class="compatibility-section"><p class="eyebrow">{locale === "en" ? "Compatibility" : "兼容性"}</p>
         {work.compatibility?.minecraft && <div class="compatibility-group"><strong class="compatibility-group__label">{locale === "en" ? "Supported versions" : "适配版本"}</strong><div class="compatibility-group__values">{work.compatibility.minecraft.map((item) => <span>{item}</span>)}</div></div>}
         {work.compatibility?.platforms && <div class="compatibility-group"><strong class="compatibility-group__label">{locale === "en" ? "Platforms" : "平台"}</strong><div class="compatibility-group__values">{work.compatibility.platforms.map((item) => <span>{item}</span>)}</div></div>}
       </section>
-      {page.links.length > 0 && <section><p class="eyebrow">{locale === "en" ? "Related links" : "相关链接"}</p>{page.links.map((link) => { const href = link.url.startsWith("/") ? withLocale(locale, link.url) : link.url; return <a class="aside-link" href={href} target={href.startsWith("http") ? "_blank" : undefined} rel={href.startsWith("http") ? "noreferrer" : undefined}><LunaIcon name={link.icon ?? (link.type === "source" ? "Code2" : link.type === "issues" ? "CircleAlert" : link.type === "support" ? "Heart" : "ExternalLink")} size={16} /><span>{link.type === "other" && link.label ? localize(link.label, locale) : linkLabels[link.type]}</span><ArrowUpRight size={14} /></a>; })}</section>}
+      {page.links.length > 0 && <section><p class="eyebrow">{locale === "en" ? "Related links" : "相关链接"}</p>{page.links.map((link) => { const href = link.url.startsWith("/") ? withLocale(locale, link.url) : link.url; return <a class="aside-link" href={href} target={href.startsWith("http") ? "_blank" : undefined} rel={href.startsWith("http") ? "noreferrer" : undefined}><LunaIcon name={link.icon} size={16} /><span>{localize(link.text, locale)}</span><ArrowUpRight size={14} /></a>; })}</section>}
       <section><p class="eyebrow">{locale === "en" ? "Work information" : "作品信息"}</p><div class="info-line"><span>{locale === "en" ? "Published" : "发布"}</span><strong>{work.publishedAt}</strong></div>{page.license && <div class="info-line"><span>{locale === "en" ? "License" : "授权"}</span><strong>{page.license.name}</strong></div>}{work.lifecycle === "archived" && work.archive?.replacement && <a class="aside-link" href={withLocale(locale, `/works/${work.archive.replacement}`)}><span>{locale === "en" ? "See the replacement" : "查看替代作品"}</span><ArrowRight size={14} /></a>}</section>
     </aside>
   </div>
@@ -172,6 +177,13 @@ const galleryItems = page.gallery.map((item) => ({
       }
       if (focus) button.focus();
     };
+
+    const acquisitionActions = [...root.querySelectorAll('[data-work-acquisition]')];
+    acquisitionActions.forEach((action) => {
+      on(action, 'click', () => {
+        selectTab(buttons.find((button) => button.dataset.workTab === 'acquisition'));
+      });
+    });
 
     buttons.forEach((button, index) => {
       button.tabIndex = button.classList.contains('is-active') ? 0 : -1;

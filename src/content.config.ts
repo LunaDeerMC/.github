@@ -55,10 +55,9 @@ const workPages = defineCollection({
       links: z
         .array(
           z.object({
-            type: z.enum(["source", "issues", "support", "community", "other"]),
+            text: localizedText,
+            icon: z.string(),
             url: z.string(),
-            label: localizedText.optional(),
-            icon: z.string().optional(),
           }),
         )
         .optional(),

@@ -72,9 +72,20 @@ test("full search restores the query from the URL", async ({ page }) => {
 
 test("default work pages switch between available sections", async ({ page }) => {
   await page.goto("/works/dominion");
+  const acquisitionButton = page.getByRole("button", { name: "立即获取", exact: true });
+  await expect(acquisitionButton).toHaveClass(/button--primary/);
+  await expect(page.getByRole("link", { name: /阅读文档/ })).toHaveClass(/button--outline/);
+  await expect(acquisitionButton).toBeVisible();
+  await acquisitionButton.click();
+  await expect(page.getByRole("tab", { name: "获取方式", exact: true })).toHaveAttribute("aria-selected", "true");
+  await expect(page.locator('[data-work-panel="acquisition"]')).toBeVisible();
   await page.getByRole("tab", { name: "图库", exact: true }).click();
   await expect(page.locator('[data-work-panel="gallery"]')).toBeVisible();
-  await page.getByRole("tab", { name: "获取方式", exact: true }).click();
+  await page.evaluate(() => window.scrollTo({ top: 800, behavior: "instant" }));
+  const miniAcquisitionButton = page.locator('[data-work-mini-header] [data-work-acquisition]');
+  await expect(miniAcquisitionButton).toBeVisible();
+  await miniAcquisitionButton.click();
+  await expect(page.getByRole("tab", { name: "获取方式", exact: true })).toHaveAttribute("aria-selected", "true");
   await expect(page.locator('[data-work-panel="acquisition"]')).toBeVisible();
   await expect(page.locator('[data-work-panel="intro"]')).toBeHidden();
 });
